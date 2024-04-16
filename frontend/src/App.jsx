@@ -1,35 +1,69 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react'
+import {createBrowserRouter, RouterProvider} from "react-router-dom";
+import Login from "./pages/Login.jsx";
+import NavBar from "./components/NavBar.jsx";
+import Home from "./pages/Home.jsx";
+import Order from "./pages/Order.jsx";
+import EditOrder from "./pages/EditOrder.jsx";
+import AddOrder from "./pages/AddOrder.jsx";
+import Profile from "./pages/Profile.jsx";
+import EditProfile from "./pages/EditProfile.jsx";
 
 function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    const router = createBrowserRouter([
+        {
+            index: true,
+            element: <Login/>,
+        },
+        {
+            path: "dash",
+            element: <NavBar/>,
+            children: [
+                {
+                    index: true,
+                    element: <Home/>
+                },
+                {
+                    path: "user/:id",
+                    children: [
+                        {
+                            index: true,
+                            element: <Profile/>
+                        },
+                        {
+                            path: "edit",
+                            element: <EditProfile/>
+                        }
+                    ]
+                },
+                {
+                    path: "order",
+                    children: [
+                        {
+                            path: "add",
+                            element: <AddOrder/>
+                        },
+                        {
+                            path: ":id",
+                            children: [
+                                {
+                                    index: true,
+                                    element: <Order/>
+                                },
+                                {
+                                    path: "edit",
+                                    element: <EditOrder/>
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]);
+    return (
+        <RouterProvider router={router}/>
+    )
 }
 
 export default App
