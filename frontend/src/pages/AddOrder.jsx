@@ -1,4 +1,4 @@
-function AddOrder() {
+const AddOrder = () => {
     return (<div>AddOrder</div>
     )
 }

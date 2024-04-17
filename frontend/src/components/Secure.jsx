@@ -1,4 +1,4 @@
-function Secure(props) {
+const Secure = (props) => {
     return (<div>Secure{props.children}</div>)
 }
 

@@ -1,6 +1,6 @@
 import {Link, Outlet} from "react-router-dom";
 
-function NavBar() {
+const NavBar = () => {
     return (<>
         <nav>
             <ul>

@@ -1,4 +1,4 @@
-function EditProfile() {
+const EditProfile = () => {
     return(<div>EditProfile</div>)
 }
 

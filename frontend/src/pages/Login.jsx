@@ -1,8 +1,28 @@
-function Login() {
-    return (<form method="GET" target="_self" action="./dash">
-        <input type="text" placeholder="Username" />
-        <input type="password" placeholder="Password" />
-        <input type="submit" value="Login"/>
+import {useRef} from "react";
+
+const getLoginData = async (loginURL, data) => {
+    const res = await fetch(loginURL, {
+        method: "POST",
+        body: JSON.stringify(data)
+    })
+}
+
+const Login = () => {
+    const email = useRef("");
+    const password = useRef("");
+
+    const login = () => {
+        let data = {
+            email: email.current.value,
+            password: password.current.value
+        };
+        console.log(data);
+    }
+
+    return (<form>
+        <input type="text" placeholder="Username" ref={email} />
+        <input type="password" placeholder="Password" ref={password} />
+        <input type="button" value="Login" onClick={login}/>
     </form>)
 }
 

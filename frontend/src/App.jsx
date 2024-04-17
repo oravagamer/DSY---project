@@ -9,7 +9,7 @@ import AddOrder from "./pages/AddOrder.jsx";
 import Profile from "./pages/Profile.jsx";
 import EditProfile from "./pages/EditProfile.jsx";
 
-function App() {
+const App = () => {
     const router = createBrowserRouter([
         {
             index: true,
