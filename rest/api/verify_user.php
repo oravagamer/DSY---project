@@ -3,11 +3,11 @@ include_once "./connection.php";
 
 function verify_user($username, $password) {
   try {
-        $c = get_connection();
+        $connection = get_connection();
 
-        $stmt = $c->prepare('SELECT password FROM users WHERE username = ? OR email = ?');
+        $statement = $connection->prepare('SELECT password FROM users WHERE username = ? OR email = ?');
         $stmt->execute([$username, $username]);
-        $result = $stmt->get_result();
+        $result = $statementt->get_result();
 
         $hash = $result->fetch_assoc();
         set_error_handler(function ($errno, $errstr, $errfile, $errline) {
@@ -25,7 +25,7 @@ function verify_user($username, $password) {
             return false;
         }
         restore_error_handler();
-        $c->close();
+        $connection->close();
 
     } catch (Exception $e) {
         http_response_code(500);
