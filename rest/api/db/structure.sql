@@ -69,7 +69,8 @@ CREATE TABLE images (
     id VARCHAR(36) NOT NULL PRIMARY KEY,
     data MEDIUMBLOB NOT NULL,
     type VARCHAR(5) NOT NULL,
-    order_id VARCHAR(36) NOT NULL
+    order_id VARCHAR(36) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES shop_order(id)
 );
 
 DELIMITER $$
@@ -82,7 +83,8 @@ END $$
 CREATE TABLE order_states (
     id VARCHAR(36) NOT NULL PRIMARY KEY,
     order_id INT NOT NULL,
-    message VARCHAR(255) NOT NULL
+    message VARCHAR(255) NOT NULL,
+    FOREIGN KEY (order_id) REFERENCES shop_order(id)
 );
 
 DELIMITER $$
