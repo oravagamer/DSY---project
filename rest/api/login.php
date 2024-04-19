@@ -1,5 +1,5 @@
 <?php
-include_once "./conncetion.php";
+include_once "./jwt_token.php";
 include_once "./verify_user.php";
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
   $jsonData = file_get_contents('php://input');
