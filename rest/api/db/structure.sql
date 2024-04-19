@@ -68,12 +68,26 @@ END $$
 CREATE TABLE images (
     id VARCHAR(36) NOT NULL PRIMARY KEY,
     data MEDIUMBLOB NOT NULL,
-    type VARCHAR(5) NOT NULL
+    type VARCHAR(5) NOT NULL,
+    order_id VARCHAR(36) NOT NULL
 );
 
 DELIMITER $$
 CREATE TRIGGER `generate_image_id` 
 BEFORE INSERT ON `images` FOR EACH ROW 
+BEGIN
+    SET new.id = uuid();
+END $$
+
+CREATE TABLE order_states (
+    id VARCHAR(36) NOT NULL PRIMARY KEY,
+    order_id INT NOT NULL,
+    message VARCHAR(255) NOT NULL
+);
+
+DELIMITER $$
+CREATE TRIGGER `generate_order_status_id` 
+BEFORE INSERT ON `order_states` FOR EACH ROW 
 BEGIN
     SET new.id = uuid();
 END $$
