@@ -10,6 +10,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
     if (verify_user($username, $password)) {
       $tokens = generate_jwt_tokens($username);
+    } else {
+      http_response_code(403);
     }
   } else {
    http_response_code(400);
