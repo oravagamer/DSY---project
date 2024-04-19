@@ -1,7 +1,7 @@
 <?php
 include_once "./redirect.php";
 
-function getConnection() {
+function get_connection() {
     $servername = '127.0.0.1';
     $username = 'root';
     $password = '';
