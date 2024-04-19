@@ -1,19 +1,22 @@
 <?php
 include_once "./jwt_token.php";
 include_once "./verify_user.php";
+include_once "./net_funcs.php";
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-  $jsonData = file_get_contents('php://input');
-  $data = json_decode($jsonData, true);
-  if ($data !== null) {
-    $username = $data["username"];
-    $password = $data["password"];
+    $jsonData = file_get_contents('php://input');
+    $data = json_decode($jsonData, true);
+    if ($data !== null && $data["username"] !== null && $data["password"] !== null) {
+        $username = $data["username"];
+        $password = $data["password"];
 
-    if (verify_user($username, $password)) {
-      $tokens = generate_jwt_tokens($username);
+        if ($user_id = verify_user($username, $password)) {
+            $tokens = generate_jwt_tokens($user_id);
+            header('Content-Type: application/json; charset=utf-8');
+            echo json_encode($tokens);
+        } else {
+            status_exit(403);
+        }
     } else {
-      http_response_code(403);
+        status_exit(400);
     }
-  } else {
-   http_response_code(400);
-  }
 }

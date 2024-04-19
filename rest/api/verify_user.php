@@ -1,13 +1,14 @@
 <?php
 include_once "./connection.php";
+include_once "./net_funcs.php";
 
-function verify_user($username, $password) {
-  try {
+function verify_user($username, $password): string | false {
+    try {
         $connection = get_connection();
 
-        $statement = $connection->prepare('SELECT password FROM users WHERE username = ? OR email = ?');
-        $stmt->execute([$username, $username]);
-        $result = $statementt->get_result();
+        $statement = $connection->prepare('SELECT password, id FROM users WHERE username = ? OR email = ?');
+        $statement->execute([$username, $username]);
+        $result = $statement->get_result();
 
         $hash = $result->fetch_assoc();
         set_error_handler(function ($errno, $errstr, $errfile, $errline) {
@@ -15,21 +16,20 @@ function verify_user($username, $password) {
         }, E_WARNING);
 
         try {
+            $result->close();
+            $statement->close();
+            $connection->close();
             if (password_verify($password, $hash["password"])) {
-                return true;
-            }
-            else {
+                return $hash["id"];
+            } else {
                 return false;
             }
         } catch (ErrorException $exception) {
             return false;
         }
-        restore_error_handler();
-        $connection->close();
 
     } catch (Exception $e) {
-        http_response_code(500);
-        return false;
+        echo $e->getMessage();
+        status_exit(500);
     }
-  return false;
 }

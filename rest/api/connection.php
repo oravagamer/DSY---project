@@ -1,7 +1,7 @@
 <?php
-include_once "./redirect.php";
+include_once "./net_funcs.php";
 
-function get_connection() {
+function get_connection(): ?mysqli {
     $servername = '127.0.0.1';
     $username = 'root';
     $password = '';
@@ -14,7 +14,7 @@ function get_connection() {
     try {
         $connection = new mysqli($servername, $username, $password, $dbname, $port);
     } catch (Exception $e) {
-        http_response_code(500);
+        status_exit(500);
     }
 
     return $connection;
