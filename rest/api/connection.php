@@ -14,9 +14,7 @@ function get_connection() {
     try {
         $connection = new mysqli($servername, $username, $password, $dbname, $port);
     } catch (Exception $e) {
-        echo $e->getMessage();
-        redirect("/");
-        exit;
+        http_response_code(500);
     }
 
     return $connection;
