@@ -3,7 +3,7 @@ include_once "./connection.php";
 
 function verify_user($username, $password) {
   try {
-        $c = getConnection();
+        $c = get_connection();
 
         $stmt = $c->prepare('SELECT password FROM users WHERE username = ? OR email = ?');
         $stmt->execute([$username, $username]);
