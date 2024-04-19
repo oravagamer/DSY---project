@@ -9,7 +9,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $password = $data["password"];
 
     if (verify_user($username, $password)) {
-      
+      $tokens = generate_jwt_tokens($username);
     }
   } else {
    http_response_code(400);
