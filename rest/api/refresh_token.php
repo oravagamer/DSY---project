@@ -6,18 +6,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $jsonData = file_get_contents('php://input');
     $data = json_decode($jsonData, true);
     if ($data !== null && $data["refresh"] !== null && $data["access"] !== null) {
-        $old_refresh_token_data = decrypt_jwt_token($data["refresh"]);
-        $old_access_token_data = decrypt_jwt_token($data["access"]);
+        $old_access_token_data = decrypt_jwt_token($data["access"], true);
+        $old_refresh_token_data = decrypt_jwt_token($data["refresh"], false);
 
         // expiration verify
-        if ($old_refresh_token_data["payload"]["exp"] > time()) {
+        if ($old_refresh_token_data["payload"]["exp"] > time() && $old_refresh_token_data["payload"]["aud"] === $old_access_token_data["payload"]["aud"]) {
             $connection = get_connection();
 
 
-            $statement = $connection->prepare("SELECT count(*) AS count FROM session WHERE refresh_token = ? AND access_token = ? AND status = TRUE");
+            $statement = $connection->prepare("SELECT count(*) AS count FROM session WHERE id = ? AND status = TRUE");
 
             try {
-                $statement->execute([$old_refresh_token_data["payload"]["aud"], $old_access_token_data["payload"]["aud"]]);
+                $statement->execute([$old_refresh_token_data["payload"]["aud"]]);
                 $result = $statement->get_result();
                 $hash = $result->fetch_assoc();
                 $result->close();
@@ -31,9 +31,9 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 status_exit(403);
             }
 
-            $statement = $connection->prepare("UPDATE session SET status = FALSE WHERE refresh_token = ? AND access_token = ?");
+            $statement = $connection->prepare("UPDATE session SET status = FALSE WHERE id = ?");
             try {
-                $statement->execute([$old_refresh_token_data["payload"]["aud"], $old_access_token_data["payload"]["aud"]]);
+                $statement->execute([$old_refresh_token_data["payload"]["aud"]]);
             } catch (Exception $exception) {
                 status_exit(500);
             }

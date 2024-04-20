@@ -4,18 +4,18 @@ USE dsy_project_vroj;
 
 CREATE TABLE users
 (
-    id         VARCHAR(36)         NOT NULL PRIMARY KEY DEFAULT UUID(),
-    first_name VARCHAR(255)        NOT NULL,
-    last_name  VARCHAR(255)        NOT NULL,
-    username   VARCHAR(255)        NOT NULL UNIQUE,
-    email      VARCHAR(255) UNIQUE NOT NULL,
-    password   VARCHAR(1023)       NOT NULL
+    id         VARCHAR(36)   NOT NULL PRIMARY KEY DEFAULT UUID(),
+    first_name VARCHAR(255)  NOT NULL,
+    last_name  VARCHAR(255)  NOT NULL,
+    username   VARCHAR(255)  NOT NULL UNIQUE,
+    email      VARCHAR(255)  NOT NULL UNIQUE,
+    password   VARCHAR(1023) NOT NULL
 );
 
 CREATE TABLE roles
 (
-    id          VARCHAR(36)         NOT NULL PRIMARY KEY DEFAULT UUID(),
-    name        VARCHAR(255) UNIQUE NOT NULL,
+    id          VARCHAR(36)  NOT NULL PRIMARY KEY DEFAULT UUID(),
+    name        VARCHAR(255) NOT NULL UNIQUE,
     description VARCHAR(255)
 );
 
@@ -30,13 +30,13 @@ CREATE TABLE user_with_role
 
 CREATE TABLE session
 (
-    id            INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    user_id       VARCHAR(36) NOT NULL,
-    access_token  VARCHAR(36) NOT NULL UNIQUE,
-    refresh_token VARCHAR(40) NOT NULL UNIQUE,
-    acc_dead      TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-    ref_dead      TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP(),
-    status        BOOLEAN     NOT NULL DEFAULT TRUE,
+    id          VARCHAR(36)  NOT NULL PRIMARY KEY DEFAULT UUID(),
+    user_id     VARCHAR(36)  NOT NULL,
+    ref_sha_key VARCHAR(344) NOT NULL,
+    acc_sha_key VARCHAR(344) NOT NULL,
+    acc_dead    TIMESTAMP    NOT NULL             DEFAULT CURRENT_TIMESTAMP(),
+    ref_dead    TIMESTAMP    NOT NULL             DEFAULT CURRENT_TIMESTAMP(),
+    status      BOOLEAN      NOT NULL             DEFAULT TRUE,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
@@ -84,16 +84,6 @@ BEGIN
 END $$
 
 DELIMITER $$
-CREATE TRIGGER `generate_access_token`
-    BEFORE INSERT
-    ON `session`
-    FOR EACH ROW
-BEGIN
-    SET new.access_token = uuid();
-    SET new.refresh_token = SHA1(uuid());
-END $$
-
-DELIMITER $$
 CREATE TRIGGER `order_state_insert`
     AFTER INSERT
     ON `shop_order`
@@ -128,15 +118,16 @@ DELIMITER $$
 CREATE PROCEDURE make_session(
     IN v_user_id VARCHAR(36),
     IN acc_exp TIMESTAMP,
-    IN ref_exp TIMESTAMP
+    IN ref_exp TIMESTAMP,
+    IN v_acc_sha_key VARCHAR(344),
+    IN v_ref_sha_key VARCHAR(344)
 )
 BEGIN
-    DECLARE session_id INT UNSIGNED DEFAULT 0;
+    SET @session_id = UUID();
 
-    INSERT INTO session(user_id, ref_dead, acc_dead) VALUE (v_user_id, ref_exp, acc_exp);
+    INSERT INTO session(id, user_id, ref_dead, acc_dead, ref_sha_key, acc_sha_key)
+    VALUE (@session_id, v_user_id, ref_exp, acc_exp, v_ref_sha_key, v_acc_sha_key);
 
-    SET session_id = LAST_INSERT_ID();
-
-    select access_token, refresh_token from session where id = session_id;
+    SELECT @session_id AS id;
 
 END $$

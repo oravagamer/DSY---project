@@ -1,7 +1,4 @@
 {
   "access_token_exp": 600,
-  "refresh_token_exp": 1200,
-  "private_key_path": "file:///xampp/apache/bin/private.key",
-  "pk_phrase": "orava",
-  "csr_path": "file:///xampp/apache/bin/request.csr"
+  "refresh_token_exp": 1200
 }

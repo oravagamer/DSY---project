@@ -5,7 +5,7 @@ include_once "./verify_user.php";
 
 function secure(): array {
     list($auth_token) = sscanf(apache_request_headers()["Authorization"], "Bearer %s");
-    $access_token_data = decrypt_jwt_token($auth_token);
+    $access_token_data = decrypt_jwt_token($auth_token, true);
 
     if ($access_token_data["payload"]["exp"] < time()) {
         status_exit(403);
@@ -14,7 +14,7 @@ function secure(): array {
         $connection = get_connection();
 
 
-        $statement = $connection->prepare("SELECT count(*) AS count FROM session WHERE access_token = ? AND status = TRUE AND user_id = ?");
+        $statement = $connection->prepare("SELECT count(*) AS count FROM session WHERE id = ? AND status = TRUE AND user_id = ?");
 
         try {
             $statement->execute([$access_token_data["payload"]["aud"], $access_token_data["payload"]["sub"]]);
