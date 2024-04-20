@@ -25,7 +25,7 @@ function verify_user($username, $password): string {
                 status_exit(403);
             }
         } catch (ErrorException $exception) {
-            status_exit(500);
+            status_exit(403);
         }
 
     } catch (Exception $e) {

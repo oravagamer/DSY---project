@@ -78,40 +78,44 @@ function generate_jwt_tokens($user_id): array {
  * @return array
  */
 function decrypt_jwt_token($token, bool $type): array {
-    $exploded = explode(".", $token, 3);
-    $connection = get_connection();
-    $header = $exploded[0];
-    $payload = $exploded[1];
-    $header_data = json_decode(base64_decode($header), true);
-    $payload_data = json_decode(base64_decode($payload), true);
-    $verify_signature = base64_decode($exploded[2]);
-    $sha_key = "";
-
-    if ($type) {
-        $statement = $connection->prepare("SELECT acc_sha_key AS sha_key FROM session WHERE id = ?");
-    } else {
-        $statement = $connection->prepare("SELECT ref_sha_key AS sha_key FROM session WHERE id = ?");
-    }
-
     try {
-        $statement->execute([$payload_data["aud"]]);
-        $result = $statement->get_result();
-        $hash = $result->fetch_assoc();
-        $sha_key = $hash["sha_key"];
+        $exploded = explode(".", $token, 3);
+        $connection = get_connection();
+        $header = $exploded[0];
+        $payload = $exploded[1];
+        $verify_signature = base64_decode($exploded[2]);
+        $header_data = json_decode(base64_decode($header), true);
+        $payload_data = json_decode(base64_decode($payload), true);
+        $sha_key = "";
 
-        $result->close();
-        $statement->close();
-        $connection->close();
-    } catch (Exception $exception) {
-        status_exit(403);
-    }
+        if ($type) {
+            $statement = $connection->prepare("SELECT acc_sha_key AS sha_key FROM session WHERE id = ?");
+        } else {
+            $statement = $connection->prepare("SELECT ref_sha_key AS sha_key FROM session WHERE id = ?");
+        }
 
-    if (hash_equals($verify_signature, hash_hmac($header_data["alg"], $header . "." . $payload, $sha_key))) {
-        return [
-            "header" => $header_data,
-            "payload" => $payload_data
-        ];
-    } else {
+        try {
+            $statement->execute([$payload_data["aud"]]);
+            $result = $statement->get_result();
+            $hash = $result->fetch_assoc();
+            $sha_key = $hash["sha_key"];
+
+            $result->close();
+            $statement->close();
+            $connection->close();
+        } catch (Exception $exception) {
+            status_exit(403);
+        }
+
+        if (hash_equals($verify_signature, hash_hmac($header_data["alg"], $header . "." . $payload, $sha_key))) {
+            return [
+                "header" => $header_data,
+                "payload" => $payload_data
+            ];
+        } else {
+            status_exit(403);
+        }
+    } catch (Error $exception) {
         status_exit(403);
     }
 }
