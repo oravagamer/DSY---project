@@ -2,7 +2,7 @@
 include_once "./connection.php";
 include_once "./net_funcs.php";
 
-function verify_user($username, $password): string|false {
+function verify_user($username, $password): string {
     try {
         $connection = get_connection();
 
@@ -22,19 +22,18 @@ function verify_user($username, $password): string|false {
             if (password_verify($password, $hash["password"])) {
                 return $hash["id"];
             } else {
-                return false;
+                status_exit(403);
             }
         } catch (ErrorException $exception) {
-            return false;
+            status_exit(500);
         }
 
     } catch (Exception $e) {
-        echo $e->getMessage();
         status_exit(500);
     }
 }
 
-function verify_user_with_id($user_id): array|false {
+function verify_user_with_id($user_id): array {
     $roles = [];
 
     try {
@@ -54,13 +53,13 @@ function verify_user_with_id($user_id): array|false {
             $connection->close();
 
             if (sizeof($roles) < 1) {
-                return false;
+                status_exit(403);
             } else {
                 return $roles;
             }
 
         } catch (ErrorException $exception) {
-            return false;
+            status_exit(500);
         }
 
     } catch (Exception $e) {

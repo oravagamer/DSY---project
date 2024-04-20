@@ -8,14 +8,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if ($data !== null && $data["username"] !== null && $data["password"] !== null) {
         $username = $data["username"];
         $password = $data["password"];
+        $user_id = verify_user($username, $password);
 
-        if ($user_id = verify_user($username, $password)) {
-            $tokens = generate_jwt_tokens($user_id);
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode($tokens);
-        } else {
-            status_exit(403);
-        }
+        $tokens = generate_jwt_tokens($user_id);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($tokens);
     } else {
         status_exit(400);
     }

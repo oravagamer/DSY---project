@@ -23,7 +23,7 @@ function generate_jwt_tokens($user_id): array {
 
     try {
         $connection = get_connection();
-        $result = false;
+        $result = null;
         $hash = [];
 
         $statement = $connection->prepare("CALL make_session(?, ?, ?, ?, ?)");
