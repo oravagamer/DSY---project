@@ -2,7 +2,7 @@
 include_once "./connection.php";
 include_once "./net_funcs.php";
 
-function verify_user($username, $password): string | false {
+function verify_user($username, $password): string|false {
     try {
         $connection = get_connection();
 
@@ -24,6 +24,41 @@ function verify_user($username, $password): string | false {
             } else {
                 return false;
             }
+        } catch (ErrorException $exception) {
+            return false;
+        }
+
+    } catch (Exception $e) {
+        echo $e->getMessage();
+        status_exit(500);
+    }
+}
+
+function verify_user_with_id($user_id): array|false {
+    $roles = [];
+
+    try {
+        $connection = get_connection();
+
+        $statement = $connection->prepare('SELECT roles.name AS role FROM user_with_role JOIN roles ON user_with_role.role_id = roles.id WHERE user_with_role.user_id = ?');
+        $statement->execute([$user_id]);
+        $result = $statement->get_result();
+
+        while ($hash = $result->fetch_assoc()) {
+            array_push($roles, $hash["role"]);
+        }
+
+        try {
+            $result->close();
+            $statement->close();
+            $connection->close();
+
+            if (sizeof($roles) < 1) {
+                return false;
+            } else {
+                return $roles;
+            }
+
         } catch (ErrorException $exception) {
             return false;
         }

@@ -4,12 +4,11 @@ include_once "./net_funcs.php";
 include_once "./settings.php";
 function generate_jwt_tokens($user_id): array {
     $settings = get_settings();
-    $access_token_exp = $settings["access_token_exp"];
-    $refresh_token_exp = $settings["refresh_token_exp"];
+    $access_token_exp = time() + $settings["access_token_exp"];
+    $refresh_token_exp = time() + $settings["refresh_token_exp"];
     $private_key_path = $settings["private_key_path"];
     $phrase = $settings["pk_phrase"];
 
-    $roles = [];
     $sub = $user_id;
     $iss = $_SERVER["REMOTE_ADDR"];
     $token_header = [
@@ -22,10 +21,10 @@ function generate_jwt_tokens($user_id): array {
         $result = false;
         $hash = [];
 
-        $statement = $connection->prepare("CALL make_session(?)");
+        $statement = $connection->prepare("CALL make_session(?, ?, ?)");
 
         try {
-            $statement->execute([$sub]);
+            $statement->execute([$sub, date("Y-m-d H:i:s", $access_token_exp), date("Y-m-d H:i:s", $refresh_token_exp)]);
             $result = $statement->get_result();
             $hash = $result->fetch_assoc();
         } catch (Exception $exception) {
@@ -37,36 +36,20 @@ function generate_jwt_tokens($user_id): array {
 
         $result->close();
         $statement->close();
-
-        try {
-            $statement = $connection->prepare('SELECT roles.name AS role FROM user_with_role JOIN roles ON roles.id = user_with_role.role_id JOIN users ON users.id = user_with_role.user_id WHERE users.id = ?');
-            $statement->execute([$sub]);
-            $result = $statement->get_result();
-            while ($hash = $result->fetch_assoc()) {
-                array_push($roles, $hash["role"]);
-            }
-        } catch (Exception $exception) {
-            status_exit(404);
-        }
-
-        $result->close();
-        $statement->close();
         $connection->close();
 
         $access_token_payload = [
             "iss" => $iss,
             "sub" => $sub,
             "aud" => $aud_access,
-            "exp" => $access_token_exp,
-            "roles" => $roles
+            "exp" => $access_token_exp
         ];
 
         $refresh_token_payload = [
             "iss" => $iss,
             "sub" => $sub,
             "aud" => $aud_refresh,
-            "exp" => $refresh_token_exp,
-            "roles" => $roles
+            "exp" => $refresh_token_exp
         ];
 
         $private_key = openssl_pkey_get_private($private_key_path, $phrase);

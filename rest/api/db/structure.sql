@@ -30,12 +30,14 @@ CREATE TABLE user_with_role
 
 CREATE TABLE session
 (
-    id            INT          NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    user_id       VARCHAR(36)  NOT NULL,
-    access_token  VARCHAR(36)  NOT NULL UNIQUE,
+    id            INT         NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    user_id       VARCHAR(36) NOT NULL,
+    access_token  VARCHAR(36) NOT NULL UNIQUE,
     refresh_token VARCHAR(40) NOT NULL UNIQUE,
-    status        BOOLEAN      NOT NULL DEFAULT TRUE,
-    FOREIGN KEY (user_id) REFERENCES users (id)  ON DELETE CASCADE
+    acc_dead      TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    ref_dead      TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP(),
+    status        BOOLEAN     NOT NULL DEFAULT TRUE,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE shop_order
@@ -43,13 +45,13 @@ CREATE TABLE shop_order
     id           VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT UUID(),
     name         VARCHAR(31) NOT NULL UNIQUE,
     created_by   VARCHAR(36) NOT NULL,
-    created_for  VARCHAR(36) NOT NULL,
+    created_for  VARCHAR(36),
     date_created TIMESTAMP   NOT NULL             DEFAULT CURRENT_TIMESTAMP(),
     finish_date  TIMESTAMP   NOT NULL             DEFAULT CURRENT_TIMESTAMP(),
     status       BOOLEAN,
     description  VARCHAR(255),
-    FOREIGN KEY (created_by) REFERENCES users (id)  ON DELETE CASCADE,
-    FOREIGN KEY (created_for) REFERENCES users (id)  ON DELETE CASCADE
+    FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE CASCADE,
+    FOREIGN KEY (created_for) REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE images
@@ -58,7 +60,7 @@ CREATE TABLE images
     data     MEDIUMBLOB  NOT NULL,
     type     VARCHAR(5)  NOT NULL,
     order_id VARCHAR(36) NOT NULL,
-    FOREIGN KEY (order_id) REFERENCES shop_order (id)  ON DELETE CASCADE
+    FOREIGN KEY (order_id) REFERENCES shop_order (id) ON DELETE CASCADE
 );
 
 CREATE TABLE order_states
@@ -67,7 +69,7 @@ CREATE TABLE order_states
     order_id VARCHAR(36)  NOT NULL,
     message  VARCHAR(255) NOT NULL,
     time     TIMESTAMP    NOT NULL             DEFAULT CURRENT_TIMESTAMP(),
-    FOREIGN KEY (order_id) REFERENCES shop_order (id)  ON DELETE CASCADE
+    FOREIGN KEY (order_id) REFERENCES shop_order (id) ON DELETE CASCADE
 );
 
 INSERT INTO roles(name, description) VALUE ('Default', 'Default role');
@@ -124,12 +126,14 @@ $$
 DELIMITER $$
 
 CREATE PROCEDURE make_session(
-    IN v_user_id VARCHAR(36)
+    IN v_user_id VARCHAR(36),
+    IN acc_exp TIMESTAMP,
+    IN ref_exp TIMESTAMP
 )
 BEGIN
     DECLARE session_id INT UNSIGNED DEFAULT 0;
 
-    INSERT INTO session(user_id) VALUE (v_user_id);
+    INSERT INTO session(user_id, ref_dead, acc_dead) VALUE (v_user_id, ref_exp, acc_exp);
 
     SET session_id = LAST_INSERT_ID();
 
