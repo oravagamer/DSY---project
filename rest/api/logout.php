@@ -2,7 +2,7 @@
 include_once "./connection.php";
 include_once "./net_funcs.php";
 include_once "./jwt_token.php";
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+POST(function () {
     $jsonData = file_get_contents('php://input');
     $data = json_decode($jsonData, true);
     if ($data !== null && $data["refresh"] !== null && $data["access"] !== null) {
@@ -49,4 +49,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } else {
         status_exit(400);
     }
-}
+});

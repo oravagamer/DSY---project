@@ -1,7 +1,7 @@
 <?php
 include_once "./connection.php";
 include_once "./net_funcs.php";
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+POST(function () {
     $jsonData = file_get_contents('php://input');
     $data = json_decode($jsonData, true);
     if ($data !== null && $data["username"] !== null && $data["password"] !== null && $data["first_name"] !== null && $data["last_name"] !== null && $data["email"] !== null) {
@@ -26,4 +26,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } else {
         status_exit(400);
     }
-}
+});

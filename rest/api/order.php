@@ -1,3 +1,100 @@
 <?php
+include_once "./net_funcs.php";
+include_once "./secure.php";
+include_once "./connection.php";
 
 $user = secure();
+
+GET(function () {
+    global $user;
+    $url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    $parts = parse_url($url);
+    parse_str($parts['query'], $query);
+    if (key_exists("id", $query)) {
+        try {
+            $connection = get_connection();
+            $statement = $connection->prepare('SELECT images.id AS img_id, images.type AS img_type, shop_order.name AS name, shop_order.created_by AS cb, shop_order.created_for AS cf, shop_order.date_created AS dc, shop_order.finish_date AS fd, shop_order.status AS status, shop_order.description AS description FROM images JOIN shop_order ON shop_order.id = images.order_id WHERE shop_order.id = ?');
+            $statement->execute([$query["id"]]);
+            $result = $statement->get_result();
+            $hash = $result->fetch_assoc();
+            if (is_null($hash)) {
+                status_exit(404);
+            }
+            $return_data = [
+                "order" => [
+                    "name" => $hash["name"],
+                    "created_by" => $hash["cb"],
+                    "created_for" => $hash["cf"],
+                    "created" => $hash["dc"],
+                    "finish" => $hash["fd"],
+                    "status" => $hash["status"],
+                    "description" => $hash["description"]
+                ],
+                "images" => []
+            ];
+
+            do {
+                array_push($return_data["images"], $hash["img_id"] . "." . $hash["img_type"]);
+            } while ($hash = $result->fetch_assoc());
+            return_as_json($return_data);
+        } catch (Exception $exception) {
+            status_exit(500);
+        }
+    }
+
+});
+
+POST(function () {
+    global $user;
+    if (isset($_POST["name"], $_POST["description"], $_POST["time_end"])) {
+        try {
+            $name = $_POST["name"];
+            $description = $_POST["description"];
+            $for_user = $_POST["for"];
+            $time = date("Y-m-d H:i:s", $_POST["time_end"]);
+            $connection = get_connection();
+
+            $statement = $connection->prepare('CALL create_order(?, ?, ?, ?, ?)');
+            $statement->execute([$user["id"], $time, $name, $description, $for_user]);
+            $result = $statement->get_result();
+
+            $hash = $result->fetch_assoc();
+            $order_id = $hash["id"];
+            $result->close();
+            $statement->close();
+
+            if (isset($_FILES['images'])) {
+                $file_array_upload = [];
+                $file_count = is_array($_FILES["images"]["name"]) ? sizeof($_FILES['images']["name"]) : 1;
+                $statement = $connection->prepare('INSERT INTO images(data, type, order_id) VALUES (?, ?, ?)' . str_repeat(", (?, ?, ?)", is_array($_FILES['images']) ? sizeof($_FILES['images']["name"]) - 1 : 0));
+                for ($i = 0; $i <= $file_count - 1; $i++) {
+                    $file_name = $_FILES['images']["name"][$i];
+                    $dot_pos = strpos($file_name, ".") + 1;
+                    array_push($file_array_upload, file_get_contents($_FILES["images"]["tmp_name"][$i]), substr($file_name, $dot_pos, strlen($file_name) - $dot_pos), $order_id);
+
+                }
+                $statement->execute($file_array_upload);
+                $statement->close();
+                $connection->close();
+                return_as_json(["order_id" => $order_id]);
+            }
+        } catch (Exception $exception) {
+            status_exit(500);
+        }
+    } else {
+        status_exit(400);
+    }
+
+});
+
+PUT(function () {
+    global $user;
+    $link = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+
+});
+
+DELETE(function () {
+    global $user;
+    $link = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+
+});

@@ -5,7 +5,8 @@ include_once "./secure.php";
 
 $user = secure();
 
-if ($_SERVER["REQUEST_METHOD"] === "GET") {
+GET(function () {
+    global $user;
     $return_data = [];
     try {
         $connection = get_connection();
@@ -37,6 +38,5 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
         status_exit(500);
     }
 
-    header('Content-Type: application/json; charset=utf-8');
-    echo json_encode($return_data);
-}
+    return_as_json($return_data);
+});

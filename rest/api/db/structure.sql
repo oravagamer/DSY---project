@@ -42,14 +42,14 @@ CREATE TABLE session
 
 CREATE TABLE shop_order
 (
-    id           VARCHAR(36) NOT NULL PRIMARY KEY DEFAULT UUID(),
-    name         VARCHAR(31) NOT NULL UNIQUE,
-    created_by   VARCHAR(36) NOT NULL,
+    id           VARCHAR(36)  NOT NULL PRIMARY KEY DEFAULT UUID(),
+    name         VARCHAR(256) NOT NULL UNIQUE,
+    created_by   VARCHAR(36)  NOT NULL,
     created_for  VARCHAR(36),
-    date_created TIMESTAMP   NOT NULL             DEFAULT CURRENT_TIMESTAMP(),
-    finish_date  TIMESTAMP   NOT NULL             DEFAULT CURRENT_TIMESTAMP(),
+    date_created TIMESTAMP    NOT NULL             DEFAULT CURRENT_TIMESTAMP(),
+    finish_date  TIMESTAMP    NOT NULL             DEFAULT CURRENT_TIMESTAMP(),
     status       BOOLEAN,
-    description  VARCHAR(255),
+    description  VARCHAR(1024),
     FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (created_for) REFERENCES users (id) ON DELETE CASCADE
 );
@@ -72,7 +72,9 @@ CREATE TABLE order_states
     FOREIGN KEY (order_id) REFERENCES shop_order (id) ON DELETE CASCADE
 );
 
-INSERT INTO roles(name, description) VALUE ('Default', 'Default role');
+INSERT INTO roles(name, description)
+VALUES ('Default', 'Default role'),
+       ('admin', 'Admin role');
 
 DELIMITER $$
 CREATE TRIGGER `assign_def_role`
@@ -126,8 +128,26 @@ BEGIN
     SET @session_id = UUID();
 
     INSERT INTO session(id, user_id, ref_dead, acc_dead, ref_sha_key, acc_sha_key)
-    VALUE (@session_id, v_user_id, ref_exp, acc_exp, v_ref_sha_key, v_acc_sha_key);
+        VALUE (@session_id, v_user_id, ref_exp, acc_exp, v_ref_sha_key, v_acc_sha_key);
 
     SELECT @session_id AS id;
+
+END $$
+
+DELIMITER $$
+
+CREATE PROCEDURE create_order(
+    IN v_user_id VARCHAR(36),
+    IN v_time_end TIMESTAMP,
+    IN v_name VARCHAR(256),
+    IN v_description VARCHAR(1024),
+    IN v_created_for VARCHAR(36)
+)
+BEGIN
+    SET @order_id = UUID();
+
+    INSERT INTO shop_order(id, name, created_by, finish_date, description, created_for) VALUE (@order_id, v_name, v_user_id, v_time_end, v_description, v_created_for);
+
+    SELECT @order_id AS id;
 
 END $$

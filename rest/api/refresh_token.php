@@ -2,7 +2,7 @@
 include_once "./connection.php";
 include_once "./net_funcs.php";
 include_once "./jwt_token.php";
-if ($_SERVER["REQUEST_METHOD"] === "POST") {
+POST(function () {
     $jsonData = file_get_contents('php://input');
     $data = json_decode($jsonData, true);
     if ($data !== null && $data["refresh"] !== null && $data["access"] !== null) {
@@ -41,9 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $statement->close();
             $connection->close();
 
-            $tokens = generate_jwt_tokens($old_access_token_data["payload"]["sub"]);
-            header('Content-Type: application/json; charset=utf-8');
-            echo json_encode($tokens);
+            return_as_json(generate_jwt_tokens($old_access_token_data["payload"]["sub"]));
         } else {
             status_exit(403);
         }
@@ -51,4 +49,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } else {
         status_exit(400);
     }
-}
+});
