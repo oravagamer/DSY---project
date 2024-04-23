@@ -111,6 +111,8 @@ BEGIN
         INSERT INTO order_states(order_id, message) VALUE (NEW.id, 'Order back in process.');
     ELSEIF (NEW.status IS NULL AND OLD.status = 1) THEN
         INSERT INTO order_states(order_id, message) VALUE (NEW.id, 'Order refresh.');
+    ELSEIF (NEW.status = OLD.status) THEN
+        INSERT INTO order_states(order_id, message) VALUE (NEW.id, 'Order information change.');
     END IF;
 END
 $$
@@ -146,7 +148,10 @@ CREATE PROCEDURE create_order(
 BEGIN
     SET @order_id = UUID();
 
-    INSERT INTO shop_order(id, name, created_by, finish_date, description, created_for) VALUE (@order_id, v_name, v_user_id, v_time_end, v_description, v_created_for);
+    INSERT INTO shop_order(id, name, created_by, finish_date, description, created_for) VALUE (@order_id, v_name,
+                                                                                               v_user_id, v_time_end,
+                                                                                               v_description,
+                                                                                               v_created_for);
 
     SELECT @order_id AS id;
 

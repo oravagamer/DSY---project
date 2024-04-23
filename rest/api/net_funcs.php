@@ -1,12 +1,10 @@
 <?php
 
-use JetBrains\PhpStorm\NoReturn;
-
 function redirect(string $url): void {
     header("Location: " . $url);
 }
 
-#[NoReturn] function status_exit($net_status): void {
+function status_exit($net_status): void {
     http_response_code($net_status);
     exit(0);
 }

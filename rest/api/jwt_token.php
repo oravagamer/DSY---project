@@ -3,9 +3,9 @@ include_once "./connection.php";
 include_once "./net_funcs.php";
 include_once "./settings.php";
 function generate_jwt_tokens($user_id): array {
-    $settings = get_settings();
-    $access_token_exp = time() + $settings["access_token_exp"];
-    $refresh_token_exp = time() + $settings["refresh_token_exp"];
+    $settings = get_settings()["jwt"];
+    $access_token_exp = time() + $settings["access_exp"];
+    $refresh_token_exp = time() + $settings["refresh_exp"];
     try {
         $access_token_sha_key = base64_encode(random_bytes(256));
         $refresh_token_sha_key = base64_encode(random_bytes(256));

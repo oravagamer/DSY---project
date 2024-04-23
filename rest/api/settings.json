@@ -1,4 +1,13 @@
 {
-  "access_token_exp": 600,
-  "refresh_token_exp": 1200
+  "db": {
+    "server": "127.0.0.1",
+    "username": "root",
+    "password": "",
+    "db_name": "dsy_project_vroj",
+    "port": 3306
+  },
+  "jwt": {
+    "access_exp": 60000,
+    "refresh_exp": 120000
+  }
 }

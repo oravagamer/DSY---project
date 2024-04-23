@@ -6,7 +6,6 @@ include_once "./connection.php";
 $user = secure();
 
 GET(function () {
-    global $user;
     $url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
     $parts = parse_url($url);
     parse_str($parts['query'], $query);
@@ -89,12 +88,100 @@ POST(function () {
 
 PUT(function () {
     global $user;
-    $link = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    $url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    $parts = parse_url($url);
+    parse_str($parts['query'], $query);
+    $id = $query["id"];
+
+    $jsonData = file_get_contents('php://input');
+    $data = json_decode($jsonData, true);
+    $is_admin = in_array("admin", $user["roles"]);
+
+    if (key_exists("id", $query) && isset($data)) {
+        $name = $data["name"];
+        $description = $data["description"];
+        $due = $data["time_end"];
+        $created_for = $data["created_for"];
+        $status = $data["status"];
+
+        try {
+            $connection = get_connection();
+            $update_data = [];
+            $sql_query = 'UPDATE shop_order SET';
+
+            if (isset($name)) {
+                $sql_query = $sql_query . " name = ?,";
+                array_push($update_data, $name);
+            }
+            if (isset($description)) {
+                $sql_query = $sql_query . " description = ?,";
+                array_push($update_data, $description);
+            }
+            if (isset($due)) {
+                $sql_query = $sql_query . " finish_date = ?,";
+                array_push($update_data, date("Y-m-d H:i:s", $due));
+            }
+            if (isset($created_for)) {
+                $sql_query = $sql_query . " created_for = ?,";
+                array_push($update_data, $created_for);
+            }
+            if (isset($status)) {
+                $sql_query = $sql_query . " status = ?,";
+                array_push($update_data, $status);
+            }
+            array_push($update_data, $id);
+
+            if ($sql_query[strlen($sql_query) - 1] === ",") {
+                $str_split = str_split($sql_query);
+                array_splice($str_split, strlen($sql_query) - 1, 1, "");
+                $sql_query = implode("", $str_split);
+                unset($str_split);
+            }
+            $sql_query = $sql_query . " WHERE id = ?";
+            if (!$is_admin) {
+                $sql_query = $sql_query . " AND (created_by = ? OR created_by = ?)";
+                array_push($update_data, $user["id"], $user["id"]);
+            }
+            $statement = $connection->prepare($sql_query);
+            $statement->execute($update_data);
+
+            if ($statement->affected_rows === 0) {
+                status_exit(404);
+            }
+            $statement->close();
+            $connection->close();
+        } catch (Exception $exception) {
+            status_exit(500);
+        }
+    }
 
 });
 
 DELETE(function () {
     global $user;
-    $link = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    $url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    $parts = parse_url($url);
+    parse_str($parts['query'], $query);
+    $is_admin = in_array("admin", $user["roles"]);
+    if (key_exists("id", $query)) {
+        try {
+            $connection = get_connection();
+            $statement = $connection->prepare('DELETE FROM shop_order WHERE id = ?' . ($is_admin ? "" : " AND (shop_order.created_by = ? || shop_order.created_for = ?)"));
+
+            if ($is_admin) {
+                $statement->execute([$query["id"]]);
+            } else {
+                $statement->execute([$query["id"], $user["id"], $user["id"]]);
+            }
+            if ($statement->affected_rows === 0) {
+                $statement->close();
+                $connection->close();
+                status_exit(404);
+            }
+        } catch (Exception $exception) {
+            echo $exception->getMessage();
+            status_exit(500);
+        }
+    }
 
 });

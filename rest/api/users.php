@@ -12,7 +12,7 @@ GET(function () {
         $connection = get_connection();
         $statement = null;
 
-        if (array_intersect($user["roles"], array("admin")) === array("admin")) {
+        if (in_array("admin", $user["roles"])) {
             $statement = $connection->prepare('SELECT first_name, last_name, username, email, id FROM users');
             $statement->execute();
         } else {
