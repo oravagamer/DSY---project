@@ -1,4 +1,5 @@
 import {useRef} from "react";
+import "./Login.css";
 
 const getLoginData = async (loginURL, data) => {
     const res = await fetch(loginURL, {
@@ -19,11 +20,17 @@ const Login = () => {
         console.log(data);
     }
 
-    return (<form>
-        <input type="text" placeholder="Username" ref={email} />
-        <input type="password" placeholder="Password" ref={password} />
-        <input type="button" value="Login" onClick={login}/>
-    </form>)
+    return (<div id="background">
+        <header id="header"></header>
+        <section id="login">
+            <form id="login-form">
+                <div id="label">Login</div>
+                <input id="username" type="text" placeholder="Username" ref={email}/>
+                <input id="password" type="password" placeholder="Password" ref={password}/>
+                <input id="button" type="button" value="Submit" onClick={login}/>
+            </form>
+        </section>
+    </div>)
 }
 
 export default Login;
