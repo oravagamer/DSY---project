@@ -1,5 +1,5 @@
 import {useRef} from "react";
-import "./Login.css";
+import styles from './Login.module.scss';
 
 const getLoginData = async (loginURL, data) => {
     const res = await fetch(loginURL, {
@@ -20,14 +20,14 @@ const Login = () => {
         console.log(data);
     }
 
-    return (<div id="background">
-        <header id="header"></header>
-        <section id="login">
-            <form id="login-form">
-                <div id="label">Login</div>
-                <input id="username" type="text" placeholder="Username" ref={email}/>
-                <input id="password" type="password" placeholder="Password" ref={password}/>
-                <input id="button" type="button" value="Submit" onClick={login}/>
+    return (<div className={styles["login-background"]}>
+        <header className={styles["login-header"]}></header>
+        <section className={styles["login-section"]}>
+            <form className={styles["login-form"]}>
+                <div className={styles["login-label"]}>Login</div>
+                <input className={styles["login-username"]} type="text" placeholder="Username" ref={email}/>
+                <input className={styles["login-password"]} type="password" placeholder="Password" ref={password}/>
+                <input className={styles["login-button"]} type="button" value="Submit" onClick={login}/>
             </form>
         </section>
     </div>)
