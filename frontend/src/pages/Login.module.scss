@@ -1,11 +1,13 @@
 @use "../globalSettings";
 
 .login-background {
-  background-image: url("background.svg");
-  background-repeat: no-repeat;
-  background-attachment: fixed;
-  background-position: center top;
-  background-size: cover;
+  background: {
+    image: url("background.svg");
+    repeat: no-repeat;
+    attachment: fixed;
+    position: center top;
+    size: cover;
+  };
   width: 100vw;
   height: 100vh;
 }
@@ -36,16 +38,37 @@
   flex-direction: column;
 }
 
-input.login-password, input.login-username {
-    width: 80%;
-    height: 12%;
-    border-radius: 2rem;
-    background-color: white;
-    border: black 0.1rem solid;
+.login-password, .login-username {
+  @include globalSettings.login-input;
+  width: 80%;
+  background-color: white;
   padding-left: 3%;
-  }
+}
 
 .login-label {
   font-size: 250%;
   text-align: center;
+}
+
+.login-button {
+  @include globalSettings.login-input;
+  padding: 0 5%;
+  background-color: #697391;
+  color: white;
+  transition: {
+    property: background-color;
+    duration: 0.4s;
+  };
+
+  &:hover {
+    background-color: #8b99bd;
+  }
+
+  &:active {
+    transition: {
+      property: background-color;
+      duration: 0.1s;
+    };
+    background-color: #3d4256;
+  }
 }

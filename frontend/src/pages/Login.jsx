@@ -1,23 +1,37 @@
-import {useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import styles from './Login.module.scss';
-
-const getLoginData = async (loginURL, data) => {
-    const res = await fetch(loginURL, {
-        method: "POST",
-        body: JSON.stringify(data)
-    })
-}
+import useAuthDataStore from "../store/authDataStore.js";
+import {frontendUrl} from "../../settings.js";
 
 const Login = () => {
-    const email = useRef("");
+    const username = useRef("");
     const password = useRef("");
+    const auth = useAuthDataStore();
+    const [error, setError] = useState({
+        status: null,
+        text: null
+    });
 
-    const login = () => {
-        let data = {
-            email: email.current.value,
-            password: password.current.value
-        };
-        console.log(data);
+    useEffect(() => {
+        if (auth.isNotExpired()) {
+            window.location.replace(`${frontendUrl}/dash`);
+        }
+    });
+    useEffect(() => {
+    }, [error]);
+
+    const login = async () => {
+        auth
+            .login(username.current.value, password.current.value)
+            .then(async res => {
+                setError({
+                    status: res.status,
+                    text: res.statusText
+                });
+                if (res.status < 300) {
+                    window.location.replace(`${frontendUrl}/dash`);
+                }
+            });
     }
 
     return (<div className={styles["login-background"]}>
@@ -25,9 +39,9 @@ const Login = () => {
         <section className={styles["login-section"]}>
             <form className={styles["login-form"]}>
                 <div className={styles["login-label"]}>Login</div>
-                <input className={styles["login-username"]} type="text" placeholder="Username" ref={email}/>
-                <input className={styles["login-password"]} type="password" placeholder="Password" ref={password}/>
-                <input className={styles["login-button"]} type="button" value="Submit" onClick={login}/>
+                <input className={styles["login-username"]} type="text" placeholder="Username" ref={username} />
+                <input className={styles["login-password"]} type="password" placeholder="Password" ref={password} />
+                <input className={styles["login-button"]} type="button" value="Submit" onClick={login} />
             </form>
         </section>
     </div>)

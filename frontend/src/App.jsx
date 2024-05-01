@@ -8,6 +8,7 @@ import EditOrder from "./pages/EditOrder.jsx";
 import AddOrder from "./pages/AddOrder.jsx";
 import Profile from "./pages/Profile.jsx";
 import EditProfile from "./pages/EditProfile.jsx";
+import Secure from "./components/Secure.jsx";
 
 const App = () => {
     const router = createBrowserRouter([
@@ -17,7 +18,7 @@ const App = () => {
         },
         {
             path: "dash",
-            element: <NavBar/>,
+            element: <Secure><NavBar/></Secure>,
             children: [
                 {
                     index: true,
