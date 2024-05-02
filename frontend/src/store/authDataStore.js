@@ -1,6 +1,6 @@
 import {create} from "zustand";
 import {backendUrl} from "../../settings.js";
-import {persist} from "zustand/middleware";
+import {createJSONStorage, persist} from "zustand/middleware";
 
 const useAuthDataStore = create(
     persist(
@@ -67,7 +67,8 @@ const useAuthDataStore = create(
             }
         }),
         {
-            name: "auth-storage"
+            name: "auth-storage",
+            storage: createJSONStorage(() => sessionStorage)
         }
     )
 );

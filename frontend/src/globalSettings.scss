@@ -1,8 +1,16 @@
 $OCRAEXT-font-family: "OCRA";
+$RuthlessWreckinOne-font-family: "RuthlessWreckinOne";
 
 @font-face {
   font-family: 'OCRA';
   src: url("OCRAEXT.TTF") format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "RuthlessWreckinOne";
+  src: url("RuthlessWreckinOne.ttf") format("truetype");
   font-weight: normal;
   font-style: normal;
 }
@@ -16,4 +24,12 @@ $OCRAEXT-font-family: "OCRA";
     radius: 2rem;
   };
   font-weight: 500;
+}
+
+@function myRepeat($n, $word) {
+  $result: null;
+  @for $_ from 1 through $n {
+    $result: append($result, $word);
+  }
+  @return $result;
 }

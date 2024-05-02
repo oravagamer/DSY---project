@@ -35,7 +35,7 @@ const Login = () => {
     }
 
     return (<div className={styles["login-background"]}>
-        <header className={styles["login-header"]}></header>
+        <header className={styles["login-header"]}><div><img src="logo.svg" alt="Website logo" /></div></header>
         <section className={styles["login-section"]}>
             <form className={styles["login-form"]}>
                 <div className={styles["login-label"]}>Login</div>

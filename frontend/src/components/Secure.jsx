@@ -5,10 +5,10 @@ const Secure = (props) => {
     const auth = useAuthDataStore();
 
     if (auth.isNotExpired()) {
-        return (<div>Secure{props.children}<input type="button" onClick={auth.logout} placeholder="test" /></div>)
+        return (<>{props.children}</>)
     } else if (auth.refreshTokenIsNotExpired()) {
         auth.refreshJWT();
-        return (<div>Secure{props.children}</div>)
+        return (<>Secure{props.children}</>)
     } else {
         return (<Navigate to="/" />);
     }
