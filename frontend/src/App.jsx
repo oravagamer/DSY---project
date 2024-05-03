@@ -9,12 +9,13 @@ import AddOrder from "./pages/AddOrder.jsx";
 import Profile from "./pages/Profile.jsx";
 import EditProfile from "./pages/EditProfile.jsx";
 import Secure from "./components/Secure.jsx";
+import UnSecure from "./components/UnSecure.jsx";
 
 const App = () => {
     const router = createBrowserRouter([
         {
             index: true,
-            element: <Login/>,
+            element: <UnSecure><Login/></UnSecure>,
         },
         {
             path: "dash",

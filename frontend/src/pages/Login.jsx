@@ -11,12 +11,6 @@ const Login = () => {
         status: null,
         text: null
     });
-
-    useEffect(() => {
-        if (auth.isNotExpired()) {
-            window.location.replace(`${frontendUrl}/dash`);
-        }
-    });
     useEffect(() => {
     }, [error]);
 
