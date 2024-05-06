@@ -37,10 +37,12 @@ cat <pub-key-file-path>
 cd /c/xampp/htdocs
 git clone git@github.com:oravagamer/DSY---project.git
 ```
-14. Now you project on your device
+14. Now project is on your device
 15. To setup `DB` copy content of file `structure.sql` inside `C:\xampp\htdocs\DSY---project\rest\api\db` and run it in phpmyadmin
+15. Start `Apache` and `Mysql` server
 16. Now open `cmd` and go to `C:\xampp\htdocs\DSY---project\frontend` install node dependencies
 ```bash
+cd C:\xampp\htdocs\DSY---project\frontend
 npm install
 ```
 17. Now you can start dev server
