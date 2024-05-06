@@ -11,6 +11,7 @@ export default defineConfig({
                 changeOrigin: true,
                 rewrite: path => path.replace("/rest/api", "/DSY---project/rest/api")
             }
-        }
+        },
+        port: 5175
     }
 })

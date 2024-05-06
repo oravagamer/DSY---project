@@ -72,6 +72,7 @@ npm run dev
 23. Click send
 ![img.png](imgs/insomnia-send.png)
 24. Now we have created user with username `aaa` and password `aaa`
+25. Website is hosted on this [link](http://localhost:5175)
 
 ## Generate pk and certificate
 ```bash
