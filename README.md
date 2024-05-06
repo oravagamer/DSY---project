@@ -21,7 +21,7 @@ pacman -S git
 ```bash
 ssh-keygen
 ```
-Expected output will be similar to this:
+Output will be similar to this:
 ![img.png](imgs/ssh-keygen-console.png)
 10. Now copy that path to file where public key was saved
 ![img.png](imgs/ssh-pub-key-path.png)
