@@ -34,6 +34,7 @@ cat <pub-key-file-path>
 12. Click `add SSH key`
 13. Go to Msys and go to path `/c/xampp/htdocs` and clone project
 ```bash
+cd /c/xampp/htdocs
 git clone git@github.com:oravagamer/DSY---project.git
 ```
 14. Now you project on your device
