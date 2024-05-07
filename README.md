@@ -25,40 +25,40 @@ Output will be similar to this:
 ![img.png](imgs/ssh-keygen-console.png)
 10. Now copy that path to file where public key was saved
 ![img.png](imgs/ssh-pub-key-path.png)
-10. Display content of file
+11. Display content of file
 ```bash
 cat <pub-key-file-path>
 ```
-11. Now copy result of this command and paste it into `github` key input and name the key
+12. Now copy result of this command and paste it into `github` key input and name the key
 ![img.png](imgs/cmd-pub-key.png)![img.png](imgs/github-add-key.png)
-12. Click `add SSH key`
-13. Go to Msys and go to path `/c/xampp/htdocs` and clone project
+13. Click `add SSH key`
+14. Go to Msys and go to path `/c/xampp/htdocs` and clone project
 ```bash
 cd /c/xampp/htdocs
 git clone git@github.com:oravagamer/DSY---project.git
 ```
-14. Now project is on your device
-15. To setup `DB` copy content of file `structure.sql` inside `C:\xampp\htdocs\DSY---project\rest\api\db` and run it in phpmyadmin
-15. Start `Apache` and `Mysql` server
-16. Now open `cmd` and go to `C:\xampp\htdocs\DSY---project\frontend` install node dependencies
+15. Now project is on your device
+16. To setup `DB` copy content of file `structure.sql` inside `C:\xampp\htdocs\DSY---project\rest\api\db` and run it in phpmyadmin
+17. Start `Apache` and `Mysql` server
+18. Now open `cmd` and go to `C:\xampp\htdocs\DSY---project\frontend` install node dependencies
 ```bash
 cd C:\xampp\htdocs\DSY---project\frontend
 npm install
 ```
-17. Now you can start dev server
+19. Now you can start dev server
 ```bash
 npm run dev 
 ```
-18. Now open Insomnia and add new HTTP request
+20. Now open Insomnia and add new HTTP request
 ![img.png](imgs/insomnia-setup.png)
 ![img.png](imgs/insomnia-http.png)
-19. Change method from GET to POST
+21. Change method from GET to POST
 ![img.png](imgs/insomnia-post.png)
-20. Add this url to requested url `http://localhost/DSY---project/rest/api/register.php`
+22. Add this url to requested url `http://localhost/DSY---project/rest/api/register.php`
 ![img_1.png](imgs/insomnia-url.png)
-21. Go to body and set body to JSON
+23. Go to body and set body to JSON
 ![img.png](imgs/insomnia-body.png)
-22. Now add this JSON as body
+24. Now add this JSON as body
 ```json
 {
 	"username": "aaa",
@@ -69,11 +69,11 @@ npm run dev
 }
 ```
 ![img.png](imgs/insomnia-json.png)
-23. Click send
+25. Click send
 ![img.png](imgs/insomnia-send.png)
-24. Now we have created user with username `aaa` and password `aaa` 
-25. Website is hosted on this [link](http://localhost:5175) 
-26. To save changes go to Msys project folder, and push changes 
+26. Now we have created user with username `aaa` and password `aaa` 
+27. Website is hosted on this [link](http://localhost:5175) 
+28. To save changes go to Msys project folder, and push changes 
 ```bash
 cd /c/xampp/htdocs/DSY---project
 git add .
