@@ -73,6 +73,14 @@ npm run dev
 ![img.png](imgs/insomnia-send.png)
 24. Now we have created user with username `aaa` and password `aaa`
 25. Website is hosted on this [link](http://localhost:5175)
+26. To save changes go to Msys project folder, and push changes
+```bash
+cd /c/xampp/htdocs/DSY---project
+git add .
+git commit -m "new(frontend): dsy styles"
+git push
+```
+If there will be error type command recommend by git
 
 ## Generate pk and certificate
 ```bash
