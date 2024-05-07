@@ -71,9 +71,9 @@ npm run dev
 ![img.png](imgs/insomnia-json.png)
 23. Click send
 ![img.png](imgs/insomnia-send.png)
-24. Now we have created user with username `aaa` and password `aaa`
-25. Website is hosted on this [link](http://localhost:5175)
-26. To save changes go to Msys project folder, and push changes
+24. Now we have created user with username `aaa` and password `aaa` 
+25. Website is hosted on this [link](http://localhost:5175) 
+26. To save changes go to Msys project folder, and push changes 
 ```bash
 cd /c/xampp/htdocs/DSY---project
 git add .
