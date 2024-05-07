@@ -1,4 +1,4 @@
-import styles from "./Home.module.css";
+import styles from "./Home.module.scss";
 import Section from "../components/Section.jsx";
 
 const Home = () => {
