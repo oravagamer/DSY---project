@@ -1,3 +1,6 @@
+@use 'sass:list';
+@use 'sass:string';
+
 $OCRAEXT-font-family: "OCRA";
 $RuthlessWreckinOne-font-family: "RuthlessWreckinOne";
 
@@ -30,6 +33,14 @@ $RuthlessWreckinOne-font-family: "RuthlessWreckinOne";
   $result: null;
   @for $_ from 1 through $n {
     $result: append($result, $word);
+  }
+  @return $result;
+}
+
+@function listToString($list, $separator: " ") {
+  $result: "";
+  @each $val in $list {
+    $result: $result + $val + $separator;
   }
   @return $result;
 }

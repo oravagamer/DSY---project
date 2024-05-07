@@ -1,3 +1,35 @@
-.section {
-    color: white;
+@use "../globalSettings";
+
+.home-section {
+  color: white;
+
+  .table {
+    width: 100%;
+    border-spacing: 0;
+    color: black;
+    font: {
+      size: 150%;
+      family: globalSettings.$OCRAEXT-font-family;
+    };
+
+    * {
+      height: 8vh;
+      text-align: left;
+    }
+
+    .table-head {
+      position: sticky;
+      top: 0;
+      background-color: #515151;
+    }
+
+    tbody {
+
+      tr:nth-child(2n) {
+        background-color: #EAEAEA;
+      }
+
+      background-color: #BFBFBF;
+    }
+  }
 }

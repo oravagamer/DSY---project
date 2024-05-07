@@ -12,8 +12,8 @@
   height: 100vh;
   display: grid;
   grid: {
-    auto-columns: auto;
-    auto-rows: auto;
+    auto-rows: globalSettings.myRepeat(10, 10vh);
+    auto-columns: 100vw;
     template-areas: "header" globalSettings.myRepeat(9, "section");
   }
 
@@ -47,8 +47,8 @@
     grid-area: section;
 
     .login-form {
-      width: 50%;
-      height: 60%;
+      width: 40%;
+      aspect-ratio: 1;
       background-color: #CECECE;
       border-radius: 4rem;
       display: flex;

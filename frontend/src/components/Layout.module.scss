@@ -1,0 +1,129 @@
+@use "../globalSettings";
+@use 'sass:math';
+@use 'sass:string';
+
+.background {
+  background-color: #23283A;
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid: {
+    auto-rows: globalSettings.myRepeat(10, 10vh);
+    auto-columns: 100vw;
+    template-areas: "nav" globalSettings.myRepeat(8, "web-center") "footer";
+  }
+
+  .nav-bar {
+    background-color: black;
+    display: inline-grid;
+    grid: {
+      area: nav;
+      template-areas: "left middle right";
+      auto-rows: 10vh;
+      auto-columns: globalSettings.myRepeat(3, math.div(100vw, 3));
+    }
+
+    .nav-left {
+      grid-area: left;
+      justify-content: left;
+    }
+
+    .nav-middle {
+      grid-area: middle;
+      justify-content: center;
+    }
+
+    .nav-right {
+      grid-area: right;
+      justify-content: right;
+    }
+
+    div {
+      display: flex;
+      align-items: center;
+      padding: 5% 10%;
+
+      * {
+        height: 100%;
+      }
+    }
+
+  }
+
+  .web-center {
+    grid-area: web-center;
+    width: 100%;
+    height: auto;
+    display: inline-grid;
+    grid: {
+      auto-columns: globalSettings.myRepeat(4, 25vw);
+      auto-rows: 100%;
+      template-areas: string.insert("left-nav", globalSettings.listToString(globalSettings.myRepeat(3, "web-content")), 100);
+    }
+
+    .left-nav {
+      grid-area: left-nav;
+      display: grid;
+      grid: {
+        template-rows: globalSettings.myRepeat(10, auto);
+        template-columns: 100%;
+      };
+      border: {
+        style: solid;
+        color: black;
+        width: 0 0.1rem 0 0;
+      }
+
+      div {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        a {
+          font: {
+            family: globalSettings.$OCRAEXT-font-family;
+            weight: 500;
+            size: 150%;
+          }
+          color: white;
+          text-decoration: unset;
+        }
+
+      }
+
+    }
+
+
+  }
+
+  .footer {
+    grid-area: footer;
+    background-color: #232323;
+    height: auto;
+    color: white;
+    border: {
+      width: 0.2vh 0 0 0;
+      style: solid;
+      color: black;
+
+    };
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    .copyright {
+      font: {
+        size: 1.5rem;
+        family: "OCR A Extended";
+      }
+    }
+
+    .santos {
+      font: {
+        family: globalSettings.$RuthlessWreckinOne-font-family;
+      };
+    }
+
+  }
+}
