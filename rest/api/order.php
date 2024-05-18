@@ -3,6 +3,7 @@ include_once "./net_funcs.php";
 include_once "./secure.php";
 include_once "./connection.php";
 
+cacncelWarns();
 $user = secure();
 
 GET(function () {
@@ -12,7 +13,7 @@ GET(function () {
     if (key_exists("id", $query)) {
         try {
             $connection = get_connection();
-            $statement = $connection->prepare('SELECT images.id AS img_id, images.type AS img_type, shop_order.name AS name, shop_order.created_by AS cb, shop_order.created_for AS cf, shop_order.date_created AS dc, shop_order.finish_date AS fd, shop_order.status AS status, shop_order.description AS description FROM images JOIN shop_order ON shop_order.id = images.order_id WHERE shop_order.id = ?');
+            $statement = $connection->prepare('SELECT images.id AS img_id, images.type AS img_type, shop_order.name AS name, shop_order.created_by AS cb, shop_order.created_for AS cf, shop_order.date_created AS dc, shop_order.finish_date AS fd, shop_order.status AS status, shop_order.description AS description FROM images RIGHT JOIN shop_order ON shop_order.id = images.order_id WHERE shop_order.id = ?');
             $statement->execute([$query["id"]]);
             $result = $statement->get_result();
             $hash = $result->fetch_assoc();
@@ -24,8 +25,8 @@ GET(function () {
                     "name" => $hash["name"],
                     "created_by" => $hash["cb"],
                     "created_for" => $hash["cf"],
-                    "created" => $hash["dc"],
-                    "finish" => $hash["fd"],
+                    "created_date" => $hash["dc"],
+                    "finish_date" => $hash["fd"],
                     "status" => $hash["status"],
                     "description" => $hash["description"]
                 ],
@@ -45,16 +46,16 @@ GET(function () {
 
 POST(function () {
     global $user;
-    if (isset($_POST["name"], $_POST["description"], $_POST["time_end"])) {
+    if (isset($_POST["name"], $_POST["description"], $_POST["finish_date"])) {
         try {
             $name = $_POST["name"];
             $description = $_POST["description"];
-            $for_user = $_POST["for"];
-            $time = date("Y-m-d H:i:s", $_POST["time_end"]);
+            $for_user = $_POST["created_for"];
+            $time = date("Y-m-d H:i:s", $_POST["finish_date"]);
             $connection = get_connection();
 
-            $statement = $connection->prepare('CALL create_order(?, ?, ?, ?, ?)');
-            $statement->execute([$user["id"], $time, $name, $description, $for_user]);
+            $statement = $connection->prepare('CALL create_order(?, ?, ?, ?, ' . ($for_user === null ? "NULL" : mysqli_escape_string($connection, $for_user)). ")");
+            $statement->execute([$user["id"], $time, $name, $description]);
             $result = $statement->get_result();
 
             $hash = $result->fetch_assoc();
@@ -73,11 +74,12 @@ POST(function () {
 
                 }
                 $statement->execute($file_array_upload);
-                $statement->close();
-                $connection->close();
-                return_as_json(["order_id" => $order_id]);
+
             }
+            $connection->close();
+            return_as_json(["order_id" => $order_id]);
         } catch (Exception $exception) {
+            echo $exception->getMessage();
             status_exit(500);
         }
     } else {
@@ -100,7 +102,7 @@ PUT(function () {
     if (key_exists("id", $query) && isset($data)) {
         $name = $data["name"];
         $description = $data["description"];
-        $due = $data["time_end"];
+        $due = $data["finish_date"];
         $created_for = $data["created_for"];
         $status = $data["status"];
 
@@ -151,6 +153,7 @@ PUT(function () {
             $statement->close();
             $connection->close();
         } catch (Exception $exception) {
+            echo $exception->getMessage();
             status_exit(500);
         }
     }
@@ -179,7 +182,6 @@ DELETE(function () {
                 status_exit(404);
             }
         } catch (Exception $exception) {
-            echo $exception->getMessage();
             status_exit(500);
         }
     }

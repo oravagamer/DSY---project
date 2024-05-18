@@ -3,8 +3,12 @@ include_once "./jwt_token.php";
 include_once "./net_funcs.php";
 include_once "./verify_user.php";
 
+cacncelWarns();
 function secure(): array {
     list($auth_token) = sscanf(apache_request_headers()["Authorization"], "Bearer %s");
+    if (!$auth_token) {
+        list($auth_token) = sscanf(apache_request_headers()["authorization"], "Bearer %s");
+    }
     $access_token_data = decrypt_jwt_token($auth_token, true);
 
     if ($access_token_data["payload"]["exp"] < time()) {

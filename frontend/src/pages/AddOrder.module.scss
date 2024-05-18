@@ -1,0 +1,42 @@
+@use "../globalSettings";
+@use "sass:math";
+
+.add-order {
+  overflow: unset;
+
+  .add-order-form {
+    display: grid;
+    height: globalSettings.$web-center-height;
+    grid-auto-rows: math.div(globalSettings.$web-center-height, 4);
+    grid-auto-columns: math.div(globalSettings.$web-content-width, 2);
+    grid-template-areas:
+            "name file"
+            "time file"
+            "desc for"
+            "submit submit";
+
+    .add-order-name {
+      grid-area: name;
+    }
+
+    .add-order-desc {
+      grid-area: desc;
+    }
+
+    .add-order-time {
+      grid-area: time;
+    }
+
+    .add-order-for {
+      grid-area: for;
+    }
+
+    .add-order-file {
+      grid-area: file;
+    }
+
+    .add-order-button {
+      grid-area: submit;
+    }
+  }
+}

@@ -7,6 +7,9 @@ const useAuthDataStore = create(
         (set, get) => ({
             accessToken: "",
             refreshToken: "",
+            isLoggedIn: () => {
+                return get().accessToken !== "";
+            },
             login: async (username, password) => {
                 const res = await fetch(`${backendUrl}/login.php`, {
                     method: "POST",

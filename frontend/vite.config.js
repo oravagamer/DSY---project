@@ -9,7 +9,8 @@ export default defineConfig({
             "/rest/api": {
                 target: "http://localhost:80",
                 changeOrigin: true,
-                rewrite: path => path.replace("/rest/api", "/DSY---project/rest/api")
+                secure: false,
+                rewrite: path => path.replace("/rest/api", "/DSY---project/rest/api"),
             }
         },
         port: 5175

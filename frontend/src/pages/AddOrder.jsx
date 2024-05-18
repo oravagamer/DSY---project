@@ -1,5 +1,54 @@
+import Section from "../components/Section.jsx";
+import styles from "./AddOrder.module.scss";
+import {useRef} from "react";
+import {backendUrl} from "../../settings.js";
+import useAuthDataStore from "../store/authDataStore.js";
+
 const AddOrder = () => {
-    return (<div>AddOrder</div>
+    const auth = useAuthDataStore();
+    const nameRef = useRef();
+    const finishDateRef = useRef();
+    const descriptionRef = useRef();
+    const forUserRef = useRef();
+    const imagesRef = useRef();
+
+    const onSubmit = () => {
+        const formData = new FormData();
+        if (nameRef.current?.value !== "") {
+            formData.append("name", nameRef.current?.value);
+        }
+        if (descriptionRef.current?.value !== "") {
+            formData.append("description", descriptionRef.current?.value);
+        }
+        if (finishDateRef.current?.value !== "") {
+            formData.append("finish_date", (new Date(finishDateRef.current?.value).getTime() / 1000).toString());
+        }
+        formData.append("created_for", forUserRef.current?.value === "" ? null : forUserRef.current?.value);
+        for (const image of imagesRef.current?.files) {
+            formData.append("images[]", image);
+        }
+        fetch(`${backendUrl}/order.php`, {
+            method: "POST",
+            body: formData,
+            headers: {
+                "Authorization": `Bearer ${auth.accessToken}`
+            }
+        })
+            .then(async res => console.log(res));
+    }
+
+    return (<Section className={styles["add-order"]}>
+            <form className={styles["add-order-form"]}>
+                <input type="text" className={styles["add-order-name"]} ref={nameRef} placeholder="Name" />
+                <input type="datetime-local" className={styles["add-order-time"]} ref={finishDateRef}
+                       placeholder="Finish date" />
+                <input type="text" className={styles["add-order-desc"]} ref={descriptionRef} placeholder="Description" />
+                <input type="text" className={styles["add-order-for"]} ref={forUserRef} placeholder="For" />
+                <input type="file" className={styles["add-order-file"]} ref={imagesRef} accept="image/*" multiple={true}
+                       placeholder="Images" />
+                <input type="button" className={styles["add-order-button"]} value="Submit" onClick={onSubmit} />
+            </form>
+        </Section>
     )
 }
 

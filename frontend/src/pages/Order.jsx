@@ -1,5 +1,32 @@
+import useFetch from "../hooks/useFetch.js";
+import {backendUrl} from "../../settings.js";
+import {Link, Navigate, useParams} from "react-router-dom";
+import useAuthDataStore from "../store/authDataStore.js";
+import Section from "../components/Section.jsx";
+import GoBack from "../components/GoBack.jsx";
+
 const Order = () => {
-    return(<div>Order</div>)
+    const {id} = useParams();
+    const auth = useAuthDataStore();
+    const [{responseData, responseStatus, loading, error}] = useFetch(`${backendUrl}/order.php?id=${id}`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${auth.accessToken}`
+        }
+    });
+
+    return (<>{responseStatus === 404
+        ? <Navigate to="/dash/home" />
+        : <Section>
+            <h1>{responseData?.order.name}</h1>
+            <h2>Description: {responseData?.order.description}</h2>
+            <h3>Created: {responseData?.order.created_date}</h3>
+            <h3>Finish: {responseData?.order.finish_date}</h3>
+            <h3>Status: {responseData?.order.status}</h3>
+            <GoBack />
+            <Link to="edit">Edit</Link>
+        </Section>
+    }</>)
 }
 
 export default Order;

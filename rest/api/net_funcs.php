@@ -38,3 +38,7 @@ function return_as_json($data) {
     echo json_encode($data);
     status_exit(200);
 }
+
+function cacncelWarns() {
+    error_reporting(E_ERROR | E_PARSE);
+}

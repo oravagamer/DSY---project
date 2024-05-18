@@ -4,13 +4,13 @@
 
 .background {
   background-color: #23283A;
-  width: 100vw;
-  height: 100vh;
+  width: globalSettings.$background-width;
+  height: globalSettings.$background-height;
   display: grid;
   grid: {
-    auto-rows: globalSettings.myRepeat(10, 10vh);
-    auto-columns: 100vw;
-    template-areas: "nav" globalSettings.myRepeat(8, "web-center") "footer";
+    auto-rows: globalSettings.$nav-height globalSettings.$web-center-height globalSettings.$footer-height;
+    auto-columns: globalSettings.$background-width;
+    template-areas: "nav" "web-center" "footer";
   }
 
   .nav-bar {
@@ -19,8 +19,8 @@
     grid: {
       area: nav;
       template-areas: "left middle right";
-      auto-rows: 10vh;
-      auto-columns: globalSettings.myRepeat(3, math.div(100vw, 3));
+      auto-rows: globalSettings.$nav-height;
+      auto-columns: math.div(globalSettings.$background-width, 3);
     }
 
     .nav-left {
@@ -56,9 +56,9 @@
     height: auto;
     display: inline-grid;
     grid: {
-      auto-columns: globalSettings.myRepeat(4, 25vw);
+      auto-columns: globalSettings.$left-nav-width globalSettings.$web-content-width;
       auto-rows: 100%;
-      template-areas: string.insert("left-nav", globalSettings.listToString(globalSettings.myRepeat(3, "web-content")), 100);
+      template-areas: "left-nav web-content";
     }
 
     .left-nav {

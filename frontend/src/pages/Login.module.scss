@@ -2,19 +2,19 @@
 
 .login-background {
   background: {
-    image: url("background.svg");
+    image: url("/background.svg");
     repeat: no-repeat;
     attachment: fixed;
     position: center top;
     size: cover;
   };
-  width: 100vw;
-  height: 100vh;
+  width: globalSettings.$background-width;
+  height: globalSettings.$background-height;
   display: grid;
   grid: {
-    auto-rows: globalSettings.myRepeat(10, 10vh);
-    auto-columns: 100vw;
-    template-areas: "header" globalSettings.myRepeat(9, "section");
+    auto-rows: globalSettings.$nav-height globalSettings.$web-center-height+globalSettings.$footer-height;
+    auto-columns: globalSettings.$background-width;
+    template-areas: "header" "section";
   }
 
   .login-header {

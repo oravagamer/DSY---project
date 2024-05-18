@@ -50,8 +50,8 @@ CREATE TABLE shop_order
     finish_date  TIMESTAMP    NOT NULL             DEFAULT CURRENT_TIMESTAMP(),
     status       BOOLEAN,
     description  VARCHAR(1024),
-    FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE CASCADE,
-    FOREIGN KEY (created_for) REFERENCES users (id) ON DELETE CASCADE
+    FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE RESTRICT,
+    FOREIGN KEY (created_for) REFERENCES users (id) ON DELETE SET NULL
 );
 
 CREATE TABLE images
