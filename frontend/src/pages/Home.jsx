@@ -27,15 +27,18 @@ const Home = () => {
             </tr>
             </thead>
             <tbody>
-            {responseData?.map(value => (<tr>
+            {responseData?.map(value => (<tr key={value.id}>
                 <td>{value.name}</td>
                 <td>{new Date(value.created_date).toUTCString()}</td>
                 <td>{new Date(value.finish_date).toUTCString()}</td>
                 <td>{(() => {
                     switch (value.status) {
-                        case null: return "Created";
-                        case 1: return "In Progress";
-                        case 2: return "Finished";
+                        case null:
+                            return "Created";
+                        case 1:
+                            return "In Progress";
+                        case 2:
+                            return "Finished";
                     }
                 })()}</td>
                 <td><Link to={`/dash/order/${value.id}`}>Info</Link></td>

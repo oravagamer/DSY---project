@@ -1,6 +1,8 @@
 <?php
-include_once "./connection.php";
 include_once "./net_funcs.php";
+include_once "./DB.php";
+include_once "./HTTP_STATES.php";
+
 POST(function () {
     $jsonData = file_get_contents('php://input');
     $data = json_decode($jsonData, true);
@@ -11,19 +13,12 @@ POST(function () {
         $last_name = $data["last_name"];
         $email = $data["email"];
 
-        $connection = get_connection();
-
-        $statement = $connection->prepare("INSERT INTO users (username, first_name, last_name, email, password) values (?, ?, ?, ?, ?)");
-        try {
-            $statement->execute([$username, $first_name, $last_name, $email, password_hash($password, PASSWORD_DEFAULT)]);
-        } catch (Exception $exception) {
-            status_exit(403);
-        }
-
-        $statement->close();
-        $connection->close();
+        $database = new DB();
+        $connection = $database->getConnection();
+        $connection->execute("INSERT INTO users (username, first_name, last_name, email, password) values (?, ?, ?, ?, ?)", [$username, $first_name, $last_name, $email, password_hash($password, PASSWORD_DEFAULT)]);
+        $connection->closeConnection();
 
     } else {
-        status_exit(400);
+        status_exit(HTTP_STATES::BAD_REQUEST);
     }
 });

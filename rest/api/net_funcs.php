@@ -1,11 +1,13 @@
 <?php
+include_once "./HTTP_STATES.php";
 
 function redirect(string $url): void {
     header("Location: " . $url);
 }
 
-function status_exit($net_status): void {
-    http_response_code($net_status);
+function status_exit(HTTP_STATES $net_status, ?string $message = null): void {
+    echo $message === null ? $net_status->name : $message;
+    http_response_code($net_status->value);
     exit(0);
 }
 
@@ -33,12 +35,12 @@ function DELETE($function): void {
     }
 }
 
-function return_as_json($data) {
+function return_as_json(array $data): void {
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode($data);
-    status_exit(200);
+    status_exit(HTTP_STATES::OK, "");
 }
 
-function cacncelWarns() {
+function cancelWarns(): void {
     error_reporting(E_ERROR | E_PARSE);
 }

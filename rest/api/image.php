@@ -1,7 +1,8 @@
 <?php
 include_once "./net_funcs.php";
 include_once "./secure.php";
-include_once "./connection.php";
+include_once "./DB.php";
+include_once "./HTTP_STATES.php";
 
 $user = secure();
 
@@ -12,27 +13,23 @@ GET(function () {
 
     if (isset($query["img_name"])) {
         list($id, $type) = explode(".", $query["img_name"]);
-        $connection = get_connection();
-        $statement = $connection->prepare("SELECT data FROM images WHERE id = ? AND type = ?");
-        $statement->execute([$id, $type]);
-        $result = $statement->get_result();
-
-        $data = $result->fetch_assoc()["data"];
+        $database = new DB();
+        $connection = $database->getConnection();
+        $db_data = $connection->executeWithResponse("SELECT data FROM images WHERE id = ? AND type = ?", [$id, $type])[0];
+        $data = $db_data["data"];
         if (!isset($data)) {
-            status_exit(404);
+            status_exit(HTTP_STATES::NOT_FOUND);
         }
-        $result->close();
-        $statement->close();
-        $connection->close();
+        $connection->closeConnection();
         header("Cache-Control: public");
         header("Content-Type: image/*");
         header("Content-Transfer-Encoding: Binary");
         header("Content-Length:" . strlen($data));
         header("Content-Disposition: attachment; filename=" . $id . "." . $type);
         echo $data;
-        status_exit(200);
+        status_exit(HTTP_STATES::OK);
     } else {
-        status_exit(404);
+        status_exit(HTTP_STATES::NOT_FOUND);
     }
 
 });

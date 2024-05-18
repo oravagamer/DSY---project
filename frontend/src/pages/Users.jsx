@@ -25,7 +25,7 @@ const Users = () => {
             </tr>
             </thead>
             <tbody>
-            {responseData?.map(value => (<tr>
+            {responseData?.map(value => (<tr key={value.id}>
                 <td>{value.username}</td>
                 <td>{value.email}</td>
                 <td>{value.first_name}</td>
