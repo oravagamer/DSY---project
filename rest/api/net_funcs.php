@@ -39,72 +39,75 @@ function DELETE($function): void {
 }
 
 function callFunctionWithMethod($function): void {
-    $method = null;
-    $consumes = null;
-    $produces = null;
-    $secure = null;
+    $namedAttributes = [];
     $user = null;
     $reflectionFunction = new ReflectionFunction($function);
     $attributes = $reflectionFunction->getAttributes();
     foreach ($attributes as $attribute) {
-        switch ($attribute->getName()) {
-            case "Method":
-            {
-                $method = $attribute;
-                break;
-            }
-            case "Consumes":
-            {
-                $consumes = $attribute;
-                break;
-            }
-            case "Produces":
-            {
-                $produces = $attribute;
-                break;
-            }
-            case "Secure":
-            {
-                $secure = $attribute;
-                break;
-            }
-        }
+        $namedAttributes[$attribute->getName()] = $attribute;
     }
-    if (!isset($method, $produces)) {
+    if (!isset($namedAttributes[Method::class])) {
         throw new Exception("Please set required attributes!");
     }
-    $contentType = apache_request_headers()["Content-Type"];
-    if (isset($secure)) {
+    if ($namedAttributes[Method::class]->getArguments()[0]->value !== $_SERVER["REQUEST_METHOD"]) {
+        return;
+    }
+    $contentType = apache_request_headers()["Content-Type"] ?? apache_request_headers()["content-type"];
+    if (isset($namedAttributes[Secure::class])) {
         $user = secure();
     }
     try {
-        $allowedContentType = $consumes->getArguments()[0];
+        $allowedContentType = $namedAttributes[Consumes::class]->getArguments()[0];
     } catch (Error $exception) {
 
     }
-    $responseType = $produces->getArguments()[0];
 
     if (!(str_contains($contentType, $allowedContentType->value)
         || (str_contains($allowedContentType->value, "/*")
-            && str_contains($contentType, str_split($allowedContentType->value, "/")[0]))
+            && str_split($contentType, "/")[0] === str_split($allowedContentType->value, "/")[0])
         || (str_contains($allowedContentType->value, "*/")
-            && str_contains($contentType, str_split($allowedContentType->value, "/")[1])))) {
+            && str_split($contentType, "/")[1] === str_split($allowedContentType->value, "/")[1]))) {
         status_exit(HTTP_STATES::UNSUPPORTED_MEDIA_TYPE);
     }
 
-    header('Content-Type: ' . $responseType->value . '; charset=utf-8');
+    header('Content-Type: ' . (isset($namedAttributes[Produces::class]) ? $namedAttributes[Produces::class]->getArguments()[0]->value : ContentType::TEXT_PLAIN->value) . '; charset=utf-8');
 
-    if ($method->getArguments()[0]->value === $_SERVER["REQUEST_METHOD"]) {
-        $function([
-            "user" => $user
-        ]);
+    $url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+    $url_parts = parse_url($url);
+    parse_str($url_parts['query'], $url_parts_query);
+    $input_value = null;
+    if ($allowedContentType === ContentType::APPLICATION_JSON) {
+        $input_value = json_decode(file_get_contents('php://input'), true);
+    } else if ($allowedContentType === ContentType::TEXT_PLAIN) {
+        $input_value = file_get_contents('php://input') ? file_get_contents('php://input') : null;
+    } else if ($allowedContentType === ContentType::APPLICATION_OCTET_STREAM) {
+        $input_value = file_get_contents('php://input');
+    } else if ($allowedContentType === ContentType::MULTIPART_FORM_DATA) {
+        $input_value = $namedAttributes[Method::class]->getArguments()[0] === HTTPMethod::POST ? $_POST : $_GET;
+        $filesKeys = array_keys($_FILES);
+        foreach ($filesKeys as $filesKey) {
+            if (is_array($_FILES[$filesKey])) {
+                for ($j = 0; $j < sizeof($_FILES[$filesKey]["name"]); $j++) {
+                    $fileKey = array_keys($_FILES[$filesKey]);
+                    foreach ($fileKey as $key) {
+                        $input_value[$filesKey][$j][$key] = $_FILES[$filesKey][$key][$j];
+                    }
+                }
+            } else {
+                $input_value[$filesKey][0] = $_FILES[$filesKey];
+            }
+        }
     }
+    $function([
+        "user" => $user,
+        "path_params" => $url_parts_query,
+        "input" => $input_value
+    ]);
 }
 
 #[Attribute(Attribute::TARGET_FUNCTION)]
 final class Method {
     public function __construct(HTTPMethod $name) {
-
     }
 }
 
@@ -125,6 +128,13 @@ final class Produces {
 #[Attribute(Attribute::TARGET_FUNCTION)]
 final class Secure {
     public function __construct() {
+
+    }
+}
+
+#[Attribute(Attribute::TARGET_FUNCTION)]
+final class RoleRestricted {
+    public function __construct(array $roles) {
 
     }
 }

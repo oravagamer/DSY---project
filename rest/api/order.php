@@ -6,77 +6,91 @@ include_once "./HTTP_STATES.php";
 
 
 cancelWarns();
-$user = secure();
 
-GET(function () {
-    $url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
-    $parts = parse_url($url);
-    parse_str($parts['query'], $query);
-    if (key_exists("id", $query)) {
-        $database = new DB();
-        $connection = $database->getConnection();
-        $data = $connection->executeWithResponse('SELECT GROUP_CONCAT(images.id) AS img_id, GROUP_CONCAT(images.type) AS img_type, shop_order.name AS name, shop_order.created_by AS cb, shop_order.created_for AS cf, shop_order.date_created AS dc, shop_order.finish_date AS fd, shop_order.status AS status, shop_order.description AS description FROM shop_order LEFT JOIN images ON images.order_id = shop_order.id WHERE shop_order.id = ? GROUP BY shop_order.id', [$query["id"]])[0];
-        if (is_null($data)) {
-            status_exit(HTTP_STATES::NOT_FOUND);
+callFunctionWithMethod(
+    #[
+        Method(HTTPMethod::GET),
+        Produces(ContentType::APPLICATION_JSON),
+        Secure
+    ]
+    function ($input_data) {
+        $url = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+        $parts = parse_url($url);
+        parse_str($parts['query'], $query);
+        if (key_exists("id", $input_data["path_param"])) {
+            $database = new DB();
+            $connection = $database->getConnection();
+            $data = $connection->executeWithResponse('SELECT GROUP_CONCAT(images.id) AS img_id, GROUP_CONCAT(images.type) AS img_type, shop_order.name AS name, shop_order.created_by AS cb, shop_order.created_for AS cf, shop_order.date_created AS dc, shop_order.finish_date AS fd, shop_order.status AS status, shop_order.description AS description FROM shop_order LEFT JOIN images ON images.order_id = shop_order.id WHERE shop_order.id = ? GROUP BY shop_order.id', [$input_data["path_param"]["id"]])[0];
+            if (is_null($data)) {
+                status_exit(HTTP_STATES::NOT_FOUND);
+            }
+            $return_data = [
+                "order" => [
+                    "name" => $data["name"],
+                    "created_by" => $data["cb"],
+                    "created_for" => $data["cf"],
+                    "created_date" => $data["dc"],
+                    "finish_date" => $data["fd"],
+                    "status" => $data["status"],
+                    "description" => $data["description"]
+                ],
+                "images" => []
+            ];
+
+            $data["img_id"] = explode(",", $data["img_id"]);
+            $data["img_type"] = explode(",", $data["img_type"]);
+
+            for ($i = 0; $i < sizeof($data["img_id"]); $i++) {
+                array_push($return_data["images"], $data[$i]["img_id"] . "." . $data[$i]["img_type"]);
+            }
+
+            return_as_json($return_data);
         }
-        $return_data = [
-            "order" => [
-                "name" => $data["name"],
-                "created_by" => $data["cb"],
-                "created_for" => $data["cf"],
-                "created_date" => $data["dc"],
-                "finish_date" => $data["fd"],
-                "status" => $data["status"],
-                "description" => $data["description"]
-            ],
-            "images" => []
-        ];
 
-        $data["img_id"] = explode(",", $data["img_id"]);
-        $data["img_type"] = explode(",", $data["img_type"]);
-
-        for ($i = 0; $i < sizeof($data["img_id"]); $i++) {
-            array_push($return_data["images"], $data[$i]["img_id"] . "." . $data[$i]["img_type"]);
-        }
-
-        return_as_json($return_data);
     }
+);
 
-});
+callFunctionWithMethod(
+    #[
+        Method(HTTPMethod::POST),
+        Consumes(ContentType::MULTIPART_FORM_DATA),
+        Produces(ContentType::APPLICATION_JSON),
+        Secure
+    ]
+    function ($input_data) {
+        $user = $input_data["user"];
+        $input_data_form = $input_data["input"];
+        if (isset($input_data_form["name"], $input_data_form["description"], $input_data_form["finish_date"])) {
+            $name = $input_data_form["name"];
+            $description = $input_data_form["description"];
+            $for_user = $input_data_form["created_for"];
+            $time = date("Y-m-d H:i:s", $input_data_form["finish_date"]);
+            $database = new DB();
+            $connection = $database->getConnection();
 
-POST(function () {
-    global $user;
-    if (isset($_POST["name"], $_POST["description"], $_POST["finish_date"])) {
-        $name = $_POST["name"];
-        $description = $_POST["description"];
-        $for_user = $_POST["created_for"];
-        $time = date("Y-m-d H:i:s", $_POST["finish_date"]);
-        $database = new DB();
-        $connection = $database->getConnection();
+            $data = $connection->executeWithResponse('CALL create_order(?, ?, ?, ?, ' . ($for_user === null ? "NULL" : mysqli_escape_string($connection->getConnection(), $for_user)) . ')', [$user["id"], $time, $name, $description])[0];
+            $order_id = $data["id"];
+            $connection->closeStatement();
 
-        $data = $connection->executeWithResponse('CALL create_order(?, ?, ?, ?, ' . ($for_user === null ? "NULL" : mysqli_escape_string($connection->getConnection(), $for_user)) . ')', [$user["id"], $time, $name, $description])[0];
-        $order_id = $data["id"];
-        $connection->closeStatement();
+            if (isset($input_data_form['images'])) {
+                $file_array_upload = [];
+                for ($i = 0; $i < sizeof($input_data_form["images"]); $i++) {
+                    $file_name = $input_data_form['images'][$i]["name"];
+                    $dot_pos = strpos($file_name, ".") + 1;
+                    array_push($file_array_upload, file_get_contents($input_data_form["images"][$i]["tmp_name"]), substr($file_name, $dot_pos, strlen($file_name) - $dot_pos), $order_id);
 
-        if (isset($_FILES['images'])) {
-            $file_array_upload = [];
-            $file_count = is_array($_FILES["images"]["name"]) ? sizeof($_FILES['images']["name"]) : 1;
-            for ($i = 0; $i <= $file_count - 1; $i++) {
-                $file_name = $_FILES['images']["name"][$i];
-                $dot_pos = strpos($file_name, ".") + 1;
-                array_push($file_array_upload, file_get_contents($_FILES["images"]["tmp_name"][$i]), substr($file_name, $dot_pos, strlen($file_name) - $dot_pos), $order_id);
+                }
+                $connection->execute('INSERT INTO images(data, type, order_id) VALUES (?, ?, ?)' . str_repeat(", (?, ?, ?)", sizeof($input_data_form['images']) - 1), $file_array_upload);
 
             }
-            $connection->execute('INSERT INTO images(data, type, order_id) VALUES (?, ?, ?)' . str_repeat(", (?, ?, ?)", is_array($_FILES['images']) ? sizeof($_FILES['images']["name"]) - 1 : 0), $file_array_upload);
-
+            $connection->closeConnection();
+            return_as_json(["order_id" => $order_id]);
+        } else {
+            status_exit(HTTP_STATES::BAD_REQUEST);
         }
-        $connection->closeConnection();
-        return_as_json(["order_id" => $order_id]);
-    } else {
-        status_exit(HTTP_STATES::BAD_REQUEST);
-    }
 
-});
+    }
+);
 
 PUT(function () {
     global $user;

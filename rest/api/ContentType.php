@@ -6,4 +6,5 @@ enum ContentType: string {
     case MULTIPART_FORM_DATA = "multipart/form-data";
     case APPLICATION_OCTET_STREAM = "application/octet-stream";
     case TEXT_PLAIN = "text/plain";
+    case NO_CONTENT = "";
 }

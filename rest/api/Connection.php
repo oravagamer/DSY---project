@@ -36,14 +36,9 @@ class Connection {
 
     public function execute(string $query, ?array $args = null): void {
         try {
-            if ($this->statement_open) {
-                if (!$this->statement->reset()) {
-                    $this->prepareStatement($query);
-                }
-            } else {
-                $this->prepareStatement($query);
-            }
+            $this->prepareStatement($query);
             $this->getExecResult($args);
+
         } catch (Exception $exception) {
             status_exit(HTTP_STATES::INTERNAL_SERVER_ERROR, $exception->getMessage());
         }
@@ -64,7 +59,6 @@ class Connection {
 
     public function closeConnection(): void {
         try {
-            $this->closeStatement();
             $this->connection->close();
         } catch (Exception $exception) {
             status_exit(HTTP_STATES::INTERNAL_SERVER_ERROR, $exception->getMessage());
@@ -73,7 +67,6 @@ class Connection {
 
     public function closeStatement(): void {
         try {
-            $this->closeResult();
             $this->statement->close();
             $this->statement_open = false;
         } catch (Exception $exception) {

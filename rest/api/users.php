@@ -20,12 +20,3 @@ callFunctionWithMethod(
         return_as_json($return_data);
     }
 );
-
-//GET(function () {
-//    $database = new DB();
-//    $connection = $database->getConnection();
-//    $return_data = $connection->executeWithResponse('SELECT first_name, last_name, username, email, id FROM users');
-//    $connection->closeConnection();
-//
-//    return_as_json($return_data);
-//});

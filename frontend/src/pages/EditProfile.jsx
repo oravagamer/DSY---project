@@ -24,7 +24,8 @@ const EditProfile = () => {
         fetch(`${backendUrl}/user.php?id=${id}`, {
             method: "PUT",
             headers: {
-                "Authorization": `Bearer ${auth.accessToken}`
+                "Authorization": `Bearer ${auth.accessToken}`,
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 username: usernameRef.current.value,
@@ -58,11 +59,11 @@ const EditProfile = () => {
     return (<Section>
         <input type="text" ref={usernameRef} />
         <input type="text" ref={firstNameRef} />
-        <input type="text" ref={lastNameRef}/>
-        <input type="email" ref={emailRef}/>
+        <input type="text" ref={lastNameRef} />
+        <input type="email" ref={emailRef} />
         <input type="button" value="Change password" />
         <input type="button" value="Save changes" onClick={saveChanges} />
-        <input type="button" value="Delete" onClick={deleteUser}/>
+        <input type="button" value="Delete" onClick={deleteUser} />
         <GoBack />
     </Section>)
 }
