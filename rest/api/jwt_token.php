@@ -34,15 +34,18 @@ function generate_jwt_tokens($user_id): array {
         "iss" => $iss,
         "sub" => $sub,
         "aud" => $aud,
-        "exp" => $access_token_exp
+        "exp" => $access_token_exp,
+        "roles" => explode(",", $data["@roles"])
     ];
 
     $refresh_token_payload = [
         "iss" => $iss,
         "sub" => $sub,
         "aud" => $aud,
-        "exp" => $refresh_token_exp
+        "exp" => $refresh_token_exp,
+        "roles" => explode(",", $data["@roles"])
     ];
+
 
     $access_token = base64_encode(json_encode($token_header)) . "." . base64_encode(json_encode($access_token_payload));
     $refresh_token = base64_encode(json_encode($token_header)) . "." . base64_encode(json_encode($refresh_token_payload));

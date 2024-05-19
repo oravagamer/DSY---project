@@ -13,7 +13,10 @@ const useAuthDataStore = create(
             login: async (username, password) => {
                 const res = await fetch(`${backendUrl}/login.php`, {
                     method: "POST",
-                    body: JSON.stringify({username: username, password: password})
+                    body: JSON.stringify({username: username, password: password}),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
                 });
                 const resData = await res.json();
                 set({accessToken: await resData.access, refreshToken: await resData.refresh});
@@ -30,7 +33,10 @@ const useAuthDataStore = create(
             logout: async () => {
                 const res = await fetch(`${backendUrl}/logout.php`, {
                     method: "POST",
-                    body: JSON.stringify({access: get().accessToken, refresh: get().refreshToken})
+                    body: JSON.stringify({access: get().accessToken, refresh: get().refreshToken}),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
                 });
                 set({accessToken: "", refreshToken: ""});
             },

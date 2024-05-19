@@ -131,8 +131,13 @@ BEGIN
 
     INSERT INTO session(id, user_id, ref_dead, acc_dead, ref_sha_key, acc_sha_key)
         VALUE (@session_id, v_user_id, ref_exp, acc_exp, v_ref_sha_key, v_acc_sha_key);
+    SELECT GROUP_CONCAT(roles.name) as roles
+    FROM user_with_role
+             JOIN roles ON roles.id = user_with_role.role_id
+    GROUP BY user_with_role.user_id
+    INTO @roles;
 
-    SELECT @session_id AS id;
+    SELECT @session_id AS id, @roles;
 
 END $$
 

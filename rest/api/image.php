@@ -11,7 +11,7 @@ callFunctionWithMethod(
         Secure
     ]
     function ($input_data) {
-        $img_data = $input_data["path_param"];
+        $img_data = $input_data["path_params"];
 
         if (isset($img_data ["img_name"])) {
             list($id, $type) = explode(".", $img_data ["img_name"]);
