@@ -36,10 +36,43 @@ callFunctionWithMethod(
     }
 );
 
-POST(function () {
+callFunctionWithMethod(
+    #[
+        Method(HTTPMethod::POST),
+        Consumes(ContentType::ALL_IMAGES),
+        Secure
+    ]
+    function ($input_data) {
+        if (isset($input_data["path_params"]["id"], $input_data["path_params"]["type"]) && $input_data["input"] !== null) {
+            $id = $input_data["path_params"]["id"];
+            $type = $input_data["path_params"]["type"];
+            $database = new DB();
+            $connection = $database->getConnection();
+            $connection->execute("INSERT INTO images(data, type, order_id) VALUES (?, ?, ?)", [$input_data["input"], $type, $id]);
+            $connection->closeConnection();
+        } else {
+            status_exit(HTTP_STATES::BAD_REQUEST);
+        }
+    }
+);
 
-});
-
-DELETE(function () {
-
-});
+callFunctionWithMethod(
+    #[
+        Method(HTTPMethod::DELETE),
+        Secure
+    ]
+    function ($input_data) {
+        if (isset($input_data["path_params"]["id"])) {
+            $id = $input_data["path_params"]["id"];
+            $database = new DB();
+            $connection = $database->getConnection();
+            $connection->execute("DELETE FROM images WHERE id = ?", [$id]);
+            if ($connection->getStatement()->affected_rows !== 1) {
+                status_exit(HTTP_STATES::NOT_FOUND);
+            }
+            $connection->closeConnection();
+        } else {
+            status_exit(HTTP_STATES::BAD_REQUEST);
+        }
+    }
+);

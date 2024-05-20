@@ -64,9 +64,9 @@ function callFunctionWithMethod($function): void {
 
     if (!(str_contains($contentType, $allowedContentType->value)
         || (str_contains($allowedContentType->value, "/*")
-            && str_split($contentType, "/")[0] === str_split($allowedContentType->value, "/")[0])
+            && explode( "/", $contentType)[0] === explode("/", $allowedContentType->value)[0])
         || (str_contains($allowedContentType->value, "*/")
-            && str_split($contentType, "/")[1] === str_split($allowedContentType->value, "/")[1]))) {
+            && explode("/", $contentType)[1] === explode("/", $allowedContentType->value)[1]))) {
         status_exit(HTTP_STATES::UNSUPPORTED_MEDIA_TYPE);
     }
 
@@ -80,7 +80,7 @@ function callFunctionWithMethod($function): void {
         $input_value = json_decode(file_get_contents('php://input'), true);
     } else if ($allowedContentType === ContentType::TEXT_PLAIN) {
         $input_value = file_get_contents('php://input') ? file_get_contents('php://input') : null;
-    } else if ($allowedContentType === ContentType::APPLICATION_OCTET_STREAM) {
+    } else if ($allowedContentType === ContentType::APPLICATION_OCTET_STREAM || $allowedContentType === ContentType::ALL_IMAGES) {
         $input_value = file_get_contents('php://input');
     } else if ($allowedContentType === ContentType::MULTIPART_FORM_DATA) {
         $input_value = $namedAttributes[Method::class]->getArguments()[0] === HTTPMethod::POST ? $_POST : $_GET;
