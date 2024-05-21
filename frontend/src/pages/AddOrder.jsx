@@ -1,16 +1,17 @@
 import Section from "../components/Section.jsx";
 import styles from "./AddOrder.module.scss";
-import {useRef} from "react";
+import {useRef, useState} from "react";
 import {backendUrl} from "../../settings.js";
 import useAuthDataStore from "../store/authDataStore.js";
+import UsersSelect from "../components/UsersSelect.jsx";
 
 const AddOrder = () => {
     const auth = useAuthDataStore();
     const nameRef = useRef();
     const finishDateRef = useRef();
     const descriptionRef = useRef();
-    const forUserRef = useRef();
     const imagesRef = useRef();
+    const [user, setUser] = useState();
 
     const onSubmit = () => {
         const formData = new FormData();
@@ -23,7 +24,7 @@ const AddOrder = () => {
         if (finishDateRef.current?.value !== "") {
             formData.append("finish_date", (new Date(finishDateRef.current?.value).getTime() / 1000).toString());
         }
-        formData.append("created_for", forUserRef.current?.value === "" ? null : forUserRef.current?.value);
+        formData.append("created_for", user === undefined ? null : user.id);
         for (const image of imagesRef.current?.files) {
             formData.append("images[]", image);
         }
@@ -43,7 +44,7 @@ const AddOrder = () => {
                 <input type="datetime-local" className={styles["add-order-time"]} ref={finishDateRef}
                        placeholder="Finish date" />
                 <input type="text" className={styles["add-order-desc"]} ref={descriptionRef} placeholder="Description" />
-                <input type="text" className={styles["add-order-for"]} ref={forUserRef} placeholder="For" />
+                <UsersSelect selectUser={setUser} />
                 <input type="file" className={styles["add-order-file"]} ref={imagesRef} accept="image/*" multiple={true}
                        placeholder="Images" />
                 <input type="button" className={styles["add-order-button"]} value="Submit" onClick={onSubmit} />

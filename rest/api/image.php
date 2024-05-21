@@ -7,18 +7,18 @@ include_once "./HTTP_STATES.php";
 callFunctionWithMethod(
     #[
         Method(HTTPMethod::GET),
-        Produces(ContentType::ALL_IMAGES),
-        Secure
+        Produces(ContentType::ALL_IMAGES)
     ]
     function ($input_data) {
         $img_data = $input_data["path_params"];
 
-        if (isset($img_data ["img_name"])) {
-            list($id, $type) = explode(".", $img_data ["img_name"]);
+        if (isset($img_data ["id"])) {
+            $id = $img_data["id"];
             $database = new DB();
             $connection = $database->getConnection();
-            $db_data = $connection->executeWithResponse("SELECT data FROM images WHERE id = ? AND type = ?", [$id, $type])[0];
+            $db_data = $connection->executeWithResponse("SELECT data, type FROM images WHERE id = ?", [$id])[0];
             $data = $db_data["data"];
+            $type = $db_data["type"];
             if (!isset($data)) {
                 status_exit(HTTP_STATES::NOT_FOUND);
             }

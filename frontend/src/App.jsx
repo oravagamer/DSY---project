@@ -12,6 +12,7 @@ import UnSecure from "./components/UnSecure.jsx";
 import Profile from "./pages/Profile.jsx";
 import Users from "./pages/Users.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
+import RoleRestricted from "./components/RoleRestricted.jsx";
 
 const App = () => {
     const router = createBrowserRouter([{

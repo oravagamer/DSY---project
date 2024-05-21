@@ -1,0 +1,18 @@
+.select-box {
+  background-color: black;
+  color: white;
+  position: absolute;
+  z-index: 100;
+  top: 100px;
+  left: 100px;
+}
+
+.user-select-miss-click {
+  top: 0;
+  left: 0;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  background-color: transparent;
+  z-index: 80;
+}

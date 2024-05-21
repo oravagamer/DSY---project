@@ -20,7 +20,7 @@ callFunctionWithMethod(
         if (key_exists("id", $input_data["path_params"])) {
             $database = new DB();
             $connection = $database->getConnection();
-            $data = $connection->executeWithResponse('SELECT GROUP_CONCAT(images.id) AS img_id, GROUP_CONCAT(images.type) AS img_type, shop_order.name AS name, shop_order.created_by AS cb, shop_order.created_for AS cf, shop_order.date_created AS dc, shop_order.finish_date AS fd, shop_order.status AS status, shop_order.description AS description FROM shop_order LEFT JOIN images ON images.order_id = shop_order.id WHERE shop_order.id = ? GROUP BY shop_order.id', [$input_data["path_params"]["id"]])[0];
+            $data = $connection->executeWithResponse('SELECT GROUP_CONCAT(images.id) AS img_id, shop_order.name AS name, shop_order.created_by AS cb, shop_order.created_for AS cf, shop_order.date_created AS dc, shop_order.finish_date AS fd, shop_order.status AS status, shop_order.description AS description FROM shop_order LEFT JOIN images ON images.order_id = shop_order.id WHERE shop_order.id = ? GROUP BY shop_order.id', [$input_data["path_params"]["id"]])[0];
             if (is_null($data)) {
                 status_exit(HTTP_STATES::NOT_FOUND);
             }
@@ -33,15 +33,11 @@ callFunctionWithMethod(
                     "finish_date" => $data["fd"],
                     "status" => $data["status"],
                     "description" => $data["description"]
-                ],
-                "images" => []
+                ]
             ];
 
-            $data["img_id"] = explode(",", $data["img_id"]);
-            $data["img_type"] = explode(",", $data["img_type"]);
-
-            for ($i = 0; $i < sizeof($data["img_id"]); $i++) {
-                array_push($return_data["images"], $data[$i]["img_id"] . "." . $data[$i]["img_type"]);
+            if (isset($data["img_id"])) {
+                $return_data["images"] = explode(",", $data["img_id"]);
             }
 
             return_as_json($return_data);
@@ -68,7 +64,7 @@ callFunctionWithMethod(
             $database = new DB();
             $connection = $database->getConnection();
 
-            $data = $connection->executeWithResponse('CALL create_order(?, ?, ?, ?, ' . ($for_user === null ? "NULL" : mysqli_escape_string($connection->getConnection(), $for_user)) . ')', [$user["id"], $time, $name, $description])[0];
+            $data = $connection->executeWithResponse('CALL create_order(?, ?, ?, ?, ?)', [$user["id"], $time, $name, $description, $for_user === null ? "NULL" : $for_user])[0];
             $order_id = $data["id"];
             $connection->closeStatement();
 

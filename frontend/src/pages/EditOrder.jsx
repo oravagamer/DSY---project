@@ -3,23 +3,54 @@ import {Link, Navigate, useParams} from "react-router-dom";
 import useAuthDataStore from "../store/authDataStore.js";
 import useFetch from "../hooks/useFetch.js";
 import {backendUrl} from "../../settings.js";
-import {useEffect, useRef} from "react";
+import {useEffect, useRef, useState} from "react";
 import GoBack from "../components/GoBack.jsx";
+import styles from "./EditOrder.module.scss";
+import UsersSelect from "../components/UsersSelect.jsx";
 
 const EditOrder = () => {
     const {id} = useParams();
     const auth = useAuthDataStore();
     const nameRef = useRef();
     const descriptionRef = useRef();
-    const createdForRef = useRef();
     const finishDateRef = useRef();
     const statusRef = useRef();
-    const [{responseData, responseStatus, loading, error}] = useFetch(`${backendUrl}/order.php?id=${id}`, {
+    const [user, setUser] = useState();
+    const [{responseData, responseStatus, loading, error}, refetch] = useFetch(`${backendUrl}/order.php?id=${id}`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${auth.accessToken}`
         }
     });
+
+    const addImage = event => {
+        event.stopPropagation();
+        event.preventDefault();
+        const file = event.target.files[0];
+        fetch(`${backendUrl}/image.php?id=${id}&type=${file.name.substring(file.name.lastIndexOf(".") + 1, file.name.size)}`, {
+            method: "POST",
+            body: file,
+            headers: {
+                "Authorization": `Bearer ${auth.accessToken}`
+            }
+        })
+            .then(async res => {
+                event.target.value = null;
+                refetch();
+            });
+    }
+
+    const removeImage = event => {
+        fetch(`${backendUrl}/image.php?id=${event.target.id}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${auth.accessToken}`
+            }
+        })
+            .then(async res => {
+                refetch();
+            });
+    }
 
     const saveChanges = () => {
         fetch(`${backendUrl}/order.php?id=${id}`, {
@@ -31,7 +62,7 @@ const EditOrder = () => {
                 name: nameRef.current.value,
                 description: descriptionRef.current.value,
                 finish_date: new Date(finishDateRef.current.value).getTime() / 1000,
-                created_for: null, // forRef.current.value,
+                created_for: user === undefined ? null : user.id,
                 status: statusRef.current.value === "0" ? null : parseInt(statusRef.current.value)
             })
         })
@@ -54,7 +85,6 @@ const EditOrder = () => {
     useEffect(() => {
         nameRef.current.value = responseData?.order.name;
         descriptionRef.current.value = responseData?.order.description;
-        createdForRef.current.value = responseData?.order.created_for;
         finishDateRef.current.value = responseData?.order.finish_date;
         statusRef.current.value = responseData?.order.status === null ? 0 : responseData?.order.status;
     }, [loading]);
@@ -64,7 +94,7 @@ const EditOrder = () => {
         : <Section>
             <input type="text" ref={nameRef} />
             <input type="text" ref={descriptionRef} />
-            <input type="text" ref={createdForRef} />
+            <UsersSelect defaultUser={responseData?.order.created_for} selectUser={setUser} />
             <input type="datetime-local" ref={finishDateRef} />
             <select name="Status" defaultChecked={true} ref={statusRef}>
                 <option value={0}>Created</option>
@@ -72,8 +102,14 @@ const EditOrder = () => {
                 <option value={2}>Finished</option>
             </select>
             <input type="button" value="Save Changes" onClick={saveChanges} />
+            <label htmlFor="image-upload" className={styles["image-upload-button"]}>Add image</label>
+            <input type="file" onChange={addImage} id={"image-upload"} hidden={true} />
             <input type="button" value="Delete" onClick={deleteOrder} />
-            <GoBack/>
+            <GoBack />
+            <ul>{responseData && responseData?.images?.map && responseData?.images?.map(value => <li key={value}><img
+                src={`${backendUrl}/image.php?id=${value}`} alt={value} className={styles["images"]} />
+                <button id={value} onClick={removeImage}>Remove</button>
+            </li>)}</ul>
         </Section>
     }</>)
 }
