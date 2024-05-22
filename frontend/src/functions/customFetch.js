@@ -1,4 +1,5 @@
 import {toast} from "react-toastify";
+import useAuthDataStore from "../store/authDataStore.js";
 
 const customFetch = async (input, init) => {
     let localResponse;
@@ -7,6 +8,9 @@ const customFetch = async (input, init) => {
         .then(async response => {
             localResponse = await response.clone();
             const myResponse = await response.clone();
+            if (await myResponse.status === 403) {
+                useAuthDataStore.getState().refreshJWT();
+            }
             if ((await myResponse.status).toString()[0] !== "2") {
                 toast(await myResponse.status, {
                     type: await myResponse.status < 200 ? "info" : await myResponse.status < 400 ? "warning" : "error"

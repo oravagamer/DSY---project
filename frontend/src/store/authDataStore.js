@@ -25,8 +25,14 @@ const useAuthDataStore = create(
             refreshJWT: async () => {
                 const res = await fetch(`${backendUrl}/refresh_token.php`, {
                     method: "POST",
-                    body: JSON.stringify({access: get().accessToken, refresh: get().refreshToken})
+                    body: JSON.stringify({access: get().accessToken, refresh: get().refreshToken}),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
                 })
+                if (await res.status === 403) {
+                    get().logout();
+                }
                 const resData = await res.json();
                 set({accessToken: await resData.access, refreshToken: await resData.refresh});
             },
