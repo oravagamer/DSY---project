@@ -5,6 +5,7 @@ import useAuthDataStore from "../store/authDataStore.js";
 import useFetch from "../hooks/useFetch.js";
 import {backendUrl} from "../../settings.js";
 import {useEffect, useRef} from "react";
+import customFetch from "../functions/customFetch.js";
 
 const EditProfile = () => {
     const {id} = useParams();
@@ -13,7 +14,7 @@ const EditProfile = () => {
     const firstNameRef = useRef();
     const lastNameRef = useRef();
     const emailRef = useRef();
-    const [{responseData, responseStatus, loading, error}] = useFetch(`${backendUrl}/user.php?id=${id}`, {
+    const [{responseData, loading}] = useFetch(`${backendUrl}/user.php?id=${id}`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${auth.accessToken}`
@@ -21,7 +22,7 @@ const EditProfile = () => {
     });
 
     const saveChanges = () => {
-        fetch(`${backendUrl}/user.php?id=${id}`, {
+        customFetch(`${backendUrl}/user.php?id=${id}`, {
             method: "PUT",
             headers: {
                 "Authorization": `Bearer ${auth.accessToken}`,
@@ -36,7 +37,7 @@ const EditProfile = () => {
         })
     }
     const deleteUser = () => {
-        fetch(`${backendUrl}/user.php?id=${id}`, {
+        customFetch(`${backendUrl}/user.php?id=${id}`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${auth.accessToken}`

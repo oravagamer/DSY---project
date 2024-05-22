@@ -1,4 +1,5 @@
 import {useEffect, useState} from "react";
+import customFetch from "../functions/customFetch.js";
 
 const useFetch = (input, init) => {
     const [responseData, setResponseData] = useState(null);
@@ -8,19 +9,16 @@ const useFetch = (input, init) => {
 
     useEffect(() => {
         (async () => {
+            const data = await customFetch(input, init);
+            setResponseStatus(await data.response.status);
             try {
-                const response = await fetch(input, init);
-                setResponseStatus(await response.status);
-                try {
-                    setResponseData(await response.json());
-                } catch (err) {
-                    setResponseData(await response.text());
-                }
+                setResponseData(await data.response.json());
             } catch (err) {
-                setError(await err);
-            } finally {
-                setLoading(false);
+                setResponseData(await data.response.text());
             }
+            setError(await data.error);
+
+            await setLoading(false);
 
         })();
 

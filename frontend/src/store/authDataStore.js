@@ -26,7 +26,7 @@ const useAuthDataStore = create(
                 const res = await fetch(`${backendUrl}/refresh_token.php`, {
                     method: "POST",
                     body: JSON.stringify({access: get().accessToken, refresh: get().refreshToken})
-                });
+                })
                 const resData = await res.json();
                 set({accessToken: await resData.access, refreshToken: await resData.refresh});
             },

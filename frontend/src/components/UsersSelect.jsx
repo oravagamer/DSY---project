@@ -25,8 +25,7 @@ const UsersSelect = props => {
                 .then(async res => setUser(await res.json()))
         },
         [props.defaultUser]
-    )
-    ;
+    );
     const selectUser = () => {
         refetch();
         setSelectMode(true);

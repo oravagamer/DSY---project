@@ -134,6 +134,7 @@ BEGIN
     SELECT GROUP_CONCAT(roles.name) as roles
     FROM user_with_role
              JOIN roles ON roles.id = user_with_role.role_id
+    WHERE user_id = v_user_id
     GROUP BY user_with_role.user_id
     INTO @roles;
 

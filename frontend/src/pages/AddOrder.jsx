@@ -4,6 +4,7 @@ import {useRef, useState} from "react";
 import {backendUrl} from "../../settings.js";
 import useAuthDataStore from "../store/authDataStore.js";
 import UsersSelect from "../components/UsersSelect.jsx";
+import customFetch from "../functions/customFetch.js";
 
 const AddOrder = () => {
     const auth = useAuthDataStore();
@@ -28,14 +29,13 @@ const AddOrder = () => {
         for (const image of imagesRef.current?.files) {
             formData.append("images[]", image);
         }
-        fetch(`${backendUrl}/order.php`, {
+        customFetch(`${backendUrl}/order.php`, {
             method: "POST",
             body: formData,
             headers: {
                 "Authorization": `Bearer ${auth.accessToken}`
             }
         })
-            .then(async res => console.log(res));
     }
 
     return (<Section className={styles["add-order"]}>

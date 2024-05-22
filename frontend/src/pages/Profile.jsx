@@ -8,7 +8,7 @@ import GoBack from "../components/GoBack.jsx";
 const Profile = () => {
     const {id} = useParams();
     const auth = useAuthDataStore();
-    const [{responseData, responseStatus, loading, error}] = useFetch(`${backendUrl}/user.php?id=${id}`, {
+    const [{responseData}] = useFetch(`${backendUrl}/user.php?id=${id}`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${auth.accessToken}`
@@ -19,7 +19,7 @@ const Profile = () => {
         <h2>{responseData?.first_name}</h2>
         <h2>{responseData?.last_name}</h2>
         <h2>{responseData?.email}</h2>
-        <ul>{responseData && responseData.roles && responseData.roles.map && responseData.roles.map(value => <li>{value}</li>)}</ul>
+        <ul>{responseData && responseData.roles && responseData.roles.map && responseData.roles.map(value => <li key={value}>{value}</li>)}</ul>
         <GoBack />
         <Link to="edit">Edit</Link>
     </Section>)

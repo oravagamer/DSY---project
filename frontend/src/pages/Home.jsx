@@ -1,6 +1,5 @@
 import styles from "./Home.module.scss";
 import Section from "../components/Section.jsx";
-import {useEffect, useState} from "react";
 import useFetch from "../hooks/useFetch.js";
 import {backendUrl} from "../../settings.js";
 import useAuthDataStore from "../store/authDataStore.js";
