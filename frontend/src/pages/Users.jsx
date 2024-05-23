@@ -3,7 +3,7 @@ import {Link} from "react-router-dom";
 import useAuthDataStore from "../store/authDataStore.js";
 import useFetch from "../hooks/useFetch.js";
 import {backendUrl} from "../../settings.js";
-import styles from "./Home.module.scss";
+import styles from "./Users.module.scss";
 
 const Users = () => {
     const auth = useAuthDataStore();
@@ -13,7 +13,7 @@ const Users = () => {
             "Authorization": `Bearer ${auth.accessToken}`
         }
     });
-    return (<Section>
+    return (<Section className={styles["users-section"]}>
         <table className={styles["table"]}>
             <thead className={styles["table-head"]}>
             <tr>
@@ -30,7 +30,7 @@ const Users = () => {
                 <td>{value.email}</td>
                 <td>{value.first_name}</td>
                 <td>{value.last_name}</td>
-                <td><Link to={`../${value.id}`}>Info</Link></td>
+                <td><Link to={`${value.id}`}>Info</Link></td>
             </tr>))}
             </tbody>
         </table>

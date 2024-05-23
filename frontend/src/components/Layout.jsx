@@ -1,4 +1,4 @@
-import {Link, Navigate, NavLink, Outlet} from "react-router-dom";
+import {Link, NavLink, Outlet} from "react-router-dom";
 import styles from "./Layout.module.scss";
 import useAuthDataStore from "../store/authDataStore.js";
 import {ToastContainer} from "react-toastify";
@@ -7,7 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const Layout = () => {
     const auth = useAuthDataStore();
     return (<div className={styles["background"]}>
-        <ToastContainer position="top-left"  />
+        <ToastContainer position="top-left" />
         <nav className={styles["nav-bar"]}>
             <div className={styles["nav-left"]}><a href="#" onClick={() => auth.logout()}><img src="/logout.svg"
                                                                                                alt="Logout" /></a>
@@ -21,9 +21,9 @@ const Layout = () => {
         </nav>
         <div className={styles["web-center"]}>
             <nav className={styles["left-nav"]}>
-                <div><NavLink to="/dash/home">Orders</NavLink></div>
-                <div><NavLink to="/dash/order/add">Upload</NavLink></div>
-                <div><NavLink to="/dash/user/all">Users</NavLink></div>
+                <NavLink className={({isActive}) => isActive ? styles["active"] : ""} to="/dash/home">Home</NavLink>
+                <NavLink className={({isActive}) => isActive ? styles["active"] : ""} to="/dash/order/add">Upload</NavLink>
+                <NavLink className={({isActive}) => isActive ? styles["active"] : ""} to="/dash/user">Users</NavLink>
             </nav>
             <Outlet />
         </div>

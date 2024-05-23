@@ -18,15 +18,16 @@ const Home = () => {
         <table className={styles["table"]}>
             <thead className={styles["table-head"]}>
             <tr>
-                <th>Job</th>
+                <th colSpan={2}>Job</th>
                 <th>Date</th>
                 <th>Deadline</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
             </thead>
-            <tbody>
+            <tbody className={styles["table-body"]}>
             {responseData?.map(value => (<tr key={value.id}>
+                <td className={styles[value.status === null ? "created" : value.status === 1 ? "in-progress" : "finished"] + " " + styles["status"]} />
                 <td>{value.name}</td>
                 <td>{new Date(value.created_date).toUTCString()}</td>
                 <td>{new Date(value.finish_date).toUTCString()}</td>

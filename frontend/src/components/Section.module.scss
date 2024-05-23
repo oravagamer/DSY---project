@@ -1,4 +1,7 @@
+@use "../globalSettings";
+
 .section {
   grid-area: web-content;
-  overflow-y: scroll;
+  overflow-y: auto;
+  scrollbar-width: none;
 }

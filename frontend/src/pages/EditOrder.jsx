@@ -58,13 +58,14 @@ const EditOrder = () => {
         customFetch(`${backendUrl}/order.php?id=${id}`, {
             method: "PUT",
             headers: {
-                "Authorization": `Bearer ${auth.accessToken}`
+                "Authorization": `Bearer ${auth.accessToken}`,
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 name: nameRef.current.value,
                 description: descriptionRef.current.value,
                 finish_date: new Date(finishDateRef.current.value).getTime() / 1000,
-                created_for: user === undefined ? null : user.id,
+                created_for: user === undefined ? "null" : user.id,
                 status: statusRef.current.value === "0" ? null : parseInt(statusRef.current.value)
             })
         })

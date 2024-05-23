@@ -1,11 +1,13 @@
 @use "../globalSettings";
 
+$table-height: 8vh;
+
 .home-section {
-  color: white;
 
   .table {
-    width: 100%;
-    border-spacing: 0;
+    height: auto;
+    width: auto;
+    border-collapse: collapse;
     color: black;
     font: {
       size: 150%;
@@ -13,7 +15,7 @@
     };
 
     * {
-      height: 8vh;
+      height: $table-height;
       text-align: left;
     }
 
@@ -23,10 +25,29 @@
       background-color: #515151;
     }
 
-    tbody {
+    .table-body {
 
-      tr:nth-child(2n) {
-        background-color: #EAEAEA;
+      tr {
+
+        &:nth-child(2n) {
+          background-color: #EAEAEA;
+        }
+
+        .status {
+          width: 0.5vw;
+        }
+
+        .created {
+          background-color: orange;
+        }
+
+        .in-progress {
+          background-color: blue;
+        }
+
+        .finished {
+          background-color: limegreen;
+        }
       }
 
       background-color: #BFBFBF;

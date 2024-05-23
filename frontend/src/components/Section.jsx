@@ -1,7 +1,7 @@
 import styles from "./Section.module.scss";
 
-const Section = (props) => {
-    return (<section className={styles["section"] + " " + props.className} id={props.id}>{props.children}</section>)
+const Section = ({className, children, id}) => {
+    return (<section className={styles["section"] + " " + className} id={id}>{children}</section>)
 }
 
 export default Section;

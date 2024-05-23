@@ -64,7 +64,7 @@ callFunctionWithMethod(
             $database = new DB();
             $connection = $database->getConnection();
 
-            $data = $connection->executeWithResponse('CALL create_order(?, ?, ?, ?, ?)', [$user["id"], $time, $name, $description, $for_user === null ? "NULL" : $for_user])[0];
+            $data = $connection->executeWithResponse('CALL create_order(?, ?, ?, ?, ?)', [$user["id"], $time, $name, $description, $for_user === "null" ? null : $for_user])[0];
             $order_id = $data["id"];
             $connection->closeStatement();
 
@@ -127,7 +127,7 @@ callFunctionWithMethod(
             }
             if (isset($created_for)) {
                 $sql_query = $sql_query . " created_for = ?,";
-                array_push($update_data, $created_for);
+                array_push($update_data, $created_for === "null" ? null : $created_for);
             }
             if (isset($status)) {
                 $sql_query = $sql_query . " status = ?,";
@@ -143,8 +143,9 @@ callFunctionWithMethod(
             }
             $sql_query = $sql_query . " WHERE id = ?";
             if (!$is_admin) {
-                $sql_query = $sql_query . " AND (created_by = ? OR created_by = ?)";
-                array_push($update_data, $user["id"], $user["id"]);
+                $sql_query = $sql_query . " AND created_by = ?";
+                echo print_r($update_data, true);
+                array_push($update_data, $user["id"]);
             }
             $connection->execute($sql_query, $update_data);
 

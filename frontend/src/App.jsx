@@ -49,7 +49,7 @@ const App = () => {
                                         ]
                                     },
                                     {
-                                        path: "all",
+                                        index: true,
                                         element: <Users />
                                     }
                                 ]
