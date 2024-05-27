@@ -12,7 +12,7 @@ const Layout = () => {
             <div className={styles["nav-left"]}><a href="#" onClick={() => auth.logout()}><img src="/logout.svg"
                                                                                                alt="Logout" /></a>
             </div>
-            <div className={styles["nav-middle"]}><Link to="/dash"><img src="/logo.svg" alt="Website logo" /></Link>
+            <div className={styles["nav-middle"]}><Link to="/dash/home"><img src="/logo.svg" alt="Website logo" /></Link>
             </div>
             <div className={styles["nav-right"]}><Link
                 to={`/dash/user/${auth.getJSONData().accessToken.payload.sub}`}><img src="/user.svg"

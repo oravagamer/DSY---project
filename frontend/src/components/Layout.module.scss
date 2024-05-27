@@ -1,5 +1,4 @@
 @use "../globalSettings";
-@use 'sass:math';
 @use 'sass:string';
 
 .background {
@@ -20,7 +19,7 @@
       area: nav;
       template-areas: "left middle right";
       auto-rows: globalSettings.$nav-height;
-      auto-columns: math.div(globalSettings.$background-width, 3);
+      auto-columns: calc(globalSettings.$background-width / 3);
     }
 
     .nav-left {
@@ -65,7 +64,7 @@
       grid-area: left-nav;
       display: grid;
       grid: {
-        template-rows: globalSettings.myRepeat(10, math.div(globalSettings.$web-center-height, 10));
+        template-rows: globalSettings.myRepeat(10, calc(globalSettings.$web-center-height / 10));
         template-columns: globalSettings.$left-nav-width;
       };
       border: {

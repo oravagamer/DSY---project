@@ -1,30 +1,81 @@
 @use "../globalSettings";
-@use "sass:math";
+
+$row-gap: 5vh;
+$column-gap: 5vw;
+$input-padding-w: 1vw;
+$input-padding-h: 1vh;
 
 .add-order {
-  overflow: unset;
 
   .add-order-form {
+    padding: {
+      top: $row-gap;
+      bottom: $row-gap;
+      left: $column-gap;
+      right: $column-gap;
+    }
     display: grid;
-    height: globalSettings.$web-center-height;
-    grid-auto-rows: math.div(globalSettings.$web-center-height, 4);
-    grid-auto-columns: math.div(globalSettings.$web-content-width, 2);
+    height: calc(100% - $row-gap * 2);
+    width: calc(100% - $column-gap * 2);
+    grid-template-rows: auto;
+    grid-template-columns: auto;
+    column-gap: $column-gap;
+    row-gap: $row-gap;
     grid-template-areas:
-            "name file"
+            "name for"
             "time file"
-            "desc for"
-            "submit submit";
+            "desc file"
+            "desc file"
+            "desc file"
+            "desc file"
+            "desc file"
+            "desc file"
+            "desc file"
+            "desc submit";
+
+    input, textarea {
+      outline: unset;
+      background-color: #dddbdb;
+      display: block;
+      color: black;
+      border: unset;
+      width: calc((globalSettings.$web-content-width - $column-gap * 3) / 2);
+      height: 100%;
+      font-weight: bolder;
+
+      &::placeholder {
+        color: black;
+        font-weight: bolder;
+      }
+    }
+
+    .add-order-name, .add-order-desc, .add-order-time {
+      border-radius: 1vmax;
+    }
 
     .add-order-name {
       grid-area: name;
+      padding: 0 $input-padding-w;
+      width: calc((globalSettings.$web-content-width - $column-gap * 3) / 2 - $input-padding-w * 2);
     }
 
     .add-order-desc {
+      resize: none;
+      width: calc((globalSettings.$web-content-width - $column-gap * 3) / 2 - $input-padding-w * 2);
+      height: calc(100% - $input-padding-h * 2);
       grid-area: desc;
+      padding: $input-padding-h $input-padding-w;
     }
 
     .add-order-time {
       grid-area: time;
+      padding: $input-padding-h $input-padding-w;
+      width: calc((globalSettings.$web-content-width - $column-gap * 3) / 2 - $input-padding-w * 2);
+      height: calc(100% - $input-padding-h * 2);
+
+      &::-webkit-calendar-picker-indicator {
+        padding-left: 50%;
+      }
     }
 
     .add-order-for {

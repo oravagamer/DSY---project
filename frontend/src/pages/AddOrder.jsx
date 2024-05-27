@@ -40,10 +40,10 @@ const AddOrder = () => {
 
     return (<Section className={styles["add-order"]}>
             <form className={styles["add-order-form"]}>
-                <input type="text" className={styles["add-order-name"]} ref={nameRef} placeholder="Name" />
+                <input type="text" className={styles["add-order-name"]} size={256} ref={nameRef} placeholder="Name" />
                 <input type="datetime-local" className={styles["add-order-time"]} ref={finishDateRef}
                        placeholder="Finish date" />
-                <input type="text" className={styles["add-order-desc"]} ref={descriptionRef} placeholder="Description" />
+                <textarea className={styles["add-order-desc"]} ref={descriptionRef} placeholder="Description" />
                 <UsersSelect selectUser={setUser} />
                 <input type="file" className={styles["add-order-file"]} ref={imagesRef} accept="image/*" multiple={true}
                        placeholder="Images" />
