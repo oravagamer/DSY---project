@@ -19,7 +19,7 @@ callFunctionWithMethod(
             $connection = $database->getConnection();
             $data = $connection->executeWithResponse('SELECT GROUP_CONCAT(images.id) AS img_id, shop_order.name AS name, shop_order.created_by AS cb, shop_order.created_for AS cf, shop_order.date_created AS dc, shop_order.finish_date AS fd, shop_order.status AS status, shop_order.description AS description FROM shop_order LEFT JOIN images ON images.order_id = shop_order.id WHERE shop_order.id = ? GROUP BY shop_order.id', [$input_data["path_params"]["id"]])[0];
             if (is_null($data)) {
-                status_exit(HTTP_STATES::NOT_FOUND);
+                statusExit(HTTP_STATES::NOT_FOUND);
             }
             $return_data = [
                 "order" => [
@@ -79,7 +79,7 @@ callFunctionWithMethod(
             $connection->closeConnection();
             return_as_json(["order_id" => $order_id]);
         } else {
-            status_exit(HTTP_STATES::BAD_REQUEST);
+            statusExit(HTTP_STATES::BAD_REQUEST);
         }
 
     }
@@ -147,7 +147,7 @@ callFunctionWithMethod(
             $connection->execute($sql_query, $update_data);
 
             if ($connection->getStatement()->affected_rows === 0) {
-                status_exit(HTTP_STATES::NOT_FOUND);
+                statusExit(HTTP_STATES::NOT_FOUND);
             }
             $connection->closeConnection();
         }
@@ -174,7 +174,7 @@ callFunctionWithMethod(
             }
             if ($connection->getStatement()->affected_rows === 0) {
                 $connection->closeConnection();
-                status_exit(HTTP_STATES::NOT_FOUND);
+                statusExit(HTTP_STATES::NOT_FOUND);
             }
             $connection->closeConnection();
         }

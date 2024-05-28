@@ -1,6 +1,6 @@
 <?php
 
-namespace rest\HTTP;
+namespace oravix\HTTP;
 enum HttpStates: int {
     case CONTINUE = 100;
     case SWITCHING_PROTOCOLS = 101;

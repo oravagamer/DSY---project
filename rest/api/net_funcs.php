@@ -67,7 +67,7 @@ function callFunctionWithMethod($function): void {
             && explode( "/", $contentType)[0] === explode("/", $allowedContentType->value)[0])
         || (str_contains($allowedContentType->value, "*/")
             && explode("/", $contentType)[1] === explode("/", $allowedContentType->value)[1]))) {
-        status_exit(HTTP_STATES::UNSUPPORTED_MEDIA_TYPE);
+        statusExit(HTTP_STATES::UNSUPPORTED_MEDIA_TYPE);
     }
 
     header('Content-Type: ' . (isset($namedAttributes[Produces::class]) ? $namedAttributes[Produces::class]->getArguments()[0]->value : ContentType::TEXT_PLAIN->value) . '; charset=utf-8');
@@ -107,7 +107,7 @@ function callFunctionWithMethod($function): void {
 
 function return_as_json(array $data): void {
     echo json_encode($data);
-    status_exit(HTTP_STATES::OK, "");
+    statusExit(HTTP_STATES::OK, "");
 }
 
 function cancelWarns(): void {

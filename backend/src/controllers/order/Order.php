@@ -1,23 +1,27 @@
 <?php
 
-use order\OrderUploadData;
-use rest\HTTP\Consumes;
-use rest\HTTP\ContentType;
-use rest\HTTP\HttpMethod;
-use rest\HTTP\input\FormData;
-use rest\HTTP\input\PathVariable;
-use rest\HTTP\Method;
-use rest\HTTP\Produces;
-use rest\Path;
-use rest\security\Secure;
+
+namespace order;
+
+use oravix\HTTP\Consumes;
+use oravix\HTTP\ContentType;
+use oravix\HTTP\Controller;
+use oravix\HTTP\HttpMethod;
+use oravix\HTTP\input\FormData;
+use oravix\HTTP\input\PathVariable;
+use oravix\HTTP\Produces;
+use oravix\HTTP\Request;
+use oravix\security\Secure;
 
 #[
-    Path("/order")
+    Controller("/order")
 ]
 class Order {
     #[
-        Path(""),
-        Method(HttpMethod::GET),
+        Request(
+            "",
+            HttpMethod::GET
+        ),
         Consumes,
         Produces(ContentType::APPLICATION_JSON),
         Secure
@@ -28,8 +32,10 @@ class Order {
     }
 
     #[
-        Path("j"),
-        Method(HttpMethod::POST),
+        Request(
+            "",
+            HttpMethod::POST
+        ),
         Consumes(ContentType::MULTIPART_FORM_DATA),
         Produces(ContentType::APPLICATION_JSON),
         Secure

@@ -1,6 +1,6 @@
 <?php
 
-namespace rest\HTTP;
+namespace oravix\HTTP;
 enum ContentType: string {
     case APPLICATION_JSON = "application/json";
     case ALL_IMAGES = "image/*";

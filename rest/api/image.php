@@ -20,7 +20,7 @@ callFunctionWithMethod(
             $data = $db_data["data"];
             $type = $db_data["type"];
             if (!isset($data)) {
-                status_exit(HTTP_STATES::NOT_FOUND);
+                statusExit(HTTP_STATES::NOT_FOUND);
             }
             $connection->closeConnection();
             header("Cache-Control: public");
@@ -28,9 +28,9 @@ callFunctionWithMethod(
             header("Content-Length:" . strlen($data));
             header("Content-Disposition: attachment; filename=" . $id . "." . $type);
             echo $data;
-            status_exit(HTTP_STATES::OK);
+            statusExit(HTTP_STATES::OK);
         } else {
-            status_exit(HTTP_STATES::NOT_FOUND);
+            statusExit(HTTP_STATES::NOT_FOUND);
         }
 
     }
@@ -51,7 +51,7 @@ callFunctionWithMethod(
             $connection->execute("INSERT INTO images(data, type, order_id) VALUES (?, ?, ?)", [$input_data["input"], $type, $id]);
             $connection->closeConnection();
         } else {
-            status_exit(HTTP_STATES::BAD_REQUEST);
+            statusExit(HTTP_STATES::BAD_REQUEST);
         }
     }
 );
@@ -68,11 +68,11 @@ callFunctionWithMethod(
             $connection = $database->getConnection();
             $connection->execute("DELETE FROM images WHERE id = ?", [$id]);
             if ($connection->getStatement()->affected_rows !== 1) {
-                status_exit(HTTP_STATES::NOT_FOUND);
+                statusExit(HTTP_STATES::NOT_FOUND);
             }
             $connection->closeConnection();
         } else {
-            status_exit(HTTP_STATES::BAD_REQUEST);
+            statusExit(HTTP_STATES::BAD_REQUEST);
         }
     }
 );

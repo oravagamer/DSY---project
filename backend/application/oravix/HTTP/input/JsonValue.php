@@ -1,6 +1,6 @@
 <?php
 
-namespace rest\HTTP\input;
+namespace oravix\HTTP\input;
 
 use Attribute;
 

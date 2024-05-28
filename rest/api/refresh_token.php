@@ -24,18 +24,18 @@ callFunctionWithMethod(
 
                 $connection->closeStatement();
                 if ($data["count"] !== 1) {
-                    status_exit(HTTP_STATES::FORBIDDEN);
+                    statusExit(HTTP_STATES::FORBIDDEN);
                 }
 
                 $connection->execute("UPDATE session SET status = FALSE WHERE id = ?", [$old_refresh_token_data["payload"]["aud"]]);
                 $connection->closeConnection();
                 return_as_json(generate_jwt_tokens($old_access_token_data["payload"]["sub"]));
             } else {
-                status_exit(HTTP_STATES::FORBIDDEN);
+                statusExit(HTTP_STATES::FORBIDDEN);
             }
 
         } else {
-            status_exit(HTTP_STATES::BAD_REQUEST);
+            statusExit(HTTP_STATES::BAD_REQUEST);
         }
     }
 );

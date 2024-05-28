@@ -1,6 +1,6 @@
 <?php
 
-namespace rest\HTTP;
+namespace oravix\HTTP;
 enum HttpMethod: string {
     case GET = "GET";
     case POST = "POST";

@@ -11,7 +11,7 @@ function generate_jwt_tokens($user_id): array {
         $access_token_sha_key = base64_encode(random_bytes(256));
         $refresh_token_sha_key = base64_encode(random_bytes(256));
     } catch (Exception $exception) {
-        status_exit(HTTP_STATES::INTERNAL_SERVER_ERROR, $exception->getMessage());
+        statusExit(HTTP_STATES::INTERNAL_SERVER_ERROR, $exception->getMessage());
     }
 
 
@@ -85,9 +85,9 @@ function decrypt_jwt_token($token, bool $type): array {
                 "payload" => $payload_data
             ];
         } else {
-            status_exit(HTTP_STATES::FORBIDDEN);
+            statusExit(HTTP_STATES::FORBIDDEN);
         }
     } catch (Error $exception) {
-        status_exit(HTTP_STATES::FORBIDDEN, $exception->getMessage());
+        statusExit(HTTP_STATES::FORBIDDEN, $exception->getMessage());
     }
 }

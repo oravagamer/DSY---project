@@ -1,6 +1,6 @@
 <?php
 
-namespace rest\HTTP;
+namespace oravix\HTTP;
 
 use Attribute;
 

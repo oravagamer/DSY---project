@@ -1,9 +1,10 @@
 <?php
 
+
 namespace order;
 
-use rest\HTTP\ContentType;
-use rest\HTTP\input\InputData;
+use oravix\HTTP\ContentType;
+use oravix\HTTP\input\InputData;
 
 class OrderUploadData {
     #[InputData("name", ContentType::TEXT_PLAIN, true)]

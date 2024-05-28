@@ -1,6 +1,6 @@
 <?php
 
-namespace rest\HTTP;
+namespace oravix\HTTP;
 
 use Attribute;
 
@@ -14,7 +14,7 @@ final class Consumes {
                 && explode("/", $providedContentType)[0] === explode("/", $contentType->value)[0])
             || (str_contains($contentType->value, "*/")
                 && explode("/", $providedContentType)[1] === explode("/", $contentType->value)[1]))) {
-            status_exit(HTTPStates::UNSUPPORTED_MEDIA_TYPE);
+            statusExit(HTTPStates::UNSUPPORTED_MEDIA_TYPE);
         }
     }
 }

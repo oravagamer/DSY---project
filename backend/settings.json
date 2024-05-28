@@ -9,5 +9,8 @@
   "jwt": {
     "access_exp": 60000,
     "refresh_exp": 120000
+  },
+  "application": {
+    "path": "/rest/api"
   }
 }

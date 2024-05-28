@@ -1,6 +1,6 @@
 <?php
 
-namespace rest\security;
+namespace oravix\security;
 
 use Attribute;
 

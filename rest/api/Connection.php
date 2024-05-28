@@ -13,7 +13,7 @@ class Connection {
         try {
             $this->connection = new mysqli($hostname, $username, $password, $database, $port, $socket);
         } catch (Exception $exception) {
-            status_exit(HTTP_STATES::INTERNAL_SERVER_ERROR, $exception->getMessage());
+            statusExit(HTTP_STATES::INTERNAL_SERVER_ERROR, $exception->getMessage());
         }
     }
 
@@ -29,7 +29,7 @@ class Connection {
             return $return_data;
 
         } catch (Exception $exception) {
-            status_exit(HTTP_STATES::INTERNAL_SERVER_ERROR, $exception->getMessage());
+            statusExit(HTTP_STATES::INTERNAL_SERVER_ERROR, $exception->getMessage());
         }
         return false;
     }
@@ -40,7 +40,7 @@ class Connection {
             $this->getExecResult($args);
 
         } catch (Exception $exception) {
-            status_exit(HTTP_STATES::INTERNAL_SERVER_ERROR, $exception->getMessage());
+            statusExit(HTTP_STATES::INTERNAL_SERVER_ERROR, $exception->getMessage());
         }
     }
 
@@ -51,7 +51,7 @@ class Connection {
 
     public function getExecResult(?array $args): void {
         if (!$this->statement->execute($args)) {
-            status_exit(HTTP_STATES::INTERNAL_SERVER_ERROR, "Failed to execute statement!");
+            statusExit(HTTP_STATES::INTERNAL_SERVER_ERROR, "Failed to execute statement!");
         } else {
             $this->result = $this->statement->get_result();
         }
@@ -61,7 +61,7 @@ class Connection {
         try {
             $this->connection->close();
         } catch (Exception $exception) {
-            status_exit(HTTP_STATES::INTERNAL_SERVER_ERROR, $exception->getMessage());
+            statusExit(HTTP_STATES::INTERNAL_SERVER_ERROR, $exception->getMessage());
         }
     }
 
@@ -70,7 +70,7 @@ class Connection {
             $this->statement->close();
             $this->statement_open = false;
         } catch (Exception $exception) {
-            status_exit(HTTP_STATES::INTERNAL_SERVER_ERROR, $exception->getMessage());
+            statusExit(HTTP_STATES::INTERNAL_SERVER_ERROR, $exception->getMessage());
         }
     }
 
@@ -80,7 +80,7 @@ class Connection {
                 $this->result->close();
             }
         } catch (Exception $exception) {
-            status_exit(HTTP_STATES::INTERNAL_SERVER_ERROR, $exception->getMessage());
+            statusExit(HTTP_STATES::INTERNAL_SERVER_ERROR, $exception->getMessage());
         }
     }
 

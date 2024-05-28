@@ -1,9 +1,9 @@
 <?php
 
-namespace rest\HTTP\input;
+namespace oravix\HTTP\input;
 
 use Attribute;
-use rest\HTTP\ContentType;
+use oravix\HTTP\ContentType;
 
 #[
     Attribute(Attribute::TARGET_PROPERTY)
