@@ -41,8 +41,7 @@ const UsersSelect = props => {
 
     }, [user, selectMode]);
     return (<div>
-        <input type="button" onClick={selectUser} value="Select user" />
-        <div>User: {user?.username}</div>
+        <input type="button" onClick={selectUser} value={`Select user Selected user: ${user?.username === undefined ? "None" : user?.username}`} />
         {selectMode ?
             <div>
                 <div className={styles["user-select-miss-click"]} onClick={() => closeSelectUser()} />
