@@ -82,8 +82,7 @@ callFunctionWithMethod(
 callFunctionWithMethod(
     #[
         Method(HTTPMethod::DELETE),
-        Secure,
-        RoleRestricted([Roles::Admin->value])
+        Secure
     ]
     function ($input_data) {
         if (isset($input_data["path_params"]["id"])) {
