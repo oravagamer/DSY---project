@@ -6,6 +6,7 @@ import useFetch from "../hooks/useFetch.js";
 import {backendUrl} from "../../settings.js";
 import {useEffect, useRef} from "react";
 import customFetch from "../functions/customFetch.js";
+import styles from "./EditProfile.module.scss";
 
 const EditProfile = () => {
     const {id} = useParams();
@@ -57,15 +58,15 @@ const EditProfile = () => {
         emailRef.current.value = responseData?.email;
     }, [loading]);
 
-    return (<Section>
-        <input type="text" ref={usernameRef} />
-        <input type="text" ref={firstNameRef} />
-        <input type="text" ref={lastNameRef} />
-        <input type="email" ref={emailRef} />
-        <input type="button" value="Change password" />
-        <input type="button" value="Save changes" onClick={saveChanges} />
-        <input type="button" value="Delete" onClick={deleteUser} />
-        <GoBack />
+    return (<Section className={styles["edit-profile"]}>
+        <input className={styles["input-user_name"]} type="text" ref={usernameRef} />
+        <input className={styles["input-first_name"]} type="text" ref={firstNameRef} />
+        <input className={styles["input-last_name"]} type="text" ref={lastNameRef} />
+        <input className={styles["input-email"]} type="email" ref={emailRef} />
+        <input className={styles["input-change_password"]} type="button" value="Change password" />
+        <input className={styles["input-save_changes"]} type="button" value="Save changes" onClick={saveChanges} />
+        <input className={styles["input-delete"]} type="button" value="Delete" onClick={deleteUser} />
+        <GoBack className={styles["input-go_back"]}/>
     </Section>)
 }
 
