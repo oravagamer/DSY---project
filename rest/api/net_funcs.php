@@ -105,40 +105,6 @@ function callFunctionWithMethod($function): void {
     ]);
 }
 
-#[Attribute(Attribute::TARGET_FUNCTION)]
-final class Method {
-    public function __construct(HTTPMethod $name) {
-    }
-}
-
-#[Attribute(Attribute::TARGET_FUNCTION)]
-final class Consumes {
-    public function __construct(ContentType $contentType) {
-
-    }
-}
-
-#[Attribute(Attribute::TARGET_FUNCTION)]
-final class Produces {
-    public function __construct(ContentType $contentType) {
-
-    }
-}
-
-#[Attribute(Attribute::TARGET_FUNCTION)]
-final class Secure {
-    public function __construct() {
-
-    }
-}
-
-#[Attribute(Attribute::TARGET_FUNCTION)]
-final class RoleRestricted {
-    public function __construct(array $roles) {
-
-    }
-}
-
 function return_as_json(array $data): void {
     echo json_encode($data);
     status_exit(HTTP_STATES::OK, "");

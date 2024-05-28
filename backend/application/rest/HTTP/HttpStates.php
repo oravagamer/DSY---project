@@ -1,6 +1,7 @@
 <?php
 
-enum HTTP_STATES: int {
+namespace rest\HTTP;
+enum HttpStates: int {
     case CONTINUE = 100;
     case SWITCHING_PROTOCOLS = 101;
     case PROCESSING = 102;
