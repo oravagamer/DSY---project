@@ -41,11 +41,11 @@ $input-padding-h: 1vh;
       border: unset;
       width: calc((globalSettings.$web-content-width - $column-gap * 3) / 2);
       height: 100%;
-      font-weight: bolder;
+      font-weight: 700;
 
       &::placeholder {
         color: black;
-        font-weight: bolder;
+        font-weight: 700;
       }
     }
 
@@ -84,6 +84,14 @@ $input-padding-h: 1vh;
 
     .add-order-file {
       grid-area: file;
+
+      &::-webkit-file-upload-button {
+        display: none;
+      }
+
+      &::before {
+      }
+
     }
 
     .add-order-button {
