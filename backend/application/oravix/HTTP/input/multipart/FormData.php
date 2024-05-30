@@ -1,6 +1,6 @@
 <?php
 
-namespace oravix\HTTP\input;
+namespace oravix\HTTP\input\multipart;
 
 use Attribute;
 

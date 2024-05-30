@@ -8,6 +8,6 @@ use Attribute;
     Attribute(Attribute::TARGET_PROPERTY)
 ]
 class JsonValue {
-    public function __construct(string $name, bool $required, mixed $default = "") {
+    public function __construct(string $name, bool $required) {
     }
 }

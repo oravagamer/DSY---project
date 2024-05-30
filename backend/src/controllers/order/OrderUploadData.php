@@ -4,16 +4,22 @@
 namespace order;
 
 use oravix\HTTP\ContentType;
-use oravix\HTTP\input\InputData;
+use oravix\HTTP\input\multipart\File;
+use oravix\HTTP\input\multipart\InputData;
 
 class OrderUploadData {
-    #[InputData("name", ContentType::TEXT_PLAIN, true)]
+    #[InputData("name", true)]
     public string $name;
-    #[InputData("description", ContentType::TEXT_PLAIN, true)]
+    #[InputData("description", true)]
     public string $description;
-    #[InputData("finish_date", ContentType::TEXT_PLAIN, true)]
+    #[InputData("finish_date", true)]
     public string $finishDate;
-    #[InputData("created_for", ContentType::TEXT_PLAIN, false)]
-    public string $createdFor;
+    #[InputData("created_for", false)]
+    public string|null $createdFor;
+    /**
+     * @var File[]|null
+     */
+    #[InputData("images", true, ContentType::ALL_IMAGES)]
+    public array|null $images;
 
 }
