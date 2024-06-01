@@ -4,7 +4,7 @@ namespace oravix\security\rest\api\data;
 
 use oravix\HTTP\input\JsonValue;
 
-class RefreshTokenData {
+class TokensData {
     #[JsonValue("access", true)]
     public string $accessToken;
     #[JsonValue("refresh", true)]

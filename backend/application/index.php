@@ -1,5 +1,6 @@
 <?php
 
+use oravix\db\Database;
 use oravix\HTTP\ContentType;
 use oravix\HTTP\Controller;
 use oravix\HTTP\HttpStates;
@@ -8,7 +9,12 @@ use oravix\HTTP\input\multipart\File;
 use oravix\HTTP\input\multipart\FormData;
 use oravix\HTTP\input\PathVariable;
 use oravix\HTTP\Request;
+use oravix\security\JOSE\Security;
+use oravix\security\Secure;
+use oravix\security\SecurityUserId;
 
+require_once "./oravix/db/Connection.php";
+require_once "./oravix/db/Database.php";
 require_once "./oravix/HTTP/input/multipart/File.php";
 require_once "./oravix/HTTP/input/multipart/FormData.php";
 require_once "./oravix/HTTP/input/multipart/InputData.php";
@@ -19,21 +25,35 @@ require_once "./oravix/HTTP/Consumes.php";
 require_once "./oravix/HTTP/ContentType.php";
 require_once "./oravix/HTTP/Controller.php";
 require_once "./oravix/HTTP/HttpMethod.php";
+require_once "./oravix/HTTP/HttpResponse.php";
 require_once "./oravix/HTTP/HttpStates.php";
 require_once "./oravix/HTTP/Produces.php";
 require_once "./oravix/HTTP/Request.php";
+require_once "./oravix/security/JOSE/Algorithm.php";
+require_once "./oravix/security/JOSE/AlgorithmFamily.php";
+require_once "./oravix/security/JOSE/Header.php";
+require_once "./oravix/security/JOSE/JWA.php";
+require_once "./oravix/security/JOSE/JWS.php";
+require_once "./oravix/security/JOSE/JWT.php";
+require_once "./oravix/security/JOSE/KeyTypes.php";
+require_once "./oravix/security/JOSE/Payload.php";
+require_once "./oravix/security/JOSE/Security.php";
+require_once "./oravix/security/rest/api/data/LoginData.php";
+require_once "./oravix/security/rest/api/data/TokensData.php";
+require_once "./oravix/security/rest/api/data/RegisterData.php";
+require_once "./oravix/security/rest/api/SecurityHttpActions.php";
 require_once "./oravix/security/RoleRestricted.php";
 require_once "./oravix/security/Roles.php";
 require_once "./oravix/security/Secure.php";
-require_once "./settings.php";
-require_once "./oravix/security/rest/api/Security.php";
+require_once "./oravix/security/SecurityUserId.php";
 
 error_reporting(E_ERROR | E_PARSE);
 
 $rootPath = "/DSY---project/backend";
 $requestedUrl = explode($rootPath, $_SERVER["REQUEST_URI"])[1];
 $pathParameters = "";
-$settings = getSettings();
+$_ENV["settings"] = parse_ini_file("../settings.env");
+$database = new Database($_ENV["settings"]["DB_SERVER"], $_ENV["settings"]["DB_DATABASE_NAME"], $_ENV["settings"]["DB_USERNAME"], $_ENV["settings"]["DB_PASSWORD"], $_ENV["settings"]["DB_PORT"]);
 
 if (str_contains($requestedUrl, "/?")) {
     list($requestedUrl, $pathParameters) = explode("/?", $requestedUrl, 2);
@@ -73,7 +93,7 @@ foreach (get_declared_classes() as $class) {
                 foreach ($refClass->getMethods() as $method) {
                     foreach ($method->getAttributes() as $methodAttribute) {
                         if ($methodAttribute->getName() === Request::class) {
-                            $paths[$methodAttribute->getArguments()[1]->value . ">" . $settings->application->path . $classAttribute->getArguments()[0] . $methodAttribute->getArguments()[0]] = $method;
+                            $paths[$methodAttribute->getArguments()[1]->value . ">" . $_ENV["settings"]["APPLICATION_PATH"] . $classAttribute->getArguments()[0] . $methodAttribute->getArguments()[0]] = $method;
                         }
                     }
                 }
@@ -89,8 +109,12 @@ $getPathDataKey = $_SERVER["REQUEST_METHOD"] . ">" . $requestedUrl;
 $method = $_SERVER["REQUEST_METHOD"];
 
 if (isset($paths[$getPathDataKey])) {
+    $userId = null;
     foreach ($paths[$getPathDataKey]->getAttributes() as $attribute) {
         $attribute->newInstance();
+        if ($attribute->getName() === Secure::class) {
+            $userId = (new Security())->secure();
+        }
 
     }
 
@@ -161,12 +185,21 @@ if (isset($paths[$getPathDataKey])) {
                 $jsonDataRef = new ReflectionClass($parameter->getType()->getName());
 
                 $methodPrams[] = processJson($jsonData, $jsonDataRef->getName());
+            } elseif ($attribute->getName() === SecurityUserId::class) {
+                $methodPrams[] = $userId;
             }
         }
     }
 
-    echo $paths[$getPathDataKey]->invoke($paths[$getPathDataKey]->getDeclaringClass()->newInstance(), ...$methodPrams);
-    statusExit(HttpStates::OK);
+    $classOfMethod = $paths[$getPathDataKey]->getDeclaringClass()->newInstance();
+
+
+    $response = $paths[$getPathDataKey]->invoke($classOfMethod, ...$methodPrams);
+    if (is_null($response)) {
+        statusExit(HttpStates::OK);
+    } else {
+        statusExit($response->getStatus(), is_array($response->getResponse()) ? json_encode($response->getResponse()) : $response->getResponse());
+    }
 
 } else {
     statusExit(HTTPStates::NOT_FOUND);

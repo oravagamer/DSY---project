@@ -13,11 +13,14 @@ use oravix\HTTP\input\PathVariable;
 use oravix\HTTP\Produces;
 use oravix\HTTP\Request;
 use oravix\security\Secure;
+use oravix\security\SecurityUserId;
+use PDO;
 
 #[
     Controller("/order")
 ]
 class Order {
+
     #[
         Request(
             "",
@@ -41,7 +44,8 @@ class Order {
         Secure
     ]
     function addOrder(
-        #[FormData] OrderUploadData $uploadData
+        #[FormData] OrderUploadData $uploadData,
+        #[SecurityUserId] string    $userId
     ) {
     }
 
@@ -55,9 +59,9 @@ class Order {
     ]
     function updateOrder(
         #[PathVariable("id", true)] string $id,
-        #[Json] OrderPutJsonData           $editData
+        #[Json] OrderPutJsonData           $editData,
+        #[SecurityUserId] string           $userId
     ) {
-        var_dump($editData);
     }
 
     #[
@@ -68,7 +72,8 @@ class Order {
         Secure
     ]
     function removeOrder(
-        #[PathVariable("id", true)] string $id
+        #[PathVariable("id", true)] string $id,
+        #[SecurityUserId] string           $userId
     ) {
     }
 }

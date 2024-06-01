@@ -28,15 +28,13 @@ CREATE TABLE user_with_role
     PRIMARY KEY (user_id, role_id)
 );
 
-CREATE TABLE session
+CREATE TABLE tokens
 (
-    id          VARCHAR(36)  NOT NULL PRIMARY KEY DEFAULT UUID(),
-    user_id     VARCHAR(36)  NOT NULL,
-    ref_sha_key VARCHAR(344) NOT NULL,
-    acc_sha_key VARCHAR(344) NOT NULL,
-    acc_dead    TIMESTAMP    NOT NULL             DEFAULT CURRENT_TIMESTAMP(),
-    ref_dead    TIMESTAMP    NOT NULL             DEFAULT CURRENT_TIMESTAMP(),
-    status      BOOLEAN      NOT NULL             DEFAULT TRUE,
+    id      VARCHAR(36)  NOT NULL PRIMARY KEY DEFAULT UUID(),
+    user_id VARCHAR(36)  NOT NULL,
+    sha_key VARCHAR(512) NOT NULL,
+    status  BOOLEAN      NOT NULL             DEFAULT TRUE,
+    type    BOOLEAN      NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
@@ -119,26 +117,18 @@ $$
 
 DELIMITER $$
 
-CREATE PROCEDURE make_session(
+CREATE PROCEDURE generate_token(
     IN v_user_id VARCHAR(36),
-    IN acc_exp TIMESTAMP,
-    IN ref_exp TIMESTAMP,
-    IN v_acc_sha_key VARCHAR(344),
-    IN v_ref_sha_key VARCHAR(344)
+    IN v_sha_key VARCHAR(344),
+    IN v_type BOOLEAN
 )
 BEGIN
-    SET @session_id = UUID();
+    SET @token_id = UUID();
 
-    INSERT INTO session(id, user_id, ref_dead, acc_dead, ref_sha_key, acc_sha_key)
-        VALUE (@session_id, v_user_id, ref_exp, acc_exp, v_ref_sha_key, v_acc_sha_key);
-    SELECT GROUP_CONCAT(roles.name) as roles
-    FROM user_with_role
-             JOIN roles ON roles.id = user_with_role.role_id
-    WHERE user_id = v_user_id
-    GROUP BY user_with_role.user_id
-    INTO @roles;
+    INSERT INTO tokens(id, user_id, sha_key, type)
+        VALUE (@token_id, v_user_id, v_sha_key, v_type);
 
-    SELECT @session_id AS id, @roles;
+    SELECT @token_id AS id;
 
 END $$
 

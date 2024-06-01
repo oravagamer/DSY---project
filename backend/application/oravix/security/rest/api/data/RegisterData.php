@@ -11,8 +11,8 @@ class RegisterData {
     public string $password;
     #[JsonValue("first_name", true)]
     public string $firstName;
-    #[JsonValue("password", true)]
+    #[JsonValue("last_name", true)]
     public string $lastName;
-    #[JsonValue("password", true)]
+    #[JsonValue("email", true)]
     public string $email;
 }

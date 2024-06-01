@@ -5,7 +5,7 @@ namespace oravix\security;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_PARAMETER)]
-class SecurityData {
+class SecurityUserId {
     public function __construct() {
 
     }
