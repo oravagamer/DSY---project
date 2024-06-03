@@ -11,12 +11,8 @@ use oravix\HTTP\HttpStates;
 use oravix\HTTP\input\Json;
 use oravix\HTTP\Produces;
 use oravix\HTTP\Request;
-use oravix\security\JOSE\Algorithm;
-use oravix\security\JOSE\JWA;
-use oravix\security\JOSE\JWT;
 use oravix\security\JOSE\Security;
 use oravix\security\rest\api\data\LoginData;
-use oravix\security\rest\api\data\LogoutData;
 use oravix\security\rest\api\data\TokensData;
 use oravix\security\rest\api\data\RegisterData;
 use oravix\security\SecurityUserId;
@@ -25,6 +21,11 @@ use oravix\security\SecurityUserId;
     Controller("/security")
 ]
 class SecurityHttpActions {
+    private static Security $security;
+
+    public function __construct() {
+        self::$security = new Security();
+    }
 
     #[
         Request(
@@ -35,10 +36,9 @@ class SecurityHttpActions {
         Produces(ContentType::APPLICATION_JSON)
     ]
     function register(
-        #[Json] RegisterData     $data,
-        #[SecurityUserId] Security $security
+        #[Json] RegisterData $data
     ): void {
-        $security->register($data);
+        self::$security->register($data);
     }
 
     #[
@@ -50,10 +50,9 @@ class SecurityHttpActions {
         Produces(ContentType::APPLICATION_JSON)
     ]
     function login(
-        #[Json] LoginData        $data,
-        #[SecurityUserId] Security $security
+        #[Json] LoginData $data
     ): HttpResponse {
-        $tokens = $security->login($data);
+        $tokens = self::$security->login($data);
         return new HttpResponse(
             HttpStates::OK,
             [
@@ -71,10 +70,9 @@ class SecurityHttpActions {
         Produces(ContentType::APPLICATION_JSON)
     ]
     function refreshToken(
-        #[Json] TokensData       $data,
-        #[SecurityUserId] Security $security
+        #[Json] TokensData $data
     ): HttpResponse {
-        $tokens = $security->refreshToken($data);
+        $tokens = self::$security->refreshToken($data);
         return new HttpResponse(
             HttpStates::OK,
             [
@@ -91,10 +89,9 @@ class SecurityHttpActions {
         Consumes(ContentType::APPLICATION_JSON)
     ]
     function logout(
-        #[Json] TokensData       $data,
-        #[SecurityUserId] Security $security
+        #[Json] TokensData         $data
     ): void {
-        $security->logout($data);
+        self::$security->logout($data);
     }
 
 }

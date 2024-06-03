@@ -115,18 +115,22 @@ class Security {
     }
 
     public function secure(): string {
-        $authorization = isset(apache_request_headers()["Authorization"]) ? apache_request_headers()["Authorization"] : isset(apache_request_headers()["authorization"]);
-        if (!isset($authorization)) {
-            statusExit(HttpStates::FORBIDDEN);
-        } else {
-            list($rawToken) = explode("Bearer ", $authorization);
-            $token = JWT::autoLoad($rawToken);
-            $token->typeAndValidityCheck(false, $this->connection);
-            if ($token->isExpired()) {
+        try {
+            $authorization = isset(apache_request_headers()["Authorization"]) ? apache_request_headers()["Authorization"] : isset(apache_request_headers()["authorization"]);
+            if (!isset($authorization)) {
                 statusExit(HttpStates::FORBIDDEN);
-            }
+            } else {
+                list(, $rawToken) = explode("Bearer ", $authorization);
+                $token = JWT::autoLoad($rawToken);
+                $token->typeAndValidityCheck(false, $this->connection);
+                if ($token->isExpired()) {
+                    statusExit(HttpStates::FORBIDDEN);
+                }
 
-            return $token->getJwtPayload()->getSubject();
+                return $token->getJwtPayload()->getSubject();
+            }
+        } catch (Error $e) {
+            statusExit(HttpStates::INTERNAL_SERVER_ERROR, $e->getMessage());
         }
     }
 

@@ -4,6 +4,7 @@ use oravix\db\Database;
 use oravix\HTTP\ContentType;
 use oravix\HTTP\Controller;
 use oravix\HTTP\HttpStates;
+use oravix\HTTP\input\FileUpload;
 use oravix\HTTP\input\Json;
 use oravix\HTTP\input\multipart\File;
 use oravix\HTTP\input\multipart\FormData;
@@ -13,11 +14,11 @@ use oravix\security\JOSE\Security;
 use oravix\security\Secure;
 use oravix\security\SecurityUserId;
 
-require_once "./oravix/db/Connection.php";
 require_once "./oravix/db/Database.php";
 require_once "./oravix/HTTP/input/multipart/File.php";
 require_once "./oravix/HTTP/input/multipart/FormData.php";
 require_once "./oravix/HTTP/input/multipart/InputData.php";
+require_once "./oravix/HTTP/input/FileUpload.php";
 require_once "./oravix/HTTP/input/Json.php";
 require_once "./oravix/HTTP/input/JsonValue.php";
 require_once "./oravix/HTTP/input/PathVariable.php";
@@ -42,8 +43,6 @@ require_once "./oravix/security/rest/api/data/LoginData.php";
 require_once "./oravix/security/rest/api/data/TokensData.php";
 require_once "./oravix/security/rest/api/data/RegisterData.php";
 require_once "./oravix/security/rest/api/SecurityHttpActions.php";
-require_once "./oravix/security/RoleRestricted.php";
-require_once "./oravix/security/Roles.php";
 require_once "./oravix/security/Secure.php";
 require_once "./oravix/security/SecurityUserId.php";
 
@@ -53,7 +52,6 @@ $rootPath = "/DSY---project/backend";
 $requestedUrl = explode($rootPath, $_SERVER["REQUEST_URI"])[1];
 $pathParameters = "";
 $_ENV["settings"] = parse_ini_file("../settings.env");
-$database = new Database($_ENV["settings"]["DB_SERVER"], $_ENV["settings"]["DB_DATABASE_NAME"], $_ENV["settings"]["DB_USERNAME"], $_ENV["settings"]["DB_PASSWORD"], $_ENV["settings"]["DB_PORT"]);
 
 if (str_contains($requestedUrl, "/?")) {
     list($requestedUrl, $pathParameters) = explode("/?", $requestedUrl, 2);
@@ -187,6 +185,8 @@ if (isset($paths[$getPathDataKey])) {
                 $methodPrams[] = processJson($jsonData, $jsonDataRef->getName());
             } elseif ($attribute->getName() === SecurityUserId::class) {
                 $methodPrams[] = $userId;
+            } elseif ($attribute->getName() === FileUpload::class) {
+                $methodPrams[] = file_get_contents('php://input');
             }
         }
     }

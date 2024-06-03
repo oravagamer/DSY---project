@@ -34,10 +34,15 @@ class JWT {
                 if ($data["type"] xor $type) {
                     statusExit(HttpStates::FORBIDDEN);
                 }
-                if (!($this->JwtSignature->getSignature() === hash_hmac($this->JoseHeader->getAlgorithm()->getPhpName(), $this->JoseHeader->getVersionBase64() . "." . $this->JwtPayload->getVersionBase64(), $data["sha_key"]))) {
+                if ($this->JwtSignature->getSignature() !== hash_hmac($this->JoseHeader->getAlgorithm()->getPhpName(), $this->JoseHeader->getVersionBase64() . "." . $this->JwtPayload->getVersionBase64(), $data["sha_key"])) {
                     statusExit(HttpStates::FORBIDDEN);
                 }
 
+                break;
+            }
+            default:
+            {
+                statusExit(HttpStates::FORBIDDEN);
                 break;
             }
         }
@@ -45,8 +50,8 @@ class JWT {
     }
 
     static function autoLoad(string $token): JWT {
-         list($base64Header, $base64Payload, $signature) = explode(".", $token);
-         return new JWT((new Header(JWA::$NONE))->loadData($base64Header), (new Payload())->loadData($base64Payload), (new JWS(new Header(JWA::$NONE), new Payload()))->setSignature($signature));
+        list($base64Header, $base64Payload, $signature) = explode(".", $token);
+        return new JWT((new Header(JWA::$NONE))->loadData($base64Header), (new Payload())->loadData($base64Payload), (new JWS(new Header(JWA::$NONE), new Payload()))->setSignature($signature));
 
     }
 
