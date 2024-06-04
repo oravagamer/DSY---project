@@ -1,6 +1,6 @@
 import Section from "../components/Section.jsx";
 import styles from "./AddOrder.module.scss";
-import {useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import {backendUrl} from "../../settings.js";
 import useAuthDataStore from "../store/authDataStore.js";
 import UsersSelect from "../components/UsersSelect.jsx";
@@ -13,6 +13,11 @@ const AddOrder = () => {
     const descriptionRef = useRef();
     const imagesRef = useRef();
     const [user, setUser] = useState();
+    const [rerender, setRerender] = useState(true);
+
+    useEffect(() => {
+        console.log("test");
+    }, [rerender]);
 
     const onSubmit = () => {
         const formData = new FormData();
@@ -45,7 +50,20 @@ const AddOrder = () => {
                        placeholder="Finish date"/>
                 <textarea className={styles["add-order-desc"]} ref={descriptionRef} placeholder="Description"/>
                 <UsersSelect selectUser={setUser}/>
-                <input type="file" name="file-upload" className={styles["add-order-file"]} ref={imagesRef} accept="image/*" multiple={true}/>
+                <label htmlFor="file-upload" className={styles["add-order-file-label"]}
+                       onClick={() => imagesRef.current.click()}>
+                    {
+                        imagesRef.current?.files.map && imagesRef.current?.files.map(
+                            value => {
+                                console.log(value);
+                                return (<div>Test</div>);
+                            }
+                        )
+                    }
+                </label>
+                <input type="file" name="file-upload" className={styles["add-order-file"]} ref={imagesRef}
+                       accept="image/*" onChange={() => setRerender(prevState => !prevState)} multiple={true}
+                       hidden={true}/>
                 <input type="button" className={styles["add-order-button"]} value="Submit" onClick={onSubmit}/>
             </form>
         </Section>

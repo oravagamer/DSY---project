@@ -83,14 +83,11 @@ $input-padding-h: 1vh;
     }
 
     .add-order-file {
+      display: none !important;
+    }
+
+    .add-order-file-label {
       grid-area: file;
-
-      &::-webkit-file-upload-button {
-        display: none;
-      }
-
-      &::before {
-      }
 
     }
 
