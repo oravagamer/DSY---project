@@ -41,7 +41,7 @@ const UsersSelect = props => {
 
     }, [user, selectMode]);
     return (<div>
-        <input type="button" onClick={selectUser} value={`Select user Selected user: ${user?.username === undefined ? "None" : user?.username}`} />
+        <input className={styles["user-select-button"]} type="button" onClick={selectUser} value={`Select user Selected user: ${user?.username === undefined ? "None" : user?.username}`} />
         {selectMode ?
             <div>
                 <div className={styles["user-select-miss-click"]} onClick={() => closeSelectUser()} />
@@ -59,7 +59,7 @@ const UsersSelect = props => {
                         {
                             responseData && responseData.map && responseData.map(
                                 value =>
-                                    <tr key={value.id} onClick={() => closeSelectUser(value)}>
+                                    <tr className={styles["user-select-table-button"]} key={value.id} onClick={() => closeSelectUser(value)}>
                                         <td>{value.username}</td>
                                         <td>{value.first_name}</td>
                                         <td>{value.last_name}</td>

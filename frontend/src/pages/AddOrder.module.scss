@@ -74,6 +74,7 @@ $input-padding-h: 1vh;
       height: calc(100% - $input-padding-h * 2);
 
       &::-webkit-calendar-picker-indicator {
+        cursor: pointer;
         padding-left: 50%;
       }
     }
@@ -88,6 +89,64 @@ $input-padding-h: 1vh;
 
     .add-order-file-label {
       grid-area: file;
+      overflow-y: auto;
+      scrollbar-width: none;
+
+      .upload-button-container {
+        width: auto;
+        height: 33%;
+        position: sticky;
+        top: 0;
+        background-color: #dddbdb;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: black;
+        flex-direction: column;
+        margin-bottom: 10%;
+
+        &:hover {
+          cursor: pointer;
+        }
+
+        .upload-button {
+          width: auto;
+          height: 90%;
+
+        }
+      }
+
+      ul {
+        margin: 0;
+        padding: 0;
+
+        li {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .remove-image {
+            &:hover {
+              cursor: pointer;
+            }
+
+          }
+
+          div {
+            text-align: center;
+            word-break: break-all;
+
+          }
+
+          &::marker {
+            all: unset;
+          }
+
+          .upload-image {
+            width: 8vw;
+          }
+        }
+      }
 
     }
 

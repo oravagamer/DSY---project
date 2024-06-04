@@ -6,12 +6,32 @@
   left: 100px;
 }
 
+.user-select-button {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
 .user-select-miss-click {
   top: 0;
   left: 0;
   position: absolute;
   width: 100vw;
   height: 100vh;
-  background-color: transparent;
+  background-color: rgba(0, 0, 0, 0.6);
   z-index: 80;
+
 }
+
+.user-select-table-button {
+  &:hover {
+    background-color: white;
+    color: black;
+    cursor: pointer;
+  }
+
+}
+
+td, th {
+    padding: 0;
+  }
