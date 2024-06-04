@@ -13,11 +13,6 @@ const AddOrder = () => {
     const descriptionRef = useRef();
     const imagesRef = useRef();
     const [user, setUser] = useState();
-    const [rerender, setRerender] = useState(true);
-
-    useEffect(() => {
-        console.log("test");
-    }, [rerender]);
 
     const onSubmit = () => {
         const formData = new FormData();
@@ -52,17 +47,10 @@ const AddOrder = () => {
                 <UsersSelect selectUser={setUser}/>
                 <label htmlFor="file-upload" className={styles["add-order-file-label"]}
                        onClick={() => imagesRef.current.click()}>
-                    {
-                        imagesRef.current?.files.map && imagesRef.current?.files.map(
-                            value => {
-                                console.log(value);
-                                return (<div>Test</div>);
-                            }
-                        )
-                    }
+                    Test
                 </label>
                 <input type="file" name="file-upload" className={styles["add-order-file"]} ref={imagesRef}
-                       accept="image/*" onChange={() => setRerender(prevState => !prevState)} multiple={true}
+                       accept="image/*" multiple={true}
                        hidden={true}/>
                 <input type="button" className={styles["add-order-button"]} value="Submit" onClick={onSubmit}/>
             </form>
