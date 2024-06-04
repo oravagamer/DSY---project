@@ -16,17 +16,17 @@ const Profile = () => {
         }
     });
     return (<Section className={styles["profile-section"]}>
-        <h1>User: {responseData?.username}</h1>
-        <h2>First name: {responseData?.first_name}</h2>
-        <h2>Last name: {responseData?.last_name}</h2>
-        <h2>Email: {responseData?.email}</h2>
+        <h1 className={styles["user"]}>User: {responseData?.username}</h1>
+        <h2 className={styles["first-name"]}>First name: {responseData?.first_name}</h2>
+        <h2 className={styles["last-name"]}>Last name: {responseData?.last_name}</h2>
+        <h2 className={styles["gaymail"]}>Email: {responseData?.email}</h2>
         <h3>
-            <h2>Roles:</h2>
+            <h2 className={styles["role"]}>Roles:</h2>
             <ul>{responseData && responseData.roles && responseData.roles.map && responseData.roles.map(value => <li
                 key={value}>{value}</li>)}</ul>
         </h3>
-        <GoBack />
-        <Link to="edit">Edit</Link>
+        <GoBack className={styles["GoBack"]} />
+        <Link className={styles["edit-style"]} to="edit">Edit</Link>
     </Section>)
 }
 

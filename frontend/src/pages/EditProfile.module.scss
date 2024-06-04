@@ -64,11 +64,12 @@
     border-radius: 10px;
     padding: 5px;
   }
-
+  grid-template-rows: auto ;
   display: grid;
   grid-template-columns: auto;
   row-gap: 2vh;
   padding: 5px;
+  grid-column-gap: 2vh;
   grid-template-areas:
           "foto foto cont1 cont1"
           "foto foto cont2 cont2"
@@ -76,4 +77,9 @@
           "foto foto cont4 cont4"
           "cont5 cont6 cont7 cont8"
 ;
+}
+.user-profil-picture-image---{
+  grid-area: foto;
+  max-width: 75%;
+  place-self: center;
 }

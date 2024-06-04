@@ -59,6 +59,7 @@ const EditProfile = () => {
     }, [loading]);
 
     return (<Section className={styles["edit-profile"]}>
+        <img className={styles["user-profil-picture-image---"]} src="/user.svg"/>
         <input className={styles["input-user_name"]} type="text" ref={usernameRef} />
         <input className={styles["input-first_name"]} type="text" ref={firstNameRef} />
         <input className={styles["input-last_name"]} type="text" ref={lastNameRef} />
