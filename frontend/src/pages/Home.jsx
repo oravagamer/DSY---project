@@ -4,6 +4,7 @@ import useFetch from "../hooks/useFetch.js";
 import {backendUrl} from "../../settings.js";
 import useAuthDataStore from "../store/authDataStore.js";
 import {Link} from "react-router-dom";
+import {useEffect} from "react";
 
 const Home = () => {
     const auth = useAuthDataStore();
@@ -14,9 +15,20 @@ const Home = () => {
         }
     });
 
+    useEffect(() => {
+        try {
+            document.getElementById(location.hash.replace("#", "")).scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+        } catch (error) {
+
+        }
+    }, [loading]);
+
     return (<Section className={styles["home-section"]}>
-        <table className={styles["table"]}>
-            <thead className={styles["table-head"]}>
+        <table className="table">
+            <thead>
             <tr>
                 <th colSpan={2}>Job</th>
                 <th>Date</th>
@@ -25,8 +37,8 @@ const Home = () => {
                 <th>Action</th>
             </tr>
             </thead>
-            <tbody className={styles["table-body"]}>
-            {responseData?.map(value => (<tr key={value.id}>
+            <tbody>
+            {responseData?.map(value => (<tr className={styles["tr"]} key={value.id} id={value.id}>
                 <td className={styles[value.status === null ? "created" : value.status === 1 ? "in-progress" : "finished"] + " " + styles["status"]} />
                 <td>{value.name}</td>
                 <td>{new Date(value.created_date).toUTCString()}</td>

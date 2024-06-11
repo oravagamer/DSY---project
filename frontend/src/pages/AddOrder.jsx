@@ -5,6 +5,7 @@ import {backendUrl} from "../../settings.js";
 import useAuthDataStore from "../store/authDataStore.js";
 import UsersSelect from "../components/UsersSelect.jsx";
 import customFetch from "../functions/customFetch.js";
+import {redirect, useNavigate} from "react-router-dom";
 
 const AddOrder = () => {
     const auth = useAuthDataStore();
@@ -14,6 +15,7 @@ const AddOrder = () => {
     const [images, setImages] = useState([]);
     const imagesRef = useRef();
     const [user, setUser] = useState();
+    const navigate = useNavigate();
 
     useEffect(() => {
     }, [images]);
@@ -40,6 +42,13 @@ const AddOrder = () => {
                 "Authorization": `Bearer ${auth.accessToken}`
             }
         })
+            .then(
+                async data => {
+                    if ((await data.response.status) === 200) {
+                        navigate(`/dash/home#${(await data.response.json()).order_id}`);
+                    }
+                }
+            )
     }
 
     return (<Section className={styles["add-order"]}>

@@ -14,8 +14,8 @@ const Users = () => {
         }
     });
     return (<Section className={styles["users-section"]}>
-        <table className={styles["table"]}>
-            <thead className={styles["table-head"]}>
+        <table className="table">
+            <thead>
             <tr>
                 <th>Username</th>
                 <th>Email</th>

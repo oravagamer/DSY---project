@@ -1,55 +1,24 @@
 @use "../globalSettings";
 
-$table-height: 8vh;
-
 .home-section {
+}
 
-  .table {
-    width: 100%;
-    border-collapse: collapse;
-    color: black;
-    font: {
-      size: 150%;
-      family: globalSettings.$OCRAEXT-font-family;
-    };
+.tr {
+  scroll-margin-top: globalSettings.$table-height;
+}
 
-    * {
-      height: $table-height;
-      text-align: left;
-    }
+.status {
+  width: 0.5vw;
+}
 
-    .table-head {
-      position: sticky;
-      top: 0;
-      background-color: #515151;
-    }
+.created {
+  background-color: orange;
+}
 
-    .table-body {
+.in-progress {
+  background-color: blue;
+}
 
-      tr {
-
-        &:nth-child(2n) {
-          background-color: #EAEAEA;
-        }
-
-        .status {
-          width: 0.5vw;
-        }
-
-        .created {
-          background-color: orange;
-        }
-
-        .in-progress {
-          background-color: blue;
-        }
-
-        .finished {
-          background-color: limegreen;
-        }
-      }
-
-      background-color: #BFBFBF;
-    }
-  }
+.finished {
+  background-color: limegreen;
 }

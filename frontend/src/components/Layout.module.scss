@@ -51,7 +51,7 @@
 
   .web-center {
     grid-area: web-center;
-    width: 100%;
+    max-width: 100%;
     height: auto;
     display: inline-grid;
     grid: {

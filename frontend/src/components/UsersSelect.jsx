@@ -46,7 +46,7 @@ const UsersSelect = props => {
             <div>
                 <div className={styles["user-select-miss-click"]} onClick={() => closeSelectUser()} />
                 <div className={styles["select-box"]}>
-                    <table>
+                    <table className="table">
                         <thead>
                         <tr>
                             <th>Username</th>

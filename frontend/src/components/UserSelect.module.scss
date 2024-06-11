@@ -1,9 +1,47 @@
+@use "../globalSettings";
+
 .select-box {
-  background-color: black;
   position: absolute;
+  top: 5%;
+  bottom: 5%;
+  left: 5%;
+  right: 5%;
   z-index: 100;
-  top: 100px;
-  left: 100px;
+  animation-name: show-box;
+  animation-duration: 0.5s;
+  background-color: #d9d9d9;
+
+  table {
+    width: 100%;
+    border-spacing: 0;
+    color: black;
+    font: {
+      size: 150%;
+      family: globalSettings.$OCRAEXT-font-family;
+    };
+
+    * {
+      height: 8vh;
+      text-align: left;
+    }
+
+    .table-head {
+      position: sticky;
+      top: 0;
+      background-color: #515151;
+    }
+
+    tbody {
+
+      tr:nth-child(2n) {
+        background-color: #EAEAEA;
+      }
+
+      background-color: #BFBFBF;
+    }
+  }
+
+
 }
 
 .user-select-button {
@@ -12,16 +50,37 @@
   }
 }
 
+@keyframes show-background {
+  from {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  to {
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+}
+
+@keyframes show-box {
+  from {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  to {
+    background-color: #d9d9d9;
+  }
+}
+
 .user-select-miss-click {
+  animation-name: show-background;
+  animation-duration: 0.5s;
+  background-color: rgba(0, 0, 0, 0.6);
   top: 0;
   left: 0;
   position: absolute;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.6);
   z-index: 80;
 
 }
+
 
 .user-select-table-button {
   &:hover {
@@ -31,7 +90,3 @@
   }
 
 }
-
-td, th {
-    padding: 0;
-  }

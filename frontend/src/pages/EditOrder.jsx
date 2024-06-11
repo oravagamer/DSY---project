@@ -17,7 +17,6 @@ const EditOrder = () => {
     const finishDateRef = useRef();
     const statusRef = useRef();
     const [user, setUser] = useState();
-    const data = useLoaderData();
     const [{responseData, loading}] = useFetch(`${backendUrl}/order.php?id=${id}`, {
         method: "GET",
         headers: {
