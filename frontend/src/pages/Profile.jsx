@@ -15,7 +15,7 @@ const Profile = () => {
             "Authorization": `Bearer ${auth.accessToken}`
         }
     });
-    return (<Section className={styles["profile-section"]}>
+    return (<Section className={styles["profile"]}>
         <h1 className={styles["user"]}>User: {responseData?.username}</h1>
         <h2 className={styles["first-name"]}>First name: {responseData?.first_name}</h2>
         <h2 className={styles["last-name"]}>Last name: {responseData?.last_name}</h2>

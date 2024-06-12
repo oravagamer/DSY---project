@@ -26,7 +26,7 @@ const Home = () => {
         }
     }, [loading]);
 
-    return (<Section className={styles["home-section"]}>
+    return (<Section className={styles["home"]}>
         <table className="table">
             <thead>
             <tr>

@@ -13,7 +13,7 @@ const Users = () => {
             "Authorization": `Bearer ${auth.accessToken}`
         }
     });
-    return (<Section className={styles["users-section"]}>
+    return (<Section className={styles["users"]}>
         <table className="table">
             <thead>
             <tr>

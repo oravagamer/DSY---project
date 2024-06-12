@@ -7,7 +7,7 @@ $input-padding-h: 1vh;
 
 .add-order {
 
-  .add-order-form {
+  .form {
     padding: {
       top: $row-gap;
       bottom: $row-gap;
@@ -49,17 +49,17 @@ $input-padding-h: 1vh;
       }
     }
 
-    .add-order-name, .add-order-desc, .add-order-time {
+    .name, .desc, .time {
       border-radius: 1vmax;
     }
 
-    .add-order-name {
+    .name {
       grid-area: name;
       padding: 0 $input-padding-w;
       width: calc((globalSettings.$web-content-width - $column-gap * 3) / 2 - $input-padding-w * 2);
     }
 
-    .add-order-desc {
+    .desc {
       resize: none;
       width: calc((globalSettings.$web-content-width - $column-gap * 3) / 2 - $input-padding-w * 2);
       height: calc(100% - $input-padding-h * 2);
@@ -67,7 +67,7 @@ $input-padding-h: 1vh;
       padding: $input-padding-h $input-padding-w;
     }
 
-    .add-order-time {
+    .time {
       grid-area: time;
       padding: $input-padding-h $input-padding-w;
       width: calc((globalSettings.$web-content-width - $column-gap * 3) / 2 - $input-padding-w * 2);
@@ -79,15 +79,15 @@ $input-padding-h: 1vh;
       }
     }
 
-    .add-order-for {
+    .for {
       grid-area: for;
     }
 
-    .add-order-file {
+    .file {
       display: none !important;
     }
 
-    .add-order-file-label {
+    .file-label {
       grid-area: file;
       overflow-y: auto;
       scrollbar-width: none;
@@ -150,7 +150,7 @@ $input-padding-h: 1vh;
 
     }
 
-    .add-order-button {
+    .button {
       grid-area: submit;
     }
   }

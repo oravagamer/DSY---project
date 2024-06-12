@@ -52,13 +52,13 @@ const AddOrder = () => {
     }
 
     return (<Section className={styles["add-order"]}>
-            <form className={styles["add-order-form"]}>
-                <input type="text" className={styles["add-order-name"]} size={256} ref={nameRef} placeholder="Name" />
-                <input type="datetime-local" className={styles["add-order-time"]} ref={finishDateRef}
+            <form className={styles["form"]}>
+                <input type="text" className={styles["name"]} size={256} ref={nameRef} placeholder="Name" />
+                <input type="datetime-local" className={styles["time"]} ref={finishDateRef}
                        placeholder="Finish date" />
-                <textarea className={styles["add-order-desc"]} ref={descriptionRef} placeholder="Description" />
+                <textarea className={styles["desc"]} ref={descriptionRef} placeholder="Description" />
                 <UsersSelect selectUser={setUser} />
-                <label htmlFor="file-upload" className={styles["add-order-file-label"]}>
+                <label htmlFor="file-upload" className={styles["file-label"]}>
                     <div className={styles["upload-button-container"]} onClick={event => {
                         imagesRef.current.value = null;
                         imagesRef.current.click();
@@ -79,14 +79,14 @@ const AddOrder = () => {
                         )}
                     </ul>
                 </label>
-                <input type="file" name="file-upload" className={styles["add-order-file"]} ref={imagesRef}
+                <input type="file" name="file-upload" className={styles["file"]} ref={imagesRef}
                        accept="image/*" multiple={true}
                        onChange={event => {
                            event.preventDefault();
                            setImages(prevState => [...prevState, ...Array.from(event.target.files)]);
                        }}
                        hidden={true} />
-                <input type="button" className={styles["add-order-button"]} value="Submit" onClick={onSubmit} />
+                <input type="button" className={styles["button"]} value="Submit" onClick={onSubmit} />
             </form>
         </Section>
     )

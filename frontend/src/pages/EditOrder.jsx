@@ -91,25 +91,30 @@ const EditOrder = () => {
         statusRef.current.value = responseData?.order.status === null ? 0 : responseData?.order.status;
     }, [loading]);
 
-    return (<Section>
-        <input type="text" ref={nameRef} />
-        <input type="text" ref={descriptionRef} />
-        <UsersSelect defaultUser={responseData?.order.created_for} selectUser={setUser} />
-        <input type="datetime-local" ref={finishDateRef} />
+    return (<Section className={styles["edit-order"]}>
+        <input type="text" ref={nameRef}/>
+        <input type="text" ref={descriptionRef}/>
+        <UsersSelect defaultUser={responseData?.order.created_for} selectUser={setUser}/>
+        <input type="datetime-local" ref={finishDateRef}/>
         <select name="Status" defaultChecked={true} ref={statusRef}>
             <option value={0}>Created</option>
             <option value={1}>In progress</option>
             <option value={2}>Finished</option>
         </select>
-        <input type="button" value="Save Changes" onClick={saveChanges} />
+        <input type="button" value="Save Changes" onClick={saveChanges}/>
         <label htmlFor="image-upload" className={styles["image-upload-button"]}>Add image</label>
-        <input type="file" onChange={addImage} id={"image-upload"} hidden={true} />
-        <input type="button" value="Delete" onClick={deleteOrder} />
-        <GoBack />
-        <ul>{responseData && responseData?.images?.map && responseData?.images?.map(value => <li key={value}><img
-            src={`${backendUrl}/image.php?id=${value}`} alt={value} className={styles["images"]} />
-            <button id={value} onClick={removeImage}>Remove</button>
-        </li>)}</ul>
+        <input type="file" onChange={addImage} id={"image-upload"} hidden={true}/>
+        <input type="button" value="Delete" onClick={deleteOrder}/>
+        <GoBack/>
+        <div
+            className={styles["images-container"]}>{responseData && responseData?.images?.map && responseData?.images?.map(value =>
+            <div key={value}>
+                <img
+                    src={`${backendUrl}/image.php?id=${value}`} alt={value} className={styles["images"]}/>
+                <button id={value} onClick={removeImage}>Remove</button>
+            </div>
+        )}
+        </div>
     </Section>)
 }
 
