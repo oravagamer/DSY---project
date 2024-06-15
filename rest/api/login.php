@@ -18,7 +18,7 @@ callFunctionWithMethod(
             $user_id = verify_user($username, $password);
             return_as_json(generate_jwt_tokens($user_id));
         } else {
-            status_exit(HTTP_STATES::BAD_REQUEST);
+            statusExit(HTTP_STATES::BAD_REQUEST);
         }
     }
 );

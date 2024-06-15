@@ -20,7 +20,7 @@ callFunctionWithMethod(
             $data["roles"] = explode(",", $data["roles"]);
             return_as_json($data);
         } else {
-            status_exit(HTTP_STATES::NOT_FOUND);
+            statusExit(HTTP_STATES::NOT_FOUND);
         }
     }
 );
@@ -72,7 +72,7 @@ callFunctionWithMethod(
             $sql_query = $sql_query . " WHERE id = ?";
             $connection->execute($sql_query, $update_data);
             if ($connection->getStatement()->affected_rows === 0) {
-                status_exit(HTTP_STATES::NOT_FOUND);
+                statusExit(HTTP_STATES::NOT_FOUND);
             }
             $connection->closeConnection();
         }
@@ -90,12 +90,12 @@ callFunctionWithMethod(
             $connection = $database->getConnection();
             $connection->execute('DELETE FROM users WHERE users.id = ?', [$input_data["path_params"]["id"]]);
             if ($connection->getStatement()->affected_rows !== 1) {
-                status_exit(HTTP_STATES::NOT_FOUND);
+                statusExit(HTTP_STATES::NOT_FOUND);
             }
             $connection->closeConnection();
 
         } else {
-            status_exit(HTTP_STATES::BAD_REQUEST);
+            statusExit(HTTP_STATES::BAD_REQUEST);
         }
     }
 );

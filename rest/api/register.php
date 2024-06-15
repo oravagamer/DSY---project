@@ -23,7 +23,7 @@ callFunctionWithMethod(
             $connection->closeConnection();
 
         } else {
-            status_exit(HTTP_STATES::BAD_REQUEST);
+            statusExit(HTTP_STATES::BAD_REQUEST);
         }
     }
 );

@@ -21,7 +21,7 @@ callFunctionWithMethod(
 
                 $connection->closeStatement();
                 if ($db_data["count"] !== 1) {
-                    status_exit(HTTP_STATES::FORBIDDEN);
+                    statusExit(HTTP_STATES::FORBIDDEN);
                 }
 
 
@@ -29,13 +29,13 @@ callFunctionWithMethod(
                 $connection->closeConnection();
 
                 redirect("/");
-                status_exit(HTTP_STATES::OK);
+                statusExit(HTTP_STATES::OK);
             } else {
-                status_exit(HTTP_STATES::FORBIDDEN);
+                statusExit(HTTP_STATES::FORBIDDEN);
             }
 
         } else {
-            status_exit(HTTP_STATES::BAD_REQUEST);
+            statusExit(HTTP_STATES::BAD_REQUEST);
         }
     }
 );

@@ -14,7 +14,7 @@ function secure(): array {
     $access_token_data = decrypt_jwt_token($auth_token, true);
 
     if ($access_token_data["payload"]["exp"] < time()) {
-        status_exit(HTTP_STATES::FORBIDDEN);
+        statusExit(HTTP_STATES::FORBIDDEN);
     } else {
 
         $database = new DB();
@@ -23,7 +23,7 @@ function secure(): array {
         $connection->closeConnection();
 
         if ($data["count"] !== 1) {
-            status_exit(HTTP_STATES::FORBIDDEN);
+            statusExit(HTTP_STATES::FORBIDDEN);
         }
 
 

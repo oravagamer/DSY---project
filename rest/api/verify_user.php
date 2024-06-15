@@ -17,10 +17,10 @@ function verify_user(string $username, string $password): string {
         if (password_verify($password, $data["password"])) {
             return $data["id"];
         } else {
-            status_exit(HTTP_STATES::FORBIDDEN);
+            statusExit(HTTP_STATES::FORBIDDEN);
         }
     } catch (Exception $exception) {
-        status_exit(HTTP_STATES::FORBIDDEN, $exception->getMessage());
+        statusExit(HTTP_STATES::FORBIDDEN, $exception->getMessage());
     }
 
 }
@@ -38,7 +38,7 @@ function verify_user_with_id(string $user_id): array {
     }
     $connection->closeConnection();
     if (sizeof($roles) < 1) {
-        status_exit(HTTP_STATES::FORBIDDEN);
+        statusExit(HTTP_STATES::FORBIDDEN);
     } else {
         return $roles;
     }
