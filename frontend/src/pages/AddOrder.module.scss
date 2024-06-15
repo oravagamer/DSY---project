@@ -6,6 +6,7 @@ $input-padding-w: 1vw;
 $input-padding-h: 1vh;
 
 .add-order {
+  display: flex;
 
   .form {
     padding: {
@@ -39,7 +40,6 @@ $input-padding-h: 1vh;
       display: block;
       color: black;
       border: unset;
-      width: calc((globalSettings.$web-content-width - $column-gap * 3) / 2);
       height: 100%;
       font-weight: 700;
 
@@ -56,12 +56,10 @@ $input-padding-h: 1vh;
     .name {
       grid-area: name;
       padding: 0 $input-padding-w;
-      width: calc((globalSettings.$web-content-width - $column-gap * 3) / 2 - $input-padding-w * 2);
     }
 
     .desc {
       resize: none;
-      width: calc((globalSettings.$web-content-width - $column-gap * 3) / 2 - $input-padding-w * 2);
       height: calc(100% - $input-padding-h * 2);
       grid-area: desc;
       padding: $input-padding-h $input-padding-w;
@@ -70,7 +68,6 @@ $input-padding-h: 1vh;
     .time {
       grid-area: time;
       padding: $input-padding-h $input-padding-w;
-      width: calc((globalSettings.$web-content-width - $column-gap * 3) / 2 - $input-padding-w * 2);
       height: calc(100% - $input-padding-h * 2);
 
       &::-webkit-calendar-picker-indicator {

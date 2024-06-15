@@ -8,24 +8,22 @@ const useFetch = (input, init) => {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        (async () => {
-            const data = await customFetch(input, init);
-            setResponseStatus(await data.response.status);
-            try {
-                setResponseData(await data.response.json());
-            } catch (err) {
-                setResponseData(await data.response.text());
-            }
-            setError(await data.error);
+        refetch();
+    }, []);
 
-            await setLoading(false);
-
-        })();
-
-    }, [loading]);
-
-    const refetch = () => {
+    const refetch = async () => {
         setLoading(true);
+        const data = await customFetch(input, init);
+        setResponseStatus(await data.response.status);
+        try {
+            setResponseData(await data.response.json());
+        } catch (err) {
+            setResponseData(await data.response.text());
+        }
+        setError(await data.error);
+
+        await setLoading(false);
+
     }
 
     return [{responseData, responseStatus, error, loading}, refetch];

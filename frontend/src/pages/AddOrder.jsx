@@ -53,7 +53,7 @@ const AddOrder = () => {
 
     return (<Section className={styles["add-order"]}>
             <form className={styles["form"]}>
-                <input type="text" className={styles["name"]} size={256} ref={nameRef} placeholder="Name" />
+                <input type="text" className={styles["name"]} ref={nameRef} placeholder="Name" />
                 <input type="datetime-local" className={styles["time"]} ref={finishDateRef}
                        placeholder="Finish date" />
                 <textarea className={styles["desc"]} ref={descriptionRef} placeholder="Description" />
