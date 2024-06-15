@@ -16,7 +16,7 @@ const EditOrder = () => {
     const descriptionRef = useRef();
     const finishDateRef = useRef();
     const statusRef = useRef();
-    const [user, setUser] = useState();
+    const userRef = useRef();
     const [{responseData, loading}] = useFetch(`${backendUrl}/order.php?id=${id}`, {
         method: "GET",
         headers: {
@@ -64,7 +64,7 @@ const EditOrder = () => {
                 name: nameRef.current.value,
                 description: descriptionRef.current.value,
                 finish_date: new Date(finishDateRef.current.value).getTime() / 1000,
-                created_for: user === undefined ? "null" : user.id,
+                created_for: userRef.current === undefined ? "null" : userRef.current.id,
                 status: statusRef.current.value === "0" ? null : parseInt(statusRef.current.value)
             })
         })
@@ -92,25 +92,25 @@ const EditOrder = () => {
     }, [loading]);
 
     return (<Section className={styles["edit-order"]}>
-        <input type="text" ref={nameRef}/>
-        <input type="text" ref={descriptionRef}/>
-        <UsersSelect defaultUser={responseData?.order.created_for} selectUser={setUser}/>
-        <input type="datetime-local" ref={finishDateRef}/>
+        <input type="text" ref={nameRef} />
+        <input type="text" ref={descriptionRef} />
+        <UsersSelect defaultUser={responseData?.order.created_for} ref={userRef} />
+        <input type="datetime-local" ref={finishDateRef} />
         <select name="Status" defaultChecked={true} ref={statusRef}>
             <option value={0}>Created</option>
             <option value={1}>In progress</option>
             <option value={2}>Finished</option>
         </select>
-        <input type="button" value="Save Changes" onClick={saveChanges}/>
+        <input type="button" value="Save Changes" onClick={saveChanges} />
         <label htmlFor="image-upload" className={styles["image-upload-button"]}>Add image</label>
-        <input type="file" onChange={addImage} id={"image-upload"} hidden={true}/>
-        <input type="button" value="Delete" onClick={deleteOrder}/>
-        <GoBack/>
+        <input type="file" onChange={addImage} id={"image-upload"} hidden={true} />
+        <input type="button" value="Delete" onClick={deleteOrder} />
+        <GoBack />
         <div
             className={styles["images-container"]}>{responseData && responseData?.images?.map && responseData?.images?.map(value =>
             <div key={value}>
                 <img
-                    src={`${backendUrl}/image.php?id=${value}`} alt={value} className={styles["images"]}/>
+                    src={`${backendUrl}/image.php?id=${value}`} alt={value} className={styles["images"]} />
                 <button id={value} onClick={removeImage}>Remove</button>
             </div>
         )}

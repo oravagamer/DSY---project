@@ -14,50 +14,53 @@ const AddOrder = () => {
     const descriptionRef = useRef();
     const [images, setImages] = useState([]);
     const imagesRef = useRef();
-    const [user, setUser] = useState();
+    const formRef = useRef();
+    const userRef = useRef();
     const navigate = useNavigate();
 
     useEffect(() => {
     }, [images]);
 
     const onSubmit = () => {
-        const formData = new FormData();
-        if (nameRef.current?.value !== "") {
-            formData.append("name", nameRef.current?.value);
-        }
-        if (descriptionRef.current?.value !== "") {
-            formData.append("description", descriptionRef.current?.value);
-        }
-        if (finishDateRef.current?.value !== "") {
-            formData.append("finish_date", (new Date(finishDateRef.current?.value).getTime() / 1000).toString());
-        }
-        formData.append("created_for", user === undefined ? null : user.id);
-        for (const image of images) {
-            formData.append("images[]", image);
-        }
-        customFetch(`${backendUrl}/order.php`, {
-            method: "POST",
-            body: formData,
-            headers: {
-                "Authorization": `Bearer ${auth.accessToken}`
+        if (formRef.current.reportValidity()) {
+            const formData = new FormData();
+            if (nameRef.current?.value !== "") {
+                formData.append("name", nameRef.current?.value);
             }
-        })
-            .then(
-                async data => {
-                    if ((await data.response.status) === 200) {
-                        navigate(`/dash/home#${(await data.response.json()).order_id}`);
-                    }
+            if (descriptionRef.current?.value !== "") {
+                formData.append("description", descriptionRef.current?.value);
+            }
+            if (finishDateRef.current?.value !== "") {
+                formData.append("finish_date", (new Date(finishDateRef.current?.value).getTime() / 1000).toString());
+            }
+            formData.append("created_for", userRef.current === undefined ? null : userRef.current.id);
+            for (const image of images) {
+                formData.append("images[]", image);
+            }
+            customFetch(`${backendUrl}/order.php`, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "Authorization": `Bearer ${auth.accessToken}`
                 }
-            )
+            })
+                .then(
+                    async data => {
+                        if ((await data.response.status) === 200) {
+                            navigate(`/dash/home#${(await data.response.json()).order_id}`);
+                        }
+                    }
+                )
+        }
     }
 
     return (<Section className={styles["add-order"]}>
-            <form className={styles["form"]}>
-                <input type="text" className={styles["name"]} ref={nameRef} placeholder="Name" />
+            <form className={styles["form"]} ref={formRef}>
+                <input type="text" className={styles["name"]} ref={nameRef} required={true} placeholder="Name" />
                 <input type="datetime-local" className={styles["time"]} ref={finishDateRef}
-                       placeholder="Finish date" />
-                <textarea className={styles["desc"]} ref={descriptionRef} placeholder="Description" />
-                <UsersSelect selectUser={setUser} />
+                       placeholder="Finish date" required={true} />
+                <textarea className={styles["desc"]} ref={descriptionRef} placeholder="Description" required={true} />
+                <UsersSelect ref={userRef} />
                 <label htmlFor="file-upload" className={styles["file-label"]}>
                     <div className={styles["upload-button-container"]} onClick={event => {
                         imagesRef.current.value = null;

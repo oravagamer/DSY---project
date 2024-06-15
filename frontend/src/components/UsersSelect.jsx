@@ -1,12 +1,12 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import useAuthDataStore from "../store/authDataStore.js";
 import useFetch from "../hooks/useFetch.js";
 import {backendUrl} from "../../settings.js";
 import styles from "./UserSelect.module.scss";
 
-const UsersSelect = props => {
-    const [user, setUser] = useState();
+const UsersSelect = React.forwardRef(({defaultUser}, ref) => {
     const [selectMode, setSelectMode] = useState(false);
+    const [user, setUser] = useState();
     const auth = useAuthDataStore();
     const [{responseData, responseStatus, loading, error}, refetch] = useFetch(`${backendUrl}/users.php`, {
         method: "GET",
@@ -15,16 +15,23 @@ const UsersSelect = props => {
         }
     });
 
+    const setRef = data => {
+        ref.current = {...data, ...ref.current};
+        setUser(data);
+    }
+
     useEffect(() => {
-            fetch(`${backendUrl}/user.php?id=${props.defaultUser}`, {
+            fetch(`${backendUrl}/user.php?id=${defaultUser}`, {
                 method: "GET",
                 headers: {
                     "Authorization": `Bearer ${auth.accessToken}`
                 }
             })
-                .then(async res => setUser(await res.json()))
+                .then(async res => {
+                    setRef(await res.json());
+                })
         },
-        [props.defaultUser]
+        [defaultUser]
     );
     const selectUser = () => {
         refetch();
@@ -32,16 +39,17 @@ const UsersSelect = props => {
     };
 
     const closeSelectUser = (input_user) => {
-        setUser(input_user);
-        props.selectUser(input_user);
+        setRef(input_user);
+
         setSelectMode(false);
     }
 
     useEffect(() => {
 
-    }, [user, selectMode]);
+    }, [user]);
     return (<div>
-        <input className={styles["user-select-button"]} type="button" onClick={selectUser} value={`Select user Selected user: ${user?.username === undefined ? "None" : user?.username}`} />
+        <input className={styles["user-select-button"]} type="button" onClick={selectUser}
+               value={`Select user Selected user: ${ref.current?.username === undefined ? "None" : ref.current?.username}`} />
         {selectMode ?
             <div>
                 <div className={styles["user-select-miss-click"]} onClick={() => closeSelectUser()} />
@@ -59,7 +67,8 @@ const UsersSelect = props => {
                         {
                             responseData && responseData.map && responseData.map(
                                 value =>
-                                    <tr className={styles["user-select-table-button"]} key={value.id} onClick={() => closeSelectUser(value)}>
+                                    <tr className={styles["user-select-table-button"]} key={value.id}
+                                        onClick={() => closeSelectUser(value)}>
                                         <td>{value.username}</td>
                                         <td>{value.first_name}</td>
                                         <td>{value.last_name}</td>
@@ -73,6 +82,6 @@ const UsersSelect = props => {
             </div>
             : null}
     </div>);
-}
+});
 
 export default UsersSelect;

@@ -41,8 +41,8 @@ const Home = () => {
             {responseData?.map(value => (<tr className={styles["tr"]} key={value.id} id={value.id}>
                 <td className={styles[value.status === null ? "created" : value.status === 1 ? "in-progress" : "finished"] + " " + styles["status"]} />
                 <td>{value.name}</td>
-                <td>{new Date(value.created_date).toUTCString()}</td>
-                <td>{new Date(value.finish_date).toUTCString()}</td>
+                <td className={styles["time"]}>{new Date(value.created_date).toUTCString()}</td>
+                <td className={styles["time"]}>{new Date(value.finish_date).toUTCString()}</td>
                 <td>{(() => {
                     switch (value.status) {
                         case null:
