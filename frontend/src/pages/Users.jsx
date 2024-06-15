@@ -7,7 +7,7 @@ import styles from "./Users.module.scss";
 
 const Users = () => {
     const auth = useAuthDataStore();
-    const [{responseData}] = useFetch(`${backendUrl}/users.php`, {
+    const [{responseData}] = useFetch(`${backendUrl}/users`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${auth.accessToken}`

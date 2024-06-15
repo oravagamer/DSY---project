@@ -3,10 +3,12 @@
 
 namespace order;
 
+use oravix\db\Database;
 use oravix\HTTP\Consumes;
 use oravix\HTTP\ContentType;
 use oravix\HTTP\Controller;
 use oravix\HTTP\HttpMethod;
+use oravix\HTTP\HttpResponse;
 use oravix\HTTP\input\Json;
 use oravix\HTTP\input\multipart\FormData;
 use oravix\HTTP\input\PathVariable;
@@ -20,6 +22,11 @@ use PDO;
     Controller("/order")
 ]
 class Order {
+    private Database $database;
+
+    public function __construct() {
+        $this->database = new Database();
+    }
 
     #[
         Request(
@@ -32,6 +39,26 @@ class Order {
     function getOrder(
         #[PathVariable("id", true)] string $id
     ) {
+        $connection = $this->database->getConnection();
+        $statement = $connection->prepare("SELECT GROUP_CONCAT(images.id) AS img_id, shop_order.name AS name, shop_order.created_by AS cb, shop_order.created_for AS cf, shop_order.date_created AS dc, shop_order.finish_date AS fd, shop_order.status AS status, shop_order.description AS description FROM shop_order LEFT JOIN images ON images.order_id = shop_order.id WHERE shop_order.id = :id GROUP BY shop_order.id");
+        $statement->execute([
+            "id" => $id
+        ]);
+        $statement->setFetchMode(PDO::FETCH_NAMED);
+        $data = $statement->fetch();
+
+        return new HttpResponse([
+            "order" => [
+                "name" => $data["name"],
+                "created_by" => $data["cb"],
+                "created_for" => $data["cf"],
+                "created_date" => $data["dc"],
+                "finish_date" => $data["fd"],
+                "status" => $data["status"],
+                "description" => $data["description"]
+            ],
+            "images" => explode(",", $data["img_id"])
+        ]);
     }
 
     #[
@@ -47,6 +74,30 @@ class Order {
         #[FormData] OrderUploadData $uploadData,
         #[SecurityUserId] string    $userId
     ) {
+        $connection = $this->database->getConnection();
+        $statement = $connection->prepare('CALL create_order(:user_id, :finish_date, :name, :desc, :for)');
+        $statement->execute([
+            "user_id" => $userId,
+            "finish_date" => date("Y-m-d H:i:s", $uploadData->finishDate),
+            "name" => $uploadData->name,
+            "desc" => $uploadData->description,
+            "for" => $uploadData->createdFor
+        ]);
+        $statement->setFetchMode(PDO::FETCH_NAMED);
+        $data["order_id"] = $statement->fetch()["id"];
+        $statement = null;
+
+        if (isset($uploadData->images)) {
+            $uploadFiles = [];
+            foreach ($uploadData->images as $image) {
+                $dotPos = strpos($image->name, ".") + 1;
+                array_push($uploadFiles, file_get_contents($image->tpmName), substr($image->name, $dotPos, strlen($image->name) - $dotPos), $data["order_id"]);
+            }
+            $statement = $connection->prepare('INSERT INTO images(data, type, order_id) VALUES (?, ?, ?)' . str_repeat(", (?, ?, ?)", sizeof($uploadData->images) - 1));
+            $statement->execute($uploadFiles);
+        }
+
+        return new HttpResponse($data);
     }
 
     #[

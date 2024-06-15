@@ -1,5 +1,5 @@
 import {create} from "zustand";
-import {backendUrl} from "../../settings.js";
+import {backendUrl, frontendUrl} from "../../settings.js";
 import {createJSONStorage, persist} from "zustand/middleware";
 
 const useAuthDataStore = create(
@@ -11,7 +11,7 @@ const useAuthDataStore = create(
                 return get().accessToken !== "";
             },
             login: async (username, password) => {
-                const res = await fetch(`${backendUrl}/login.php`, {
+                const res = await fetch(`${backendUrl}/security/login`, {
                     method: "POST",
                     body: JSON.stringify({username: username, password: password}),
                     headers: {
@@ -20,10 +20,11 @@ const useAuthDataStore = create(
                 });
                 const resData = await res.json();
                 set({accessToken: await resData.access, refreshToken: await resData.refresh});
+                await window.location.replace(`${frontendUrl}/dash/home`);
                 return res;
             },
             refreshJWT: async () => {
-                const res = await fetch(`${backendUrl}/refresh_token.php`, {
+                const res = await fetch(`${backendUrl}/security/refresh-token`, {
                     method: "POST",
                     body: JSON.stringify({access: get().accessToken, refresh: get().refreshToken}),
                     headers: {
@@ -37,7 +38,7 @@ const useAuthDataStore = create(
                 set({accessToken: await resData.access, refreshToken: await resData.refresh});
             },
             logout: async () => {
-                const res = await fetch(`${backendUrl}/logout.php`, {
+                const res = await fetch(`${backendUrl}/security/logout`, {
                     method: "POST",
                     body: JSON.stringify({access: get().accessToken, refresh: get().refreshToken}),
                     headers: {
@@ -49,7 +50,7 @@ const useAuthDataStore = create(
             isNotExpired: () => {
                 try {
                     const accPayload = get().getJSONData().accessToken.payload;
-                    return Math.floor(Date.now() / 1000) < accPayload.exp && get().refreshTokenIsNotExpired();
+                    return Math.floor(Date.now() / 1000) < accPayload.iat + accPayload.exp && get().refreshTokenIsNotExpired();
                 } catch (error) {
                     return false;
                 }
@@ -57,7 +58,7 @@ const useAuthDataStore = create(
             refreshTokenIsNotExpired: () => {
                 try {
                     const refPayload = get().getJSONData().refreshToken.payload;
-                    return Math.floor(Date.now() / 1000) < refPayload.exp;
+                    return Math.floor(Date.now() / 1000) < refPayload.iat + refPayload.exp;
                 } catch (error) {
                     return false;
                 }

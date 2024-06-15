@@ -7,29 +7,18 @@ const Login = () => {
     const username = useRef("");
     const password = useRef("");
     const auth = useAuthDataStore();
-    const [error, setError] = useState({
-        status: null,
-        text: null
-    });
+
     useEffect(() => {
-    }, [error]);
+    }, []);
 
     const login = async () => {
-        auth
-            .login(username.current.value, password.current.value)
-            .then(async res => {
-                setError({
-                    status: res.status,
-                    text: res.statusText
-                });
-                if (res.status < 300) {
-                    window.location.replace(`${frontendUrl}/dash/home`);
-                }
-            });
+        auth.login(username.current.value, password.current.value);
     }
 
     return (<div className={styles["login-background"]}>
-        <header className={styles["login-header"]}><div><img src="/logo.svg" alt="Website logo" /></div></header>
+        <header className={styles["login-header"]}>
+            <div><img src="/logo.svg" alt="Website logo" /></div>
+        </header>
         <section className={styles["login-section"]}>
             <form className={styles["login-form"]}>
                 <div className={styles["login-label"]}>Login</div>

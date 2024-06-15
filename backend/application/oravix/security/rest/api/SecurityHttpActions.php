@@ -54,7 +54,6 @@ class SecurityHttpActions {
     ): HttpResponse {
         $tokens = self::$security->login($data);
         return new HttpResponse(
-            HttpStates::OK,
             [
                 "access" => $tokens["access"]->getJWTString(),
                 "refresh" => $tokens["refresh"]->getJWTString()
@@ -74,7 +73,6 @@ class SecurityHttpActions {
     ): HttpResponse {
         $tokens = self::$security->refreshToken($data);
         return new HttpResponse(
-            HttpStates::OK,
             [
                 "access" => $tokens["access"]->getJWTString(),
                 "refresh" => $tokens["refresh"]->getJWTString()
@@ -89,7 +87,7 @@ class SecurityHttpActions {
         Consumes(ContentType::APPLICATION_JSON)
     ]
     function logout(
-        #[Json] TokensData         $data
+        #[Json] TokensData $data
     ): void {
         self::$security->logout($data);
     }

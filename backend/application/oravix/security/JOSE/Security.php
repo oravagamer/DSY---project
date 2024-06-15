@@ -116,7 +116,7 @@ class Security {
 
     public function secure(): string {
         try {
-            $authorization = isset(apache_request_headers()["Authorization"]) ? apache_request_headers()["Authorization"] : isset(apache_request_headers()["authorization"]);
+            $authorization = isset(apache_request_headers()["Authorization"]) ? apache_request_headers()["Authorization"] : apache_request_headers()["authorization"];
             if (!isset($authorization)) {
                 statusExit(HttpStates::FORBIDDEN);
             } else {

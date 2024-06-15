@@ -37,7 +37,7 @@ const AddOrder = () => {
             for (const image of images) {
                 formData.append("images[]", image);
             }
-            customFetch(`${backendUrl}/order.php`, {
+            customFetch(`${backendUrl}/order`, {
                 method: "POST",
                 body: formData,
                 headers: {

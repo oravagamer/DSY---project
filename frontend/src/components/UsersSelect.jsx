@@ -8,7 +8,7 @@ const UsersSelect = React.forwardRef(({defaultUser}, ref) => {
     const [selectMode, setSelectMode] = useState(false);
     const [user, setUser] = useState();
     const auth = useAuthDataStore();
-    const [{responseData, responseStatus, loading, error}, refetch] = useFetch(`${backendUrl}/users.php`, {
+    const [{responseData, responseStatus, loading, error}, refetch] = useFetch(`${backendUrl}/users`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${auth.accessToken}`
@@ -21,15 +21,17 @@ const UsersSelect = React.forwardRef(({defaultUser}, ref) => {
     }
 
     useEffect(() => {
-            fetch(`${backendUrl}/user.php?id=${defaultUser}`, {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${auth.accessToken}`
-                }
-            })
-                .then(async res => {
-                    setRef(await res.json());
+            if (defaultUser !== undefined) {
+                fetch(`${backendUrl}/user?id=${defaultUser}`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${auth.accessToken}`
+                    }
                 })
+                    .then(async res => {
+                        setRef(await res.json());
+                    })
+            }
         },
         [defaultUser]
     );

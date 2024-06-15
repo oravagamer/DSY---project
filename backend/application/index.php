@@ -25,6 +25,7 @@ require_once "./oravix/HTTP/input/PathVariable.php";
 require_once "./oravix/HTTP/Consumes.php";
 require_once "./oravix/HTTP/ContentType.php";
 require_once "./oravix/HTTP/Controller.php";
+require_once "./oravix/HTTP/HttpHeader.php";
 require_once "./oravix/HTTP/HttpMethod.php";
 require_once "./oravix/HTTP/HttpResponse.php";
 require_once "./oravix/HTTP/HttpStates.php";

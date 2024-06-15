@@ -8,7 +8,7 @@ import {useEffect} from "react";
 
 const Home = () => {
     const auth = useAuthDataStore();
-    const [{responseData, responseStatus, loading, error}] = useFetch(`${backendUrl}/orders.php`, {
+    const [{responseData, responseStatus, loading, error}] = useFetch(`${backendUrl}/orders`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${auth.accessToken}`
@@ -38,7 +38,7 @@ const Home = () => {
             </tr>
             </thead>
             <tbody>
-            {responseData?.map(value => (<tr className={styles["tr"]} key={value.id} id={value.id}>
+            {responseData?.map && responseData?.map(value => (<tr className={styles["tr"]} key={value.id} id={value.id}>
                 <td className={styles[value.status === null ? "created" : value.status === 1 ? "in-progress" : "finished"] + " " + styles["status"]} />
                 <td>{value.name}</td>
                 <td className={styles["time"]}>{new Date(value.created_date).toUTCString()}</td>

@@ -9,10 +9,10 @@ use PDOException;
 class Database {
     private ?PDO $connection = null;
     private static string $hostname;
-        private static string $dbName;
-        private static string $username;
-        private static string $password;
-        private static string $port;
+    private static string $dbName;
+    private static string $username;
+    private static string $password;
+    private static string $port;
 
     public function __construct(
         ?string $hostname = null,
@@ -35,6 +35,7 @@ class Database {
                 $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $this->connection->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
                 $this->connection->setAttribute(PDO::ATTR_STRINGIFY_FETCHES, false);
+                $this->connection->setAttribute(PDO::ATTR_CASE, PDO::CASE_NATURAL);
             }
 
             return $this->connection;

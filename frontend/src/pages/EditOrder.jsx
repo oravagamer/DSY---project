@@ -17,7 +17,7 @@ const EditOrder = () => {
     const finishDateRef = useRef();
     const statusRef = useRef();
     const userRef = useRef();
-    const [{responseData, loading}] = useFetch(`${backendUrl}/order.php?id=${id}`, {
+    const [{responseData, loading}] = useFetch(`${backendUrl}/order?id=${id}`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${auth.accessToken}`
@@ -28,7 +28,7 @@ const EditOrder = () => {
         event.stopPropagation();
         event.preventDefault();
         const file = event.target.files[0];
-        customFetch(`${backendUrl}/image.php?id=${id}&type=${file.name.substring(file.name.lastIndexOf(".") + 1, file.name.size)}`, {
+        customFetch(`${backendUrl}/image?id=${id}&type=${file.name.substring(file.name.lastIndexOf(".") + 1, file.name.size)}`, {
             method: "POST",
             body: file,
             headers: {
@@ -42,7 +42,7 @@ const EditOrder = () => {
     }
 
     const removeImage = event => {
-        customFetch(`${backendUrl}/image.php?id=${event.target.id}`, {
+        customFetch(`${backendUrl}/image?id=${event.target.id}`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${auth.accessToken}`
@@ -54,7 +54,7 @@ const EditOrder = () => {
     }
 
     const saveChanges = () => {
-        customFetch(`${backendUrl}/order.php?id=${id}`, {
+        customFetch(`${backendUrl}/order?id=${id}`, {
             method: "PUT",
             headers: {
                 "Authorization": `Bearer ${auth.accessToken}`,
@@ -71,7 +71,7 @@ const EditOrder = () => {
     }
 
     const deleteOrder = () => {
-        customFetch(`${backendUrl}/order.php?id=${id}`, {
+        customFetch(`${backendUrl}/order?id=${id}`, {
             method: "DELETE",
             headers: {
                 "Authorization": `Bearer ${auth.accessToken}`
@@ -110,7 +110,7 @@ const EditOrder = () => {
             className={styles["images-container"]}>{responseData && responseData?.images?.map && responseData?.images?.map(value =>
             <div key={value}>
                 <img
-                    src={`${backendUrl}/image.php?id=${value}`} alt={value} className={styles["images"]} />
+                    src={`${backendUrl}/image?id=${value}`} alt={value} className={styles["images"]} />
                 <button id={value} onClick={removeImage}>Remove</button>
             </div>
         )}
