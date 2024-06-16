@@ -33,7 +33,9 @@ const AddOrder = () => {
             if (finishDateRef.current?.value !== "") {
                 formData.append("finish_date", (new Date(finishDateRef.current?.value).getTime() / 1000).toString());
             }
-            formData.append("created_for", userRef.current === undefined ? null : userRef.current.id);
+            if (userRef.current?.user !== undefined) {
+                formData.append("created_for", userRef.current?.user.id);
+            }
             for (const image of images) {
                 formData.append("images[]", image);
             }

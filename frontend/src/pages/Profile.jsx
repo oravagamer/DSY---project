@@ -9,7 +9,7 @@ import styles from "./Profile.module.scss";
 const Profile = () => {
     const {id} = useParams();
     const auth = useAuthDataStore();
-    const [{responseData}] = useFetch(`${backendUrl}/user.php?id=${id}`, {
+    const [{responseData}] = useFetch(`${backendUrl}/user?id=${id}`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${auth.accessToken}`

@@ -36,9 +36,9 @@ class SecurityHttpActions {
         Produces(ContentType::APPLICATION_JSON)
     ]
     function register(
-        #[Json] RegisterData $data
+        #[Json] RegisterData $registerData
     ): void {
-        self::$security->register($data);
+        self::$security->register($registerData);
     }
 
     #[
@@ -50,9 +50,9 @@ class SecurityHttpActions {
         Produces(ContentType::APPLICATION_JSON)
     ]
     function login(
-        #[Json] LoginData $data
+        #[Json] LoginData $loginData
     ): HttpResponse {
-        $tokens = self::$security->login($data);
+        $tokens = self::$security->login($loginData);
         return new HttpResponse(
             [
                 "access" => $tokens["access"]->getJWTString(),
@@ -69,9 +69,9 @@ class SecurityHttpActions {
         Produces(ContentType::APPLICATION_JSON)
     ]
     function refreshToken(
-        #[Json] TokensData $data
+        #[Json] TokensData $tokensData
     ): HttpResponse {
-        $tokens = self::$security->refreshToken($data);
+        $tokens = self::$security->refreshToken($tokensData);
         return new HttpResponse(
             [
                 "access" => $tokens["access"]->getJWTString(),
@@ -87,9 +87,9 @@ class SecurityHttpActions {
         Consumes(ContentType::APPLICATION_JSON)
     ]
     function logout(
-        #[Json] TokensData $data
+        #[Json] TokensData $tokensData
     ): void {
-        self::$security->logout($data);
+        self::$security->logout($tokensData);
     }
 
 }

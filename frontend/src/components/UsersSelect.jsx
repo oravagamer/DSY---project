@@ -16,7 +16,10 @@ const UsersSelect = React.forwardRef(({defaultUser}, ref) => {
     });
 
     const setRef = data => {
-        ref.current = {...data, ...ref.current};
+        ref.current = {
+            user: data,
+            ...Object.fromEntries(Object.entries(ref.current || {}).filter(e => e[0] !== "user"))
+        };
         setUser(data);
     }
 
@@ -42,7 +45,6 @@ const UsersSelect = React.forwardRef(({defaultUser}, ref) => {
 
     const closeSelectUser = (input_user) => {
         setRef(input_user);
-
         setSelectMode(false);
     }
 
@@ -51,7 +53,7 @@ const UsersSelect = React.forwardRef(({defaultUser}, ref) => {
     }, [user]);
     return (<div>
         <input className={styles["user-select-button"]} type="button" onClick={selectUser}
-               value={`Select user Selected user: ${ref.current?.username === undefined ? "None" : ref.current?.username}`} />
+               value={`Select user Selected user: ${ref.current?.user?.username === undefined ? "None" : ref.current?.user.username}`} />
         {selectMode ?
             <div>
                 <div className={styles["user-select-miss-click"]} onClick={() => closeSelectUser()} />

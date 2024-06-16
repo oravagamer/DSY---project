@@ -11,7 +11,7 @@ class HttpResponse {
      * @param HttpStates|null $status
      * @param HttpHeader[]|null $headers
      */
-    public function __construct(array|string|null $response, ?HttpStates $status = HttpStates::OK, ?array $headers = null) {
+    public function __construct(array|string|null $response = null, ?HttpStates $status = HttpStates::OK, ?array $headers = null) {
         $this->status = $status;
         $this->response = $response;
         if (!is_null($headers)) {

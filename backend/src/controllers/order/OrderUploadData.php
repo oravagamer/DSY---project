@@ -19,7 +19,7 @@ class OrderUploadData {
     /**
      * @var File[]|null
      */
-    #[InputData("images", true, ContentType::ALL_IMAGES)]
+    #[InputData("images", false, ContentType::ALL_IMAGES)]
     public array|null $images;
 
 }

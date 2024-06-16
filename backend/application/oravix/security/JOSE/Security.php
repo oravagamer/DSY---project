@@ -50,7 +50,7 @@ class Security {
                 "email" => $registerData->email
             ]);
         } catch (PDOException $e) {
-            statusExit(HttpStates::INTERNAL_SERVER_ERROR, $e->getMessage());
+            statusExit($e->getCode() == 23000 ? HttpStates::CONFLICT : HttpStates::INTERNAL_SERVER_ERROR, $e->getMessage());
         }
     }
 

@@ -1,5 +1,5 @@
 import Section from "../components/Section.jsx";
-import {Link, Navigate, useLoaderData, useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import useAuthDataStore from "../store/authDataStore.js";
 import useFetch from "../hooks/useFetch.js";
 import {backendUrl} from "../../settings.js";
@@ -17,7 +17,8 @@ const EditOrder = () => {
     const finishDateRef = useRef();
     const statusRef = useRef();
     const userRef = useRef();
-    const [{responseData, loading}] = useFetch(`${backendUrl}/order?id=${id}`, {
+    const navigate = useNavigate();
+    const [{responseData, loading}, refetch] = useFetch(`${backendUrl}/order?id=${id}`, {
         method: "GET",
         headers: {
             "Authorization": `Bearer ${auth.accessToken}`
@@ -64,7 +65,7 @@ const EditOrder = () => {
                 name: nameRef.current.value,
                 description: descriptionRef.current.value,
                 finish_date: new Date(finishDateRef.current.value).getTime() / 1000,
-                created_for: userRef.current === undefined ? "null" : userRef.current.id,
+                created_for: userRef.current?.user === undefined ? null : userRef.current?.user.id,
                 status: statusRef.current.value === "0" ? null : parseInt(statusRef.current.value)
             })
         })
@@ -78,8 +79,8 @@ const EditOrder = () => {
             }
         })
             .then(async res => {
-                if (await res.status < 400) {
-                    await location.replace("/dash/home")
+                if (await res.response.status < 400) {
+                    await navigate("/dash/home");
                 }
             });
     }

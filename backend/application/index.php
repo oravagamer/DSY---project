@@ -1,6 +1,5 @@
 <?php
 
-use oravix\db\Database;
 use oravix\HTTP\ContentType;
 use oravix\HTTP\Controller;
 use oravix\HTTP\HttpStates;
@@ -43,6 +42,9 @@ require_once "./oravix/security/JOSE/Security.php";
 require_once "./oravix/security/rest/api/data/LoginData.php";
 require_once "./oravix/security/rest/api/data/TokensData.php";
 require_once "./oravix/security/rest/api/data/RegisterData.php";
+require_once "./oravix/security/rest/api/user/User.php";
+require_once "./oravix/security/rest/api/user/Users.php";
+require_once "./oravix/security/rest/api/user/UserUpdateData.php";
 require_once "./oravix/security/rest/api/SecurityHttpActions.php";
 require_once "./oravix/security/Secure.php";
 require_once "./oravix/security/SecurityUserId.php";
@@ -153,7 +155,7 @@ if (isset($paths[$getPathDataKey])) {
                                         $_FILES[$propertyName]["size"][$i]
                                     );
                                 }
-                            } else {
+                            } elseif (isset($_FILES[$propertyName]["name"])) {
                                 $files[] = new File(
                                     $_FILES[$propertyName]["name"],
                                     $_FILES[$propertyName]["full_path"],
@@ -162,6 +164,8 @@ if (isset($paths[$getPathDataKey])) {
                                     $_FILES[$propertyName]["error"],
                                     $_FILES[$propertyName]["size"]
                                 );
+                            } else {
+                                $files = null;
                             }
 
                             $property->setValue($formData, $files);

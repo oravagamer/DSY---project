@@ -42,13 +42,13 @@ CREATE TABLE shop_order
 (
     id           VARCHAR(36)  NOT NULL PRIMARY KEY DEFAULT UUID(),
     name         VARCHAR(256) NOT NULL UNIQUE,
-    created_by   VARCHAR(36)  NOT NULL,
+    created_by   VARCHAR(36),
     created_for  VARCHAR(36),
     date_created TIMESTAMP    NOT NULL             DEFAULT CURRENT_TIMESTAMP(),
     finish_date  TIMESTAMP    NOT NULL             DEFAULT CURRENT_TIMESTAMP(),
     status       BOOLEAN,
     description  VARCHAR(1024),
-    FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE RESTRICT,
+    FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE SET NULL,
     FOREIGN KEY (created_for) REFERENCES users (id) ON DELETE SET NULL
 );
 

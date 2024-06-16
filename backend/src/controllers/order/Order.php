@@ -9,6 +9,7 @@ use oravix\HTTP\ContentType;
 use oravix\HTTP\Controller;
 use oravix\HTTP\HttpMethod;
 use oravix\HTTP\HttpResponse;
+use oravix\HTTP\HttpStates;
 use oravix\HTTP\input\Json;
 use oravix\HTTP\input\multipart\FormData;
 use oravix\HTTP\input\PathVariable;
@@ -17,6 +18,7 @@ use oravix\HTTP\Request;
 use oravix\security\Secure;
 use oravix\security\SecurityUserId;
 use PDO;
+use PDOException;
 
 #[
     Controller("/order")
@@ -37,12 +39,12 @@ class Order {
         Secure
     ]
     function getOrder(
-        #[PathVariable("id", true)] string $id
+        #[PathVariable("id", true)] string $orderId
     ) {
         $connection = $this->database->getConnection();
-        $statement = $connection->prepare("SELECT GROUP_CONCAT(images.id) AS img_id, shop_order.name AS name, shop_order.created_by AS cb, shop_order.created_for AS cf, shop_order.date_created AS dc, shop_order.finish_date AS fd, shop_order.status AS status, shop_order.description AS description FROM shop_order LEFT JOIN images ON images.order_id = shop_order.id WHERE shop_order.id = :id GROUP BY shop_order.id");
+        $statement = $connection->prepare("SELECT GROUP_CONCAT(images.id) AS img_id, shop_order.name AS name, shop_order.created_by AS cb, shop_order.created_for AS cf, shop_order.date_created AS dc, shop_order.finish_date AS fd, shop_order.status AS status, shop_order.description AS description FROM shop_order LEFT JOIN images ON images.order_id = shop_order.id WHERE shop_order.id = :order_id GROUP BY shop_order.id");
         $statement->execute([
-            "id" => $id
+            "order_id" => $orderId
         ]);
         $statement->setFetchMode(PDO::FETCH_NAMED);
         $data = $statement->fetch();
@@ -76,13 +78,17 @@ class Order {
     ) {
         $connection = $this->database->getConnection();
         $statement = $connection->prepare('CALL create_order(:user_id, :finish_date, :name, :desc, :for)');
-        $statement->execute([
-            "user_id" => $userId,
-            "finish_date" => date("Y-m-d H:i:s", $uploadData->finishDate),
-            "name" => $uploadData->name,
-            "desc" => $uploadData->description,
-            "for" => $uploadData->createdFor
-        ]);
+        try {
+            $statement->execute([
+                "user_id" => $userId,
+                "finish_date" => date("Y-m-d H:i:s", $uploadData->finishDate),
+                "name" => $uploadData->name,
+                "desc" => $uploadData->description,
+                "for" => $uploadData->createdFor
+            ]);
+        } catch (PDOException $exception) {
+            return new HttpResponse(status: $exception->getCode() == 23000 ? HttpStates::CONFLICT : HttpStates::INTERNAL_SERVER_ERROR);
+        }
         $statement->setFetchMode(PDO::FETCH_NAMED);
         $data["order_id"] = $statement->fetch()["id"];
         $statement = null;
@@ -109,10 +115,23 @@ class Order {
         Secure
     ]
     function updateOrder(
-        #[PathVariable("id", true)] string $id,
-        #[Json] OrderPutJsonData           $editData,
-        #[SecurityUserId] string           $userId
+        #[PathVariable("id", true)] string $orderId,
+        #[Json] OrderPutJsonData           $editData
     ) {
+        $connection = $this->database->getConnection();
+        $statement = $connection->prepare('UPDATE shop_order SET  name = :name,  description = :desc, finish_date = :finish_date, created_for = :cf, status = :status WHERE id = :order_id');
+        try {
+            $statement->execute([
+                "name" => $editData->name,
+                "desc" => $editData->description,
+                "finish_date" => date("Y-m-d H:i:s", $editData->finishDate),
+                "cf" => $editData->createdFor,
+                "status" => $editData->status,
+                "order_id" => $orderId
+            ]);
+        } catch (PDOException $exception) {
+            return new HttpResponse(status: $exception->getCode() == 23000 ? HttpStates::CONFLICT : HttpStates::INTERNAL_SERVER_ERROR);
+        }
     }
 
     #[
@@ -123,8 +142,15 @@ class Order {
         Secure
     ]
     function removeOrder(
-        #[PathVariable("id", true)] string $id,
-        #[SecurityUserId] string           $userId
+        #[PathVariable("id", true)] string $orderId
     ) {
+        $connection = $this->database->getConnection();
+        $statement = $connection->prepare('DELETE FROM shop_order WHERE id = :order_id');
+        $statement->execute([
+            "order_id" => $orderId
+        ]);
+        if ($statement->rowCount() === 0) {
+            return new HttpResponse(status: HttpStates::NOT_FOUND);
+        }
     }
 }

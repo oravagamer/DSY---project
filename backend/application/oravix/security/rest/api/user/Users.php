@@ -1,13 +1,12 @@
 <?php
 
-namespace user;
+namespace oravix\security\rest\api\user;
 
 use oravix\db\Database;
 use oravix\HTTP\ContentType;
 use oravix\HTTP\Controller;
 use oravix\HTTP\HttpMethod;
 use oravix\HTTP\HttpResponse;
-use oravix\HTTP\HttpStates;
 use oravix\HTTP\Produces;
 use oravix\HTTP\Request;
 use oravix\security\Secure;
