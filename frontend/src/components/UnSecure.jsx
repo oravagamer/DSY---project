@@ -4,7 +4,7 @@ import {Navigate} from "react-router-dom";
 const UnSecure = (props) => {
     const auth = useAuthDataStore();
     if (auth.isNotExpired()) {
-        return (<Navigate to="/dash"/>)
+        return (<Navigate to="/dash/home"/>)
     } else {
         return (<>{props.children}</>)
     }

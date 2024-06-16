@@ -1,7 +1,48 @@
+@use "globalSettings";
+
 body {
-    margin: 0;
+  margin: 0;
+}
+
+.Toastify {
+  height: 0;
 }
 
 input {
-    all: unset;
+  //all: unset;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: black;
+  font: {
+    size: 150%;
+    family: globalSettings.$OCRAEXT-font-family;
+  };
+
+  * {
+    height: globalSettings.$table-height;
+    text-align: left;
+  }
+
+  thead {
+    position: sticky;
+    top: 0;
+    background-color: #515151;
+  }
+
+  tbody {
+    height: 100%;
+
+    tr {
+      word-break: break-all;
+
+      &:nth-child(2n) {
+        background-color: #EAEAEA;
+      }
+    }
+
+    background-color: #BFBFBF;
+  }
 }

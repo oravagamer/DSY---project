@@ -1,0 +1,41 @@
+@use "../globalSettings";
+
+.home {
+}
+
+.tr {
+  scroll-margin-top: globalSettings.$table-height;
+
+  td a {
+    text-decoration: none;
+    color: black;
+    height: inherit;
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
+
+}
+
+.time {
+  word-break: keep-all;
+  white-space: break-spaces;
+
+}
+
+.status {
+  width: 0.5vw !important;
+}
+
+.created {
+  background-color: orange;
+}
+
+.in-progress {
+  background-color: blue;
+}
+
+.finished {
+  background-color: limegreen;
+}

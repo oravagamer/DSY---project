@@ -1,0 +1,154 @@
+@use "../globalSettings";
+
+$row-gap: 5vh;
+$column-gap: 5vw;
+$input-padding-w: 1vw;
+$input-padding-h: 1vh;
+
+.add-order {
+  display: flex;
+
+  .form {
+    padding: {
+      top: $row-gap;
+      bottom: $row-gap;
+      left: $column-gap;
+      right: $column-gap;
+    }
+    display: grid;
+    height: calc(100% - $row-gap * 2);
+    width: calc(100% - $column-gap * 2);
+    grid-template-rows: auto;
+    grid-template-columns: auto;
+    column-gap: $column-gap;
+    row-gap: $row-gap;
+    grid-template-areas:
+            "name for"
+            "time file"
+            "desc file"
+            "desc file"
+            "desc file"
+            "desc file"
+            "desc file"
+            "desc file"
+            "desc file"
+            "desc submit";
+
+    input, textarea {
+      outline: unset;
+      background-color: #dddbdb;
+      display: block;
+      color: black;
+      border: unset;
+      height: 100%;
+      font-weight: 700;
+
+      &::placeholder {
+        color: black;
+        font-weight: 700;
+      }
+    }
+
+    .name, .desc, .time {
+      border-radius: 1vmax;
+    }
+
+    .name {
+      grid-area: name;
+      padding: 0 $input-padding-w;
+    }
+
+    .desc {
+      resize: none;
+      height: calc(100% - $input-padding-h * 2);
+      grid-area: desc;
+      padding: $input-padding-h $input-padding-w;
+    }
+
+    .time {
+      grid-area: time;
+      padding: $input-padding-h $input-padding-w;
+      height: calc(100% - $input-padding-h * 2);
+
+      &::-webkit-calendar-picker-indicator {
+        cursor: pointer;
+        padding-left: 30%;
+      }
+    }
+
+    .for {
+      grid-area: for;
+    }
+
+    .file {
+      display: none !important;
+    }
+
+    .file-label {
+      grid-area: file;
+      overflow-y: auto;
+      scrollbar-width: none;
+
+      .upload-button-container {
+        width: auto;
+        height: 33%;
+        position: sticky;
+        top: 0;
+        background-color: #dddbdb;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: black;
+        flex-direction: column;
+        margin-bottom: 10%;
+
+        &:hover {
+          cursor: pointer;
+        }
+
+        .upload-button {
+          width: auto;
+          height: 90%;
+
+        }
+      }
+
+      ul {
+        margin: 0;
+        padding: 0;
+
+        li {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          .remove-image {
+            &:hover {
+              cursor: pointer;
+            }
+
+          }
+
+          div {
+            text-align: center;
+            word-break: break-all;
+
+          }
+
+          &::marker {
+            all: unset;
+          }
+
+          .upload-image {
+            width: 8vw;
+          }
+        }
+      }
+
+    }
+
+    .button {
+      grid-area: submit;
+    }
+  }
+}

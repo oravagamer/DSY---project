@@ -1,0 +1,85 @@
+.edit-profile {
+  border: 5px solid rgb(160, 160, 160);
+  border-radius: 10px;
+  .input-go_back{
+    background-color: rgb(200, 200, 200);
+    border: 2px solid rgb(160, 160, 160);
+    border-radius: 20px;
+    padding: 5px;
+    grid-area: cont8;
+  }
+  .input-delete{
+    background-color: rgb(200, 200, 200);
+    border: 2px solid rgb(130, 130, 130);
+    border-radius: 20px;
+    padding: 5px;
+    grid-area: cont7;
+
+  }
+  .input-save_changes{
+    background-color: rgb(200, 200, 200);
+    border: 2px solid rgb(160, 160, 160);
+    border-radius: 20px;
+    padding: 5px;
+    grid-area: cont6;
+  }
+  .input-change_password{
+    background-color: rgb(200, 200, 200);
+    border: 2px solid rgb(160, 160, 160);
+    border-radius: 20px;
+    padding: 5px;
+    grid-area: cont5;
+  }
+  .input-email{
+    background-color: rgb(200, 200, 200);
+    border: 2px solid rgb(160, 160, 160);
+    border-radius: 20px;
+    padding: 5px;
+    grid-area: cont4;
+  }
+  .input-last_name{
+    background-color: rgb(200, 200, 200);
+    border: 2px solid rgb(160, 160, 160);
+    border-radius: 20px;
+    padding: 5px;
+    grid-area: cont3;
+  }
+  .input-first_name{
+    background-color: rgb(200, 200, 200);
+    border: 2px solid rgb(160, 160, 160);
+    border-radius: 20px;
+    padding: 5px;
+    grid-area: cont2;
+  }
+  .input-user_name{
+    background-color: rgb(200, 200, 200);
+    border: 2px solid rgb(160, 160, 160);
+    border-radius: 20px;
+    padding: 5px;
+    grid-area: cont1;
+  }
+
+  input{
+    border: 5px solid rgb(160, 160, 160);
+    border-radius: 10px;
+    padding: 5px;
+  }
+  grid-template-rows: auto ;
+  display: grid;
+  grid-template-columns: auto;
+  row-gap: 2vh;
+  padding: 5px;
+  grid-column-gap: 2vh;
+  grid-template-areas:
+          "foto foto cont1 cont1"
+          "foto foto cont2 cont2"
+          "foto foto cont3 cont3"
+          "foto foto cont4 cont4"
+          "cont5 cont6 cont7 cont8"
+;
+}
+.user-profil-picture-image---{
+  grid-area: foto;
+  max-width: 75%;
+  place-self: center;
+}

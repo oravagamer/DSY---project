@@ -1,5 +1,5 @@
 import {create} from "zustand";
-import {backendUrl} from "../../settings.js";
+import {backendUrl, frontendUrl} from "../../settings.js";
 import {createJSONStorage, persist} from "zustand/middleware";
 
 const useAuthDataStore = create(
@@ -7,34 +7,50 @@ const useAuthDataStore = create(
         (set, get) => ({
             accessToken: "",
             refreshToken: "",
+            isLoggedIn: () => {
+                return get().accessToken !== "";
+            },
             login: async (username, password) => {
-                const res = await fetch(`${backendUrl}/login.php`, {
+                const res = await fetch(`${backendUrl}/security/login`, {
                     method: "POST",
-                    body: JSON.stringify({username: username, password: password})
+                    body: JSON.stringify({username: username, password: password}),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
                 });
                 const resData = await res.json();
                 set({accessToken: await resData.access, refreshToken: await resData.refresh});
+                await window.location.replace(`${frontendUrl}/dash/home`);
                 return res;
             },
             refreshJWT: async () => {
-                const res = await fetch(`${backendUrl}/refresh_token.php`, {
+                const res = await fetch(`${backendUrl}/security/refresh-token`, {
                     method: "POST",
-                    body: JSON.stringify({access: get().accessToken, refresh: get().refreshToken})
-                });
+                    body: JSON.stringify({access: get().accessToken, refresh: get().refreshToken}),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                })
+                if (await res.status === 403) {
+                    get().logout();
+                }
                 const resData = await res.json();
                 set({accessToken: await resData.access, refreshToken: await resData.refresh});
             },
             logout: async () => {
-                const res = await fetch(`${backendUrl}/logout.php`, {
+                const res = await fetch(`${backendUrl}/security/logout`, {
                     method: "POST",
-                    body: JSON.stringify({access: get().accessToken, refresh: get().refreshToken})
+                    body: JSON.stringify({access: get().accessToken, refresh: get().refreshToken}),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
                 });
                 set({accessToken: "", refreshToken: ""});
             },
             isNotExpired: () => {
                 try {
                     const accPayload = get().getJSONData().accessToken.payload;
-                    return Math.floor(Date.now() / 1000) < accPayload.exp && get().refreshTokenIsNotExpired();
+                    return Math.floor(Date.now() / 1000) < accPayload.iat + accPayload.exp && get().refreshTokenIsNotExpired();
                 } catch (error) {
                     return false;
                 }
@@ -42,7 +58,7 @@ const useAuthDataStore = create(
             refreshTokenIsNotExpired: () => {
                 try {
                     const refPayload = get().getJSONData().refreshToken.payload;
-                    return Math.floor(Date.now() / 1000) < refPayload.exp;
+                    return Math.floor(Date.now() / 1000) < refPayload.iat + refPayload.exp;
                 } catch (error) {
                     return false;
                 }

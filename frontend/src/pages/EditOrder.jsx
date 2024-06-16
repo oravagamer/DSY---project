@@ -1,5 +1,122 @@
+import Section from "../components/Section.jsx";
+import {useNavigate, useParams} from "react-router-dom";
+import useAuthDataStore from "../store/authDataStore.js";
+import useFetch from "../hooks/useFetch.js";
+import {backendUrl} from "../../settings.js";
+import {useEffect, useRef, useState} from "react";
+import GoBack from "../components/GoBack.jsx";
+import styles from "./EditOrder.module.scss";
+import UsersSelect from "../components/UsersSelect.jsx";
+import customFetch from "../functions/customFetch.js";
+
 const EditOrder = () => {
-    return(<div>EditOrder</div>)
+    const {id} = useParams();
+    const auth = useAuthDataStore();
+    const nameRef = useRef();
+    const descriptionRef = useRef();
+    const finishDateRef = useRef();
+    const statusRef = useRef();
+    const userRef = useRef();
+    const navigate = useNavigate();
+    const [{responseData, loading}, refetch] = useFetch(`${backendUrl}/order?id=${id}`, {
+        method: "GET",
+        headers: {
+            "Authorization": `Bearer ${auth.accessToken}`
+        }
+    });
+
+    const addImage = event => {
+        event.stopPropagation();
+        event.preventDefault();
+        const file = event.target.files[0];
+        customFetch(`${backendUrl}/image?id=${id}&type=${file.name.substring(file.name.lastIndexOf(".") + 1, file.name.size)}`, {
+            method: "POST",
+            body: file,
+            headers: {
+                "Authorization": `Bearer ${auth.accessToken}`
+            }
+        })
+            .then(async res => {
+                event.target.value = null;
+                refetch();
+            });
+    }
+
+    const removeImage = event => {
+        customFetch(`${backendUrl}/image?id=${event.target.id}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${auth.accessToken}`
+            }
+        })
+            .then(async res => {
+                refetch();
+            });
+    }
+
+    const saveChanges = () => {
+        customFetch(`${backendUrl}/order?id=${id}`, {
+            method: "PUT",
+            headers: {
+                "Authorization": `Bearer ${auth.accessToken}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: nameRef.current.value,
+                description: descriptionRef.current.value,
+                finish_date: new Date(finishDateRef.current.value).getTime() / 1000,
+                created_for: userRef.current?.user === undefined ? null : userRef.current?.user.id,
+                status: statusRef.current.value === "0" ? null : parseInt(statusRef.current.value)
+            })
+        })
+    }
+
+    const deleteOrder = () => {
+        customFetch(`${backendUrl}/order?id=${id}`, {
+            method: "DELETE",
+            headers: {
+                "Authorization": `Bearer ${auth.accessToken}`
+            }
+        })
+            .then(async res => {
+                if (await res.response.status < 400) {
+                    await navigate("/dash/home");
+                }
+            });
+    }
+
+    useEffect(() => {
+        nameRef.current.value = responseData?.order.name;
+        descriptionRef.current.value = responseData?.order.description;
+        finishDateRef.current.value = responseData?.order.finish_date;
+        statusRef.current.value = responseData?.order.status === null ? 0 : responseData?.order.status;
+    }, [loading]);
+
+    return (<Section className={styles["edit-order"]}>
+        <input type="text" ref={nameRef} />
+        <input type="text" ref={descriptionRef} />
+        <UsersSelect defaultUser={responseData?.order.created_for} ref={userRef} />
+        <input type="datetime-local" ref={finishDateRef} />
+        <select name="Status" defaultChecked={true} ref={statusRef}>
+            <option value={0}>Created</option>
+            <option value={1}>In progress</option>
+            <option value={2}>Finished</option>
+        </select>
+        <input type="button" value="Save Changes" onClick={saveChanges} />
+        <label htmlFor="image-upload" className={styles["image-upload-button"]}>Add image</label>
+        <input type="file" onChange={addImage} id={"image-upload"} hidden={true} />
+        <input type="button" value="Delete" onClick={deleteOrder} />
+        <GoBack />
+        <div
+            className={styles["images-container"]}>{responseData && responseData?.images?.map && responseData?.images?.map(value =>
+            <div key={value}>
+                <img
+                    src={`${backendUrl}/image?id=${value}`} alt={value} className={styles["images"]} />
+                <button id={value} onClick={removeImage}>Remove</button>
+            </div>
+        )}
+        </div>
+    </Section>)
 }
 
 export default EditOrder;

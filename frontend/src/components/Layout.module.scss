@@ -1,0 +1,139 @@
+@use "../globalSettings";
+@use 'sass:list';
+@use 'sass:math';
+
+$padding-nav: 10%;
+$padding-left-nav: 1rem 3rem;
+
+.background {
+  background-color: #23283A;
+  width: globalSettings.$background-width;
+  height: globalSettings.$background-height;
+  display: grid;
+  grid: {
+    auto-rows: globalSettings.$nav-height globalSettings.$web-center-height globalSettings.$footer-height;
+    auto-columns: globalSettings.$background-width;
+    template-areas: "nav" "web-center" "footer";
+  }
+
+  .nav-bar {
+    width: auto;
+    height: auto;
+    background-color: black;
+    display: grid;
+    align-items: center;
+    grid: {
+      area: nav;
+      template-areas: "left middle right";
+      auto-rows: globalSettings.$nav-height;
+      auto-columns: calc(globalSettings.$background-width / 3);
+    }
+
+    .nav-left {
+      grid-area: left;
+      justify-content: left;
+      padding: $padding-nav;
+    }
+
+    .nav-middle {
+      grid-area: middle;
+      justify-content: center;
+    }
+
+    .nav-right {
+      grid-area: right;
+      justify-content: right;
+      padding: $padding-nav;
+    }
+
+    div {
+      display: flex;
+      align-items: center;
+      height: 80%;
+
+      * {
+        height: 100%;
+      }
+    }
+
+  }
+
+  .web-center {
+    grid-area: web-center;
+    max-width: 100%;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+
+    .left-nav {
+      grid-area: left-nav;
+      display: flex;
+      flex-direction: column;
+      border: {
+        style: solid;
+        color: black;
+        width: 0 0.1rem 0 0;
+      }
+      align-items: center;
+      width: fit-content;
+
+      a {
+        height: 1em;
+        padding: $padding-left-nav;
+        min-width: max-content;
+        width: calc(100% - list.nth($padding-left-nav, 2) * 2);
+        font: {
+          family: globalSettings.$OCRAEXT-font-family;
+          weight: 500;
+          size: 150%;
+        }
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        text-decoration: unset;
+
+        &.active {
+          background-color: rgba(0, 0, 0, 0.37);
+
+        }
+
+      }
+
+    }
+
+
+  }
+
+  .footer {
+    color: white;
+    grid-area: footer;
+    background-color: #232323;
+    height: auto;
+
+    border: {
+      width: 0.2vh 0 0 0;
+      style: solid;
+      color: black;
+
+    };
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    .copyright {
+      font: {
+        size: 1.5rem;
+        family: "OCR A Extended";
+      }
+    }
+
+    .santos {
+      font: {
+        family: globalSettings.$RuthlessWreckinOne-font-family;
+      };
+    }
+
+  }
+}

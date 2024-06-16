@@ -1,5 +1,14 @@
+@use 'sass:list';
+@use 'sass:string';
+
+$table-height: 8vh;
 $OCRAEXT-font-family: "OCRA";
 $RuthlessWreckinOne-font-family: "RuthlessWreckinOne";
+$background-width: 100vw;
+$background-height: 100vh;
+$web-center-height: 80vh;
+$nav-height: 10vh;
+$footer-height: 10vh;
 
 @font-face {
   font-family: 'OCRA';
@@ -30,6 +39,14 @@ $RuthlessWreckinOne-font-family: "RuthlessWreckinOne";
   $result: null;
   @for $_ from 1 through $n {
     $result: append($result, $word);
+  }
+  @return $result;
+}
+
+@function listToString($list, $separator: " ") {
+  $result: "";
+  @each $val in $list {
+    $result: $result + $val + $separator;
   }
   @return $result;
 }

@@ -1,0 +1,21 @@
+.order {
+  margin-left: 1vw;
+  color: white;
+
+  .images-container {
+    display: flex;
+    height: fit-content;
+    width: 100%;
+    flex-wrap: wrap;
+    justify-content: left;
+    align-items: center;
+    gap: 1vw;
+
+    img {
+      height: 200px;
+      width: auto;
+
+    }
+  }
+
+}
