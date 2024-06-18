@@ -75,7 +75,7 @@ $searchedFiles = glob($searchPath . ".php");
 while (sizeof($searchedFiles) !== 0 || sizeof($searchedDirs) !== 0) {
     if (sizeof($searchedFiles) !== 0) {
         foreach ($searchedFiles as $file) {
-            require $file;
+            require_once $file;
         }
     }
     $searchPath = $searchPath . "/*";
