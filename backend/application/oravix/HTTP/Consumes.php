@@ -3,6 +3,7 @@
 namespace oravix\HTTP;
 
 use Attribute;
+use oravix\exceptions\HttpException;
 
 #[Attribute(Attribute::TARGET_METHOD)]
 final class Consumes {
@@ -14,7 +15,7 @@ final class Consumes {
                 && explode("/", $providedContentType)[0] === explode("/", $contentType->value)[0])
             || (str_contains($contentType->value, "*/")
                 && explode("/", $providedContentType)[1] === explode("/", $contentType->value)[1]))) {
-            statusExit(HTTPStates::UNSUPPORTED_MEDIA_TYPE);
+            throw new HttpException(HTTPStates::UNSUPPORTED_MEDIA_TYPE);
         }
     }
 }

@@ -10,13 +10,21 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.13.0",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^5.16.7",
+    "@mui/material": "^5.16.7",
+    "@mui/x-date-pickers": "^7.13.0",
+    "@react-buddy/palette-mui": "^5.0.1",
+    "@types/libsodium-wrappers": "^0.7.14",
     "bootstrap": "^5.3.3",
+    "dayjs": "^1.11.12",
+    "libsodium-wrappers": "^0.7.14",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.3",
     "react-toastify": "^10.0.5",
-    "sass": "^1.75.0",
-    "zustand": "^4.5.2"
+    "vite-plugin-svgr-component": "^1.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",

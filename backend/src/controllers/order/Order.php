@@ -48,6 +48,7 @@ class Order {
         ]);
         $statement->setFetchMode(PDO::FETCH_NAMED);
         $data = $statement->fetch();
+        $images = explode(",", $data["img_id"]);
 
         return new HttpResponse([
             "order" => [
@@ -59,7 +60,7 @@ class Order {
                 "status" => $data["status"],
                 "description" => $data["description"]
             ],
-            "images" => explode(",", $data["img_id"])
+            "images" => $images[0] === "" ? [] : $images
         ]);
     }
 

@@ -1,82 +1,72 @@
-import Section from "../components/Section.jsx";
 import {useNavigate, useParams} from "react-router-dom";
-import useAuthDataStore from "../store/authDataStore.js";
-import useFetch from "../hooks/useFetch.js";
 import {backendUrl} from "../../settings.js";
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from "react";
 import GoBack from "../components/GoBack.jsx";
-import styles from "./EditOrder.module.scss";
 import UsersSelect from "../components/UsersSelect.jsx";
 import customFetch from "../functions/customFetch.js";
+import useOravixSecurity from "../hooks/useOravixSecurity.js";
+import {
+    Card, CardActions, CardContent, Button, TextField, Select, InputLabel, FormControl, MenuItem, ButtonGroup
+} from '@mui/material';
+import dayjs from 'dayjs';
+import {DatePicker} from '@mui/x-date-pickers/DatePicker';
+import useOravixFetch from "../hooks/useOravixFetch.js";
 
 const EditOrder = () => {
     const {id} = useParams();
-    const auth = useAuthDataStore();
-    const nameRef = useRef();
-    const descriptionRef = useRef();
-    const finishDateRef = useRef();
-    const statusRef = useRef();
-    const userRef = useRef();
     const navigate = useNavigate();
-    const [{responseData, loading}, refetch] = useFetch(`${backendUrl}/order?id=${id}`, {
-        method: "GET",
-        headers: {
-            "Authorization": `Bearer ${auth.accessToken}`
-        }
-    });
+    const [finishDate, setFinishDate] = useState();
+    const [name, setName] = useState();
+    const [description, setDescription] = useState();
+    const [status, setStatus] = useState();
+    const [user, setUser] = useState();
+    const {data, loading} = useOravixFetch(backendUrl + "/order/?id=" + id, {
+        method: "GET"
+    }, true, true, {});
+    const {security} = useOravixSecurity();
 
     const addImage = event => {
         event.stopPropagation();
         event.preventDefault();
         const file = event.target.files[0];
         customFetch(`${backendUrl}/image?id=${id}&type=${file.name.substring(file.name.lastIndexOf(".") + 1, file.name.size)}`, {
-            method: "POST",
-            body: file,
-            headers: {
-                "Authorization": `Bearer ${auth.accessToken}`
+            method: "POST", body: file, headers: {
+                "Authorization": `Bearer `
             }
         })
             .then(async res => {
                 event.target.value = null;
-                refetch();
             });
     }
 
     const removeImage = event => {
         customFetch(`${backendUrl}/image?id=${event.target.id}`, {
-            method: "DELETE",
-            headers: {
-                "Authorization": `Bearer ${auth.accessToken}`
+            method: "DELETE", headers: {
+                "Authorization": `Bearer `
             }
         })
             .then(async res => {
-                refetch();
             });
     }
 
-    const saveChanges = () => {
-        customFetch(`${backendUrl}/order?id=${id}`, {
-            method: "PUT",
-            headers: {
-                "Authorization": `Bearer ${auth.accessToken}`,
+    const saveChanges = event => {
+        event.preventDefault();
+        security.secureEncryptedFetch(`${backendUrl}/order?id=${id}`, {
+            method: "PUT", headers: {
                 "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                name: nameRef.current.value,
-                description: descriptionRef.current.value,
-                finish_date: new Date(finishDateRef.current.value).getTime() / 1000,
-                created_for: userRef.current?.user === undefined ? null : userRef.current?.user.id,
-                status: statusRef.current.value === "0" ? null : parseInt(statusRef.current.value)
+            }, body: JSON.stringify({
+                name: name,
+                description: description,
+                finish_date: finishDate,
+                created_for: user === undefined ? null : user,
+                status: status === "0" ? null : parseInt(status)
             })
         })
     }
 
     const deleteOrder = () => {
-        customFetch(`${backendUrl}/order?id=${id}`, {
-            method: "DELETE",
-            headers: {
-                "Authorization": `Bearer ${auth.accessToken}`
-            }
+        security.secureEncryptedFetch(`${backendUrl}/order?id=${id}`, {
+            method: "DELETE"
         })
             .then(async res => {
                 if (await res.response.status < 400) {
@@ -86,37 +76,67 @@ const EditOrder = () => {
     }
 
     useEffect(() => {
-        nameRef.current.value = responseData?.order.name;
-        descriptionRef.current.value = responseData?.order.description;
-        finishDateRef.current.value = responseData?.order.finish_date;
-        statusRef.current.value = responseData?.order.status === null ? 0 : responseData?.order.status;
+        setName(data?.order?.name);
+        setDescription(data?.order?.description);
+        setStatus(data?.order?.status === null ? 0 : data?.order?.status);
+        setUser(data?.order?.created_for);
+        setFinishDate(new Date(data?.order?.finish_date).getTime() / 1000);
     }, [loading]);
 
-    return (<Section className={styles["edit-order"]}>
-        <input type="text" ref={nameRef} />
-        <input type="text" ref={descriptionRef} />
-        <UsersSelect defaultUser={responseData?.order.created_for} ref={userRef} />
-        <input type="datetime-local" ref={finishDateRef} />
-        <select name="Status" defaultChecked={true} ref={statusRef}>
-            <option value={0}>Created</option>
-            <option value={1}>In progress</option>
-            <option value={2}>Finished</option>
-        </select>
-        <input type="button" value="Save Changes" onClick={saveChanges} />
-        <label htmlFor="image-upload" className={styles["image-upload-button"]}>Add image</label>
-        <input type="file" onChange={addImage} id={"image-upload"} hidden={true} />
-        <input type="button" value="Delete" onClick={deleteOrder} />
-        <GoBack />
-        <div
-            className={styles["images-container"]}>{responseData && responseData?.images?.map && responseData?.images?.map(value =>
-            <div key={value}>
-                <img
-                    src={`${backendUrl}/image?id=${value}`} alt={value} className={styles["images"]} />
-                <button id={value} onClick={removeImage}>Remove</button>
-            </div>
-        )}
-        </div>
-    </Section>)
+    return (<Card
+        component="form"
+        sx={{width: "350px", alignSelf: "center"}}
+        action="#"
+        method="POST"
+        onSubmit={saveChanges}
+    >
+        <CardContent>
+            <TextField
+                required
+                variant="filled"
+                label="Name"
+                value={name === undefined ? "Loading" : name}
+                onChange={event => setName(event.target.value)}
+                type="text" />
+            <TextField
+                variant="filled"
+                label="Description"
+                value={description === undefined ? "Loading" : description}
+                onChange={event => setDescription(event.target.value)}
+                type="text" />
+            <UsersSelect user={user} setUser={setUser} />
+            <DatePicker
+                label="Finish date"
+                format="DD.MM.YYYY"
+                value={finishDate === undefined || isNaN(finishDate) ? dayjs(Date.now()) : dayjs.unix(finishDate)}
+                onChange={event => setFinishDate(event.unix())}
+            />
+            <FormControl
+                variant="filled"
+                sx={{m: 1, minWidth: 120}}>
+                <InputLabel
+                    id="id-status-select">Status</InputLabel>
+                <Select
+                    labelId="id-status-select"
+                    label="Status"
+                    autoWidth
+                    value={status === undefined ? 0 : status}
+                    onChange={event => setStatus(event.target.value)}
+                >
+                    <MenuItem value={0}>Created</MenuItem>
+                    <MenuItem value={1}>In progress</MenuItem>
+                    <MenuItem value={2}>Finished</MenuItem>
+                </Select>
+            </FormControl>
+        </CardContent>
+        <CardActions sx={{justifyContent: "space-between"}}>
+            <GoBack />
+            <ButtonGroup variant="contained">
+                <Button type="submit" color="success">Save changes</Button>
+                <Button onClick={deleteOrder} color="error">Delete</Button>
+            </ButtonGroup>
+        </CardActions>
+    </Card>)
 }
 
 export default EditOrder;

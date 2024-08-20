@@ -9,7 +9,18 @@ CREATE TABLE users
     last_name  VARCHAR(255)  NOT NULL,
     username   VARCHAR(255)  NOT NULL UNIQUE,
     email      VARCHAR(255)  NOT NULL UNIQUE,
-    password   VARCHAR(1023) NOT NULL
+    password   VARCHAR(1023) NOT NULL,
+    active     BOOLEAN       NOT NULL             DEFAULT FALSE
+);
+
+CREATE TABLE sessions
+(
+    id      VARCHAR(36)  NOT NULL PRIMARY KEY DEFAULT UUID(),
+    action  VARCHAR(255) NOT NULL,
+    used    BOOLEAN      NOT NULL             DEFAULT FALSE,
+    params  VARCHAR(1024),
+    user_id VARCHAR(36),
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE roles
@@ -28,26 +39,34 @@ CREATE TABLE user_with_role
     PRIMARY KEY (user_id, role_id)
 );
 
-CREATE TABLE tokens
+CREATE TABLE acc_tokens
 (
-    id      VARCHAR(36)  NOT NULL PRIMARY KEY DEFAULT UUID(),
-    user_id VARCHAR(36)  NOT NULL,
-    sha_key VARCHAR(512) NOT NULL,
-    status  BOOLEAN      NOT NULL             DEFAULT TRUE,
-    type    BOOLEAN      NOT NULL,
+    id            VARCHAR(36)   NOT NULL PRIMARY KEY DEFAULT UUID(),
+    user_id       VARCHAR(36)   NOT NULL,
+    secret_key    VARCHAR(2048) NOT NULL,
+    is_terminated BOOLEAN       NOT NULL             DEFAULT FALSE,
+    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
+);
+
+CREATE TABLE ref_tokens
+(
+    id            VARCHAR(36)   NOT NULL PRIMARY KEY DEFAULT UUID(),
+    user_id       VARCHAR(36)   NOT NULL,
+    secret_key    VARCHAR(2048) NOT NULL,
+    is_terminated BOOLEAN       NOT NULL             DEFAULT FALSE,
     FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE shop_order
 (
-    id           VARCHAR(36)  NOT NULL PRIMARY KEY DEFAULT UUID(),
-    name         VARCHAR(256) NOT NULL UNIQUE,
+    id           VARCHAR(36)   NOT NULL PRIMARY KEY DEFAULT UUID(),
+    name         VARCHAR(256)  NOT NULL UNIQUE,
     created_by   VARCHAR(36),
     created_for  VARCHAR(36),
-    date_created TIMESTAMP    NOT NULL             DEFAULT CURRENT_TIMESTAMP(),
-    finish_date  TIMESTAMP    NOT NULL             DEFAULT CURRENT_TIMESTAMP(),
+    date_created TIMESTAMP     NOT NULL             DEFAULT CURRENT_TIMESTAMP(),
+    finish_date  TIMESTAMP     NOT NULL             DEFAULT CURRENT_TIMESTAMP(),
     status       BOOLEAN,
-    description  VARCHAR(1024),
+    description  VARCHAR(1024) NOT NULL             DEFAULT '',
     FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE SET NULL,
     FOREIGN KEY (created_for) REFERENCES users (id) ON DELETE SET NULL
 );
@@ -114,23 +133,6 @@ BEGIN
     END IF;
 END
 $$
-
-DELIMITER $$
-
-CREATE PROCEDURE generate_token(
-    IN v_user_id VARCHAR(36),
-    IN v_sha_key VARCHAR(344),
-    IN v_type BOOLEAN
-)
-BEGIN
-    SET @token_id = UUID();
-
-    INSERT INTO tokens(id, user_id, sha_key, type)
-        VALUE (@token_id, v_user_id, v_sha_key, v_type);
-
-    SELECT @token_id AS id;
-
-END $$
 
 DELIMITER $$
 

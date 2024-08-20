@@ -1,19 +1,16 @@
 import Section from "../components/Section.jsx";
 import {Link} from "react-router-dom";
-import useAuthDataStore from "../store/authDataStore.js";
 import useFetch from "../hooks/useFetch.js";
 import {backendUrl} from "../../settings.js";
-import styles from "./Users.module.scss";
 
 const Users = () => {
-    const auth = useAuthDataStore();
-    const [{responseData}] = useFetch(`${backendUrl}/users`, {
+    const [{data}] = useFetch(`${backendUrl}/users`, {
         method: "GET",
         headers: {
-            "Authorization": `Bearer ${auth.accessToken}`
+            "Authorization": `Bearer `
         }
     });
-    return (<Section className={styles["users"]}>
+    return (<Section>
         <table className="table">
             <thead>
             <tr>

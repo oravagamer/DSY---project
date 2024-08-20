@@ -1,5 +1,5 @@
 import React from 'react'
-import {createBrowserRouter, RouterProvider} from "react-router-dom";
+import {createBrowserRouter, RouterProvider, Outlet} from "react-router-dom";
 import Login from "./pages/Login.jsx";
 import Layout from "./components/Layout.jsx";
 import Home from "./pages/Home.jsx";
@@ -12,20 +12,36 @@ import UnSecure from "./components/UnSecure.jsx";
 import Profile from "./pages/Profile.jsx";
 import Users from "./pages/Users.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
+import Register from "./pages/Register.jsx";
+import Redirect from "./pages/Redirect.jsx";
+import EmailWait from "./pages/EmailWait.jsx";
 
 const App = () => {
     const router = createBrowserRouter([{
             path: "/",
             errorElement: <ErrorPage />,
+            element: <Layout />,
             children:
                 [
                     {
-                        index: true,
+                        path: "login",
                         element: <UnSecure><Login /></UnSecure>
                     },
                     {
+                        path: "register",
+                        element: <UnSecure><Register /></UnSecure>
+                    },
+                    {
+                        path: "redirect",
+                        element: <Redirect />
+                    },
+                    {
+                        path: "email-wait",
+                        element: <EmailWait />
+                    },
+                    {
                         path: "dash",
-                        element: <Secure><Layout /></Secure>,
+                        element: <Secure redirect={true}><Outlet /></Secure>,
                         children: [
                             {
                                 path: "home",

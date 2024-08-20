@@ -8,4 +8,5 @@ enum ContentType: string {
     case APPLICATION_OCTET_STREAM = "application/octet-stream";
     case TEXT_PLAIN = "text/plain";
     case NO_CONTENT = "";
+    case TEXT_HTML = "text/html";
 }

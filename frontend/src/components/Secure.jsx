@@ -1,21 +1,21 @@
-import useAuthDataStore from "../store/authDataStore.js";
-import {Navigate, useLocation} from 'react-router-dom'
-import {useEffect} from "react";
+import {Navigate} from 'react-router-dom'
+import oravixSecurity from "../security.js";
+import {useEffect, useState} from "react";
+import {useLocation} from 'react-router-dom';
 
-const Secure = (props) => {
-    const auth = useAuthDataStore();
-    const location = useLocation();
+const Secure = ({redirect = false, children}) => {
+    const [isSecure, setIsSecure] = useState(true);
+    let location = useLocation();
 
     useEffect(() => {
-    }, [location]);
+        setIsSecure(oravixSecurity
+            .isSecure())
+    }, [isSecure, location]);
 
-    if (auth.isNotExpired()) {
-        return (<>{props.children}</>)
-    } else if (auth.refreshTokenIsNotExpired()) {
-        auth.refreshJWT();
-        return (<>{props.children}</>)
-    } else {
-        return (<Navigate to="/" />);
+    if (isSecure) {
+        return (<>{children}</>)
+    } else if (redirect) {
+        return (<Navigate to="/login" />);
     }
 }
 

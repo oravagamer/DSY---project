@@ -1,6 +1,6 @@
 import Section from "../components/Section.jsx";
 import GoBack from "../components/GoBack.jsx";
-import {useRouteError} from "react-router-dom";
+import {useRouteError, Link} from "react-router-dom";
 
 const ErrorPage = () => {
     const error = useRouteError();
@@ -10,6 +10,7 @@ const ErrorPage = () => {
         <p>{error.statusText}</p>
         {error.data?.message && <p>{error.data.message}</p>}
         <GoBack />
+        <Link to="/login">Home</Link>
     </Section>)
 }
 

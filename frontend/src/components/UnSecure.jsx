@@ -1,10 +1,17 @@
-import useAuthDataStore from "../store/authDataStore.js";
 import {Navigate} from "react-router-dom";
+import oravixSecurity from "../security.js";
+import {useEffect, useState} from "react"
 
 const UnSecure = (props) => {
-    const auth = useAuthDataStore();
-    if (auth.isNotExpired()) {
-        return (<Navigate to="/dash/home"/>)
+    const [isSecure, setIsSecure] = useState(false);
+
+    useEffect(() => {
+        setIsSecure(oravixSecurity
+            .isSecure())
+    }, [isSecure]);
+
+    if (isSecure) {
+        return (<Navigate to="/dash/home" />)
     } else {
         return (<>{props.children}</>)
     }

@@ -1,33 +1,48 @@
-import useFetch from "../hooks/useFetch.js";
 import {backendUrl} from "../../settings.js";
-import {Link, Navigate, useParams} from "react-router-dom";
-import useAuthDataStore from "../store/authDataStore.js";
-import Section from "../components/Section.jsx";
+import {useState, useEffect} from "react";
+import {Link, useParams} from "react-router-dom";
 import GoBack from "../components/GoBack.jsx";
-import styles from "./Order.module.scss";
+import {
+    Card, CardActions, CardContent, Button, Typography, Dialog, DialogTitle, ImageList, ImageListItem
+} from '@mui/material';
+import useOravixFetch from "../hooks/useOravixFetch.js";
 
 const Order = () => {
     const {id} = useParams();
-    const auth = useAuthDataStore();
-    const [{responseData}] = useFetch(`${backendUrl}/order?id=${id}`, {
-        method: "GET",
-        headers: {
-            "Authorization": `Bearer ${auth.accessToken}`
-        }
-    });
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const {data, loading} = useOravixFetch(backendUrl + "/order/?id=" + id, {
+        method: "GET"
+    }, true, true);
 
-    return (<Section className={styles["order"]}>
-            <h1>{responseData?.order.name}</h1>
-            <h2>Description: {responseData?.order.description}</h2>
-            <h3>Created: {responseData?.order.created_date}</h3>
-            <h3>Finish: {responseData?.order.finish_date}</h3>
-            <h3>Status: {responseData?.order.status === null ? "Created" : responseData?.order.status === 1 ? "In progress" : "Finished"}</h3>
-            <div className={styles["images-container"]}>{responseData && responseData?.images?.map && responseData?.images?.map(value => <img
-                src={`${backendUrl}/image?id=${value}`} key={value} alt={value} />)}</div>
-            <GoBack />
-            <Link to="edit">Edit</Link>
-        </Section>
-    )
+    return (<>
+        <Card sx={{width: "300px", alignSelf: "center", borderRadius: "5px"}} variant="outlined">
+            <CardContent>
+                <Typography variant="h4" component="div">{loading ? "Loading" : data.order.name}</Typography>
+                <Typography sx={{fontSize: 14}} color="text.secondary"
+                            gutterBottom>{loading ? "Loading" : data.order.description}</Typography>
+                <Typography variant="body2">Created: {loading ? "Loading" : data.order.created_date}</Typography>
+                <Typography variant="body2">Finish: {loading ? "Loading" : data.order.finish_date}</Typography>
+                <Typography
+                    variant="body2">Status: {loading ? "Loading" : (data.order.status === null ? "Created" : data.order.status === 1 ? "In progress" : "Finished")}</Typography>
+                <>{loading ? "" : (!(data.images.length === 0) ?
+                    <Button sx={{alignSelf: "flex-start"}} onClick={() => setDialogOpen(true)}>Images</Button> : "")}</>
+            </CardContent>
+            <CardActions sx={{justifyContent: "space-between"}}>
+                <GoBack />
+                <Button component={Link} to="edit" variant="contained">Edit</Button>
+            </CardActions>
+        </Card>
+        <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} fullWidth={true} scroll="body" maxWidth="lg">
+            <DialogTitle sx={{textAlign: "center"}}>{data?.order?.name} images</DialogTitle>
+            {Array.isArray(data?.images) ? <ImageList variant="masonry" cols={3} gap={8}>
+                {data?.images?.map(value => {
+                    return (<ImageListItem key={value}>
+                        <img src={`${backendUrl}/image?id=${value}`} alt={value} />
+                    </ImageListItem>)
+                })}
+            </ImageList> : ""}
+        </Dialog>
+    </>)
 }
 
 export default Order;

@@ -1,33 +1,76 @@
-import {useEffect, useRef, useState} from "react";
-import styles from './Login.module.scss';
-import useAuthDataStore from "../store/authDataStore.js";
-import {frontendUrl} from "../../settings.js";
+import {useEffect, useState} from "react";
+import oravixSecurity from "../security.js";
+import {Link, useNavigate} from "react-router-dom";
+import {Typography, TextField, Button, CardContent, CardActions, Card} from "@mui/material";
+import PasswordInput from "../components/PasswordInput.jsx";
 
 const Login = () => {
-    const username = useRef("");
-    const password = useRef("");
-    const auth = useAuthDataStore();
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [passwordValid, setPasswordValid] = useState("");
+    const [usernameValid, setUsernameValid] = useState("");
+    const [usernameFocus, setUsernameFocus] = useState(false);
+    const navigate = useNavigate();
+    const login = event => {
+        event.preventDefault();
+        oravixSecurity
+            .login(username, password)
+            .then(async res => {
+                if (await res === 403) {
+                    setPasswordValid("Data does not match");
+                    setUsernameValid("Data does not match");
+                } else {
+                    navigate("/email-wait");
+                }
+            })
+    }
 
     useEffect(() => {
     }, []);
 
-    const login = async () => {
-        auth.login(username.current.value, password.current.value);
-    }
-
-    return (<div className={styles["login-background"]}>
-        <header className={styles["login-header"]}>
-            <div><img src="/logo.svg" alt="Website logo" /></div>
-        </header>
-        <section className={styles["login-section"]}>
-            <form className={styles["login-form"]}>
-                <div className={styles["login-label"]}>Login</div>
-                <input className={styles["login-username"]} type="text" placeholder="Username" ref={username} />
-                <input className={styles["login-password"]} type="password" placeholder="Password" ref={password} />
-                <input className={styles["login-button"]} type="button" value="Submit" onClick={login} />
-            </form>
-        </section>
-    </div>)
+    return (<>
+        <Card
+            sx={{width: "350px", height: "max-content", alignSelf: "center", borderRadius: "5px"}}
+            component="form"
+            action="#"
+            method="POST"
+            onSubmit={login}>
+            <CardContent align="center" sx={{paddingBottom: "0!important"}}>
+                <Typography gutterBottom variant="h3" component="div">Login</Typography>
+                <TextField
+                    required
+                    variant="filled"
+                    label={usernameValid !== "" ? usernameValid : "Username"}
+                    color={usernameValid !== "" ? "error" : "primary"}
+                    value={username}
+                    onChange={(event) => {
+                        setUsername(event.target.value);
+                        setUsernameFocus(false);
+                        setUsernameValid("");
+                    }}
+                    sx={{mb: 1.5, width: '25ch'}}
+                    inputProps={{minLength: 3}}
+                    focused={usernameFocus || usernameValid !== ""}
+                    onFocus={() => setUsernameFocus(true)}
+                    onBlur={() => setUsernameFocus(false)}
+                    onInvalid={event => {
+                        event.preventDefault();
+                        setUsernameValid(event.target.value.length < 3 ? "Min 3 chars" : "");
+                    }}
+                    autoComplete="username email" />
+                <PasswordInput
+                    password={password}
+                    setPassword={setPassword}
+                    autoComplete="current-password"
+                    message={passwordValid}
+                    sx={{m: 1, width: '25ch'}} />
+            </CardContent>
+            <CardActions align="center" display="flex" sx={{paddingY: "20px", justifyContent: "space-around"}}>
+                <Button component={Link} to="/register">Register</Button>
+                <Button variant="contained" type="submit">Login</Button>
+            </CardActions>
+        </Card>
+    </>)
 }
 
 export default Login;

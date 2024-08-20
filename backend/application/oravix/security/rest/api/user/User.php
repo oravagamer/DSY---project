@@ -3,6 +3,7 @@
 namespace oravix\security\rest\api\user;
 
 use oravix\db\Database;
+use oravix\exceptions\HttpException;
 use oravix\HTTP\Consumes;
 use oravix\HTTP\ContentType;
 use oravix\HTTP\Controller;
@@ -74,10 +75,14 @@ class User {
                 "user_id" => $userId
             ]);
         } catch (PDOException $exception) {
-            return new HttpResponse(status: $exception->getCode() == 23000 ? HttpStates::CONFLICT : HttpStates::INTERNAL_SERVER_ERROR);
+            if ($exception->getCode() == 23000) {
+                throw new HttpException(HttpStates::CONFLICT);
+            } else {
+                throw $exception;
+            }
         }
         if ($statement->rowCount() === 0) {
-            return new HttpResponse(status: HttpStates::NOT_FOUND);
+            throw new HttpException(HttpStates::NOT_FOUND);
         }
     }
 
@@ -98,7 +103,7 @@ class User {
         ]);
 
         if ($statement->rowCount() === 0) {
-            return new HttpResponse(status: HttpStates::NOT_FOUND);
+            throw new HttpException(HttpStates::NOT_FOUND);
         }
     }
 

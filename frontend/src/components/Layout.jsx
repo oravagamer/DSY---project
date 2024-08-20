@@ -1,37 +1,119 @@
-import {Link, NavLink, Outlet} from "react-router-dom";
-import styles from "./Layout.module.scss";
-import useAuthDataStore from "../store/authDataStore.js";
-import {ToastContainer} from "react-toastify";
+import {Outlet, Link} from "react-router-dom";
 import 'react-toastify/dist/ReactToastify.css';
+import {
+    ListItemText,
+    ListItemIcon,
+    ListItemButton,
+    ListItem,
+    Divider,
+    List,
+    Drawer,
+    IconButton,
+    Typography,
+    Box,
+    Toolbar,
+    AppBar,
+    Grid,
+    Icon
+} from '@mui/material';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import MenuIcon from '@mui/icons-material/Menu';
+import HomeIcon from '@mui/icons-material/Home';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import {useState} from "react";
+import Secure from "./Secure.jsx";
+import oravixSecurity from "../security.js";
+import useOravixSecurity from "../hooks/useOravixSecurity.js";
+import LogoIcon from "./LogoIcon.jsx";
 
 const Layout = () => {
-    const auth = useAuthDataStore();
-    return (<div className={styles["background"]}>
-        <ToastContainer position="top-left" />
-        <nav className={styles["nav-bar"]}>
-            <div className={styles["nav-left"]}><a href="#" onClick={() => auth.logout()}><img src="/logout.svg"
-                                                                                               alt="Logout" /></a>
-            </div>
-            <div className={styles["nav-middle"]}><Link to="/dash/home"><img src="/logo.svg" alt="Website logo" /></Link>
-            </div>
-            <div className={styles["nav-right"]}><Link
-                to={`/dash/user/${auth.getJSONData().accessToken.payload.sub}`}><img src="/user.svg"
-                                                                                     alt="Edit profile" /></Link>
-            </div>
-        </nav>
-        <div className={styles["web-center"]}>
-            <nav className={styles["left-nav"]}>
-                <NavLink className={({isActive}) => isActive ? styles["active"] : ""} to="/dash/home">Home</NavLink>
-                <NavLink className={({isActive}) => isActive ? styles["active"] : ""} to="/dash/order/add">Upload</NavLink>
-                <NavLink className={({isActive}) => isActive ? styles["active"] : ""} to="/dash/user">Users</NavLink>
-            </nav>
+    const [open, setOpen] = useState(false);
+    const {getUserId} = useOravixSecurity();
+
+    return (<Box sx={{height: "100vh"}}>
+        <AppBar sx={{height: "64px", position: "fixed", top: 0}}>
+            <Toolbar component={Grid} container>
+                <Grid item xs={4} sx={{height: "100%", display: "flex", alignItems: "center"}}>
+                    <Secure>
+                        <IconButton
+                            size="large"
+                            edge="start"
+                            color="inherit"
+                            aria-label="menu"
+                            sx={{mr: 2}}
+                            onClick={() => setOpen(true)}>
+                            <MenuIcon />
+                        </IconButton>
+                    </Secure>
+                </Grid>
+                <Grid item xs={4} sx={{
+                    justifyContent: "space-around", display: "flex", height: "100%", alignItems: "center"
+                }}>
+                    <LogoIcon fontSize="large" sx={{height: "inherit"}} />
+                </Grid>
+                <Grid item xs={4} sx={{height: "100%", display: "flex", alignItems: "center"}}></Grid>
+            </Toolbar>
+        </AppBar>
+        <Typography component="section" gutterBottom flexDirection="column" display="flex"
+                    sx={{position: "absolute", top: "64px", bottom: "64px", width: "100%"}}
+                    justifyContent="center">
             <Outlet />
-        </div>
-        <footer className={styles["footer"]}>
-            <div className={styles["copyright"]}>©</div>
-            <div className={styles["santos"]}>Santos_Father</div>
-        </footer>
-    </div>)
+        </Typography>
+        <Box component="footer" sx={{
+            height: "64px", display: "flex", justifyContent: "center", position: "fixed", width: "100%", bottom: 0
+        }}>
+            <Typography variant="body2" color="secondary" align="center"
+                        sx={{placeSelf: "flex-end"}}>©
+                Santos_Father</Typography>
+        </Box>
+        <Drawer open={open} onClose={() => setOpen(false)}>
+            <Box
+                sx={{width: 250}}
+                role="presentation"
+                onClick={() => setOpen(false)}>
+                <List>
+                    <ListItem>
+                        <ListItemButton onClick={() => oravixSecurity.logout()}>
+                            <ListItemIcon>
+                                <ExitToAppIcon />
+                            </ListItemIcon>
+                            <ListItemText primary="Logout" />
+                        </ListItemButton>
+                    </ListItem>
+                </List>
+                <Divider />
+                <Secure>
+                    <List>
+                        <ListItem>
+                            <ListItemButton component={Link} to={`/dash/user/${getUserId()}`}>
+                                <ListItemIcon>
+                                    <AccountCircleIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Profile" />
+                            </ListItemButton>
+                        </ListItem>
+                        <ListItem>
+                            <ListItemButton component={Link} to="/dash/home">
+                                <ListItemIcon>
+                                    <HomeIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Home" />
+                            </ListItemButton>
+                        </ListItem>
+                        <ListItem>
+                            <ListItemButton component={Link} to="/dash/order/add">
+                                <ListItemIcon>
+                                    <AddCircleIcon />
+                                </ListItemIcon>
+                                <ListItemText primary="Add order" />
+                            </ListItemButton>
+                        </ListItem>
+                    </List>
+                </Secure>
+            </Box>
+        </Drawer>
+    </Box>)
 }
 
 export default Layout;

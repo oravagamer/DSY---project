@@ -1,11 +1,18 @@
 import {useEffect, useState} from "react";
-import customFetch from "../functions/customFetch.js";
+import oravixSecurity from "../security.js";
 
-const useFetch = (input, init) => {
+/**
+ *
+ * @param input {RequestInfo | URL}
+ * @param init {RequestInit}
+ * @param secure
+ * @param encrypted
+ * @return {[{responseData: JSON, responseStatus: number, loading: boolean},refetch: () => Promise<void>]}
+ */
+const useFetch = (input, init, secure = false, encrypted = true) => {
     const [responseData, setResponseData] = useState(null);
     const [responseStatus, setResponseStatus] = useState(undefined);
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
 
     useEffect(() => {
         refetch();
@@ -13,20 +20,40 @@ const useFetch = (input, init) => {
 
     const refetch = async () => {
         setLoading(true);
-        const data = await customFetch(input, init);
-        setResponseStatus(await data.response.status);
-        try {
-            setResponseData(await data.response.json());
-        } catch (err) {
-            setResponseData(await data.response.text());
+        if (secure && encrypted) {
+            oravixSecurity
+                .secureEncryptedFetch(input, init)
+                .then(async res => {
+                    setResponseStatus(res.status);
+                    setResponseData(JSON.parse(res.body));
+                });
+        } else if (!secure && encrypted) {
+            oravixSecurity
+                .encryptedFetch(input, init)
+                .then(async res => {
+                    setResponseStatus(res.status);
+                    setResponseData(JSON.parse(res.body));
+                })
+        } else if (secure && !encrypted) {
+            oravixSecurity
+                .noCryptSecureFetch(input, init)
+                .then(async res => {
+                    setResponseStatus(res.status);
+                    setResponseData(await res.json());
+                })
+        } else {
+            oravixSecurity
+                .noCryptFetch(input, init)
+                .then(async res => {
+                    setResponseStatus(res.status);
+                    setResponseData(await res.json());
+                })
         }
-        setError(await data.error);
-
-        await setLoading(false);
+        setLoading(false);
 
     }
 
-    return [{responseData, responseStatus, error, loading}, refetch];
+    return [{data, responseStatus, loading}, refetch];
 
 }
 
