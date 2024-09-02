@@ -217,7 +217,6 @@ try {
                     foreach ($formDataRef->getProperties() as $formDataProperty) {
                         $formDataPropertyAttribute = $formDataProperty->getAttributes()[0];
                         $propertyName = $formDataPropertyAttribute->getArguments()[0];
-
                         if (($formDataPropertyAttribute->getArguments()[1] && (isset($_FILES[$propertyName]) || isset($_POST[$propertyName]) || isset($_GET[$propertyName]))) || !$formDataPropertyAttribute->getArguments()[1]) {
                             $property = new ReflectionProperty($formData, $formDataProperty->getName());
                             $property->setAccessible(true);

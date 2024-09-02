@@ -49,7 +49,7 @@ class User {
         ]);
         $data = $statement->fetch();
         $data["roles"] = explode(",", $data["roles"]);
-        return new HttpResponse($data, status: !$data ? HttpStates::NOT_FOUND : HttpStates::OK);
+        return new HttpResponse($data, status: !isset($data["first_name"]) ? HttpStates::NOT_FOUND : HttpStates::OK);
     }
 
     #[
@@ -65,13 +65,12 @@ class User {
         #[PathVariable("id", true)] string $userId
     ) {
         $connection = $this->database->getConnection();
-        $statement = $connection->prepare("UPDATE users SET username = :username, first_name = :first_name, last_name = :last_name, email = :email WHERE id = :user_id");
+        $statement = $connection->prepare("UPDATE users SET username = :username, first_name = :first_name, last_name = :last_name WHERE id = :user_id");
         try {
             $statement->execute([
                 "username" => $userUpdateData->username,
                 "first_name" => $userUpdateData->firstName,
                 "last_name" => $userUpdateData->lastName,
-                "email" => $userUpdateData->email,
                 "user_id" => $userId
             ]);
         } catch (PDOException $exception) {

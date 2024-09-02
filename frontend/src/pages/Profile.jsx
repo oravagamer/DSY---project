@@ -1,30 +1,36 @@
-import Section from "../components/Section.jsx";
 import {Link, useParams} from "react-router-dom";
-import useFetch from "../hooks/useFetch.js";
 import {backendUrl} from "../../settings.js";
 import GoBack from "../components/GoBack.jsx";
+import {
+    Card, CardActions, CardContent, Button, Typography
+} from '@mui/material';
+import useOravixFetch from "../hooks/useOravixFetch.js";
 
 const Profile = () => {
     const {id} = useParams();
-    const [{data}] = useFetch(`${backendUrl}/user?id=${id}`, {
-        method: "GET",
-        headers: {
-            "Authorization": `Bearer `
-        }
+    const {data} = useOravixFetch(`${backendUrl}/user?id=${id}`, {
+        method: "GET"
+    }, true, true, {
+        username: "Loading", first_name: "Loading", last_name: "Loading", email: "Loading", roles: ["Loading"]
     });
-    return (<Section>
-        <h1>User: {responseData?.username}</h1>
-        <h2>First name: {responseData?.first_name}</h2>
-        <h2>Last name: {responseData?.last_name}</h2>
-        <h2>Email: {responseData?.email}</h2>
-        <h3>
-            <h2>Roles:</h2>
-            <ul>{responseData && responseData.roles && responseData.roles.map && responseData.roles.map(value => <li
-                key={value}>{value}</li>)}</ul>
-        </h3>
-        <GoBack />
-        <Link to="edit">Edit</Link>
-    </Section>)
+    return (<Card sx={{minWidth: "300px", alignSelf: "center", borderRadius: "5px"}} variant="outlined">
+        <CardContent sx={{display: "flex", flexDirection: "column"}}>
+            <Typography variant="h4" component="div">{data.username}</Typography>
+            <Typography component="h6">First name: <Typography sx={{fontSize: 14}} color="text.secondary"
+                                                               component="div">{data.first_name}</Typography></Typography>
+            <Typography component="h6">Last name: <Typography sx={{fontSize: 14}} color="text.secondary"
+                                                              component="div">{data.last_name}</Typography></Typography>
+            <Typography component="h6">Email: <Typography sx={{fontSize: 14}} color="text.secondary"
+                                                          component="div">{data.email}</Typography></Typography>
+            <Typography variant="body2">Roles:</Typography>
+            {data?.roles.map && data?.roles.map(role => <Typography key={role} sx={{fontSize: 14, pl: 2}}
+                                                                    color="text.secondary">{role}</Typography>)}
+        </CardContent>
+        <CardActions sx={{justifyContent: "space-between"}}>
+            <GoBack />
+            <Button component={Link} to="edit">Edit</Button>
+        </CardActions>
+    </Card>)
 }
 
 export default Profile;

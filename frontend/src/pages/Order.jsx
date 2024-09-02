@@ -10,21 +10,29 @@ import useOravixFetch from "../hooks/useOravixFetch.js";
 const Order = () => {
     const {id} = useParams();
     const [dialogOpen, setDialogOpen] = useState(false);
-    const {data, loading} = useOravixFetch(backendUrl + "/order/?id=" + id, {
+    const {data} = useOravixFetch(backendUrl + "/order/?id=" + id, {
         method: "GET"
-    }, true, true);
+    }, true, true, {
+        name: "Loading",
+        description: "Loading",
+        created_date: "Loading",
+        status: -1
+    });
+    const {data:  imgData, loading: imgLoading} = useOravixFetch(backendUrl + "/image/all?id=" + id, {
+        method: "GET"
+    }, true, true, []);
 
     return (<>
-        <Card sx={{width: "300px", alignSelf: "center", borderRadius: "5px"}} variant="outlined">
+        <Card sx={{minWidth: "300px", alignSelf: "center", borderRadius: "5px"}} variant="outlined">
             <CardContent>
-                <Typography variant="h4" component="div">{loading ? "Loading" : data.order.name}</Typography>
+                <Typography variant="h4" component="div">{data.name}</Typography>
                 <Typography sx={{fontSize: 14}} color="text.secondary"
-                            gutterBottom>{loading ? "Loading" : data.order.description}</Typography>
-                <Typography variant="body2">Created: {loading ? "Loading" : data.order.created_date}</Typography>
-                <Typography variant="body2">Finish: {loading ? "Loading" : data.order.finish_date}</Typography>
+                            gutterBottom>{data.description}</Typography>
+                <Typography variant="body2">Created: {data.created_date}</Typography>
+                <Typography variant="body2">Finish: {data.finish_date}</Typography>
                 <Typography
-                    variant="body2">Status: {loading ? "Loading" : (data.order.status === null ? "Created" : data.order.status === 1 ? "In progress" : "Finished")}</Typography>
-                <>{loading ? "" : (!(data.images.length === 0) ?
+                    variant="body2">Status: {data.status === -1 ? "Loading" : (data.status === null ? "Created" : data.status === 1 ? "In progress" : "Finished")}</Typography>
+                <>{imgLoading ? "" : (data?.images ?
                     <Button sx={{alignSelf: "flex-start"}} onClick={() => setDialogOpen(true)}>Images</Button> : "")}</>
             </CardContent>
             <CardActions sx={{justifyContent: "space-between"}}>
@@ -33,9 +41,9 @@ const Order = () => {
             </CardActions>
         </Card>
         <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} fullWidth={true} scroll="body" maxWidth="lg">
-            <DialogTitle sx={{textAlign: "center"}}>{data?.order?.name} images</DialogTitle>
-            {Array.isArray(data?.images) ? <ImageList variant="masonry" cols={3} gap={8}>
-                {data?.images?.map(value => {
+            <DialogTitle sx={{textAlign: "center"}}>{data?.name} images</DialogTitle>
+            {Array.isArray(imgData) ? <ImageList variant="masonry" cols={3} gap={8}>
+                {imgData?.map(value => {
                     return (<ImageListItem key={value}>
                         <img src={`${backendUrl}/image?id=${value}`} alt={value} />
                     </ImageListItem>)

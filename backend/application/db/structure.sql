@@ -27,6 +27,7 @@ CREATE TABLE roles
 (
     id          VARCHAR(36)  NOT NULL PRIMARY KEY DEFAULT UUID(),
     name        VARCHAR(255) NOT NULL UNIQUE,
+    level       BIT(8)       NOT NULL DEFAULT 255,
     description VARCHAR(255)
 );
 

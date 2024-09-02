@@ -11,7 +11,5 @@ class UserUpdateData {
     public string $firstName;
     #[JsonValue("last_name", false)]
     public string $lastName;
-    #[JsonValue("email", false)]
-    public string $email;
 
 }

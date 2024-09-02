@@ -94,4 +94,29 @@ class Image {
             return new HttpResponse(status: HttpStates::NOT_FOUND);
         }
     }
+
+    #[
+        Request(
+            "/all",
+            HttpMethod::GET
+        ),
+        Produces(ContentType::APPLICATION_JSON)
+    ]
+    public function getImages(
+        #[PathVariable("id", true)] $orderId
+    ) {
+        $connection = $this->database->getConnection();
+        $statement = $connection->prepare('SELECT id FROM images WHERE order_id = :order_id');
+        $statement->execute([
+            "order_id" => $orderId
+        ]);
+        $statement->setFetchMode(PDO::FETCH_NAMED);
+        $data = [];
+        while ($imgId = $statement->fetch()) {
+            $data[] = $imgId["id"];
+        }
+
+        return new HttpResponse($data);
+    }
+
 }

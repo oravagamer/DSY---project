@@ -3,6 +3,7 @@ import oravixSecurity from "../security.js";
 import {Link, useNavigate} from "react-router-dom";
 import {Typography, TextField, Button, CardContent, CardActions, Card} from "@mui/material";
 import PasswordInput from "../components/PasswordInput.jsx";
+import Redirect from "./Redirect.jsx";
 
 const Login = () => {
     const [username, setUsername] = useState("");
@@ -10,7 +11,7 @@ const Login = () => {
     const [passwordValid, setPasswordValid] = useState("");
     const [usernameValid, setUsernameValid] = useState("");
     const [usernameFocus, setUsernameFocus] = useState(false);
-    const navigate = useNavigate();
+    const [logged, setLoggeded] = useState(false);
     const login = event => {
         event.preventDefault();
         oravixSecurity
@@ -20,7 +21,7 @@ const Login = () => {
                     setPasswordValid("Data does not match");
                     setUsernameValid("Data does not match");
                 } else {
-                    navigate("/email-wait");
+                    setLoggeded(true);
                 }
             })
     }
@@ -28,9 +29,9 @@ const Login = () => {
     useEffect(() => {
     }, []);
 
-    return (<>
+    return (logged ? <Redirect /> : (<>
         <Card
-            sx={{width: "350px", height: "max-content", alignSelf: "center", borderRadius: "5px"}}
+            sx={{width: "350px", height: "max-content", alignSelf: "center"}}
             component="form"
             action="#"
             method="POST"
@@ -70,7 +71,7 @@ const Login = () => {
                 <Button variant="contained" type="submit">Login</Button>
             </CardActions>
         </Card>
-    </>)
+    </>))
 }
 
 export default Login;

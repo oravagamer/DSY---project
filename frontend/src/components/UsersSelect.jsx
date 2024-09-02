@@ -17,7 +17,7 @@ import {
 } from "@mui/material";
 import useOravixFetch from "../hooks/useOravixFetch.js";
 
-const UsersSelect = ({user, setUser}) => {
+const UsersSelect = ({user, setUser, sx = {}}) => {
     const [open, setOpen] = useState(false);
     const {security} = useOravixSecurity();
     const [page, setPage] = useState(0);
@@ -71,7 +71,7 @@ const UsersSelect = ({user, setUser}) => {
         }
     }, [user]);
     return (<>
-        <Button variant="outlined" onClick={selectUser}>
+        <Button variant="outlined" onClick={selectUser} sx={sx}>
             {`Select user Selected user: ${userData === undefined || user === null ? "None" : userData.username}`}
         </Button>
         <Dialog

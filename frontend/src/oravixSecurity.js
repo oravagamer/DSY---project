@@ -145,18 +145,20 @@ class OravixSecurity {
 
     async noCryptFetch(input, init) {
         await until(_ => this.#isConstructed);
-        input.searchParams
+        const newInput = new URL(input);
+        newInput.searchParams
             .set("encrypted", "0");
         init.headers = {
             "win-id": this.#winId, ...init.headers
         }
-        return await fetch(input, init);
+        return await fetch(newInput, init);
     }
 
     async noCryptSecureFetch(input, init) {
-        input.searchParams
+        const newInput = new URL(input);
+        newInput.searchParams
             .set("encrypted", "0");
-        return await this.#secureFetch(input, init);
+        return await this.#secureFetch(newInput, init);
     }
 
     async #encrypted(input, init, secure) {

@@ -40,25 +40,21 @@ class Security {
     }
 
     public function login(string $userId): array {
-        parse_str($_SERVER["REDIRECT_QUERY_STRING"], $query);
-        [
-            "path" => $redirectString
-        ] = $query;
         $header = new Header($this->algorithm);
         ["id" => $refId] = $this->connection->query("SELECT  UUID() as id")->fetch();
         ["id" => $accId] = $this->connection->query("SELECT  UUID() as id")->fetch();
         $accPayload = (new Payload())
-            ->setIssuer($_SERVER["HTTP_X_FORWARDED_HOST"])
+            ->setIssuer($_SERVER["HTTP_HOST"])
             ->setSubject($userId)
-            ->setAudience($redirectString)
+            ->setAudience($_SERVER["HTTP_X_FORWARDED_HOST"])
             ->setExpirationTime($_ENV["settings"]["JWT_ACCESS_EXPIRATION"])
             ->setNotBefore(time() + $_ENV["settings"]["JWT_ACCESS_NOT_BEFORE"])
             ->setIssuedAt(time())
             ->setJwtId($accId);
         $refPayload = (new Payload())
-            ->setIssuer($_SERVER["HTTP_X_FORWARDED_HOST"])
+            ->setIssuer($_SERVER["HTTP_HOST"])
             ->setSubject($userId)
-            ->setAudience($redirectString)
+            ->setAudience($_SERVER["HTTP_X_FORWARDED_HOST"])
             ->setExpirationTime($_ENV["settings"]["JWT_REFRESH_EXPIRATION"])
             ->setNotBefore(time() + $_ENV["settings"]["JWT_REFRESH_NOT_BEFORE"])
             ->setIssuedAt(time())

@@ -42,7 +42,7 @@ class Order {
         #[PathVariable("id", true)] string $orderId
     ) {
         $connection = $this->database->getConnection();
-        $statement = $connection->prepare("SELECT GROUP_CONCAT(images.id) AS img_id, shop_order.name AS name, shop_order.created_by AS cb, shop_order.created_for AS cf, shop_order.date_created AS dc, shop_order.finish_date AS fd, shop_order.status AS status, shop_order.description AS description FROM shop_order LEFT JOIN images ON images.order_id = shop_order.id WHERE shop_order.id = :order_id GROUP BY shop_order.id");
+        $statement = $connection->prepare("SELECT shop_order.name AS name, shop_order.created_by AS cb, shop_order.created_for AS cf, shop_order.date_created AS dc, shop_order.finish_date AS fd, shop_order.status AS status, shop_order.description AS description, COUNT(images.id) AS img_count FROM shop_order LEFT JOIN images ON images.order_id = shop_order.id WHERE shop_order.id = :order_id GROUP BY shop_order.id");
         $statement->execute([
             "order_id" => $orderId
         ]);
@@ -51,16 +51,14 @@ class Order {
         $images = explode(",", $data["img_id"]);
 
         return new HttpResponse([
-            "order" => [
-                "name" => $data["name"],
-                "created_by" => $data["cb"],
-                "created_for" => $data["cf"],
-                "created_date" => $data["dc"],
-                "finish_date" => $data["fd"],
-                "status" => $data["status"],
-                "description" => $data["description"]
-            ],
-            "images" => $images[0] === "" ? [] : $images
+            "name" => $data["name"],
+            "created_by" => $data["cb"],
+            "created_for" => $data["cf"],
+            "created_date" => $data["dc"],
+            "finish_date" => $data["fd"],
+            "status" => $data["status"],
+            "description" => $data["description"],
+            "images" => $data["img_count"] !== 0
         ]);
     }
 
