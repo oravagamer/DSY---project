@@ -58,7 +58,7 @@ const UsersSelect = ({user, setUser, sx = {}}) => {
     }
 
     useEffect(() => {
-        if (user !== undefined) {
+        if (user) {
             security.secureEncryptedFetch(`${backendUrl}/user?id=${user}`, {
                 method: "GET"
             })

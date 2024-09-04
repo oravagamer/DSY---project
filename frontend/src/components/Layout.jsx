@@ -26,6 +26,8 @@ import Secure from "./Secure.jsx";
 import oravixSecurity from "../security.js";
 import useOravixSecurity from "../hooks/useOravixSecurity.js";
 import LogoIcon from "./LogoIcon.jsx";
+import AccessibilityIcon from '@mui/icons-material/Accessibility';
+import RoleRestricted from "./RoleRestricted.jsx";
 
 const Layout = () => {
     const [open, setOpen] = useState(false);
@@ -109,6 +111,16 @@ const Layout = () => {
                                 <ListItemText primary="Add order" />
                             </ListItemButton>
                         </ListItem>
+                        <RoleRestricted role="admin">
+                            <ListItem>
+                                <ListItemButton component={Link} to="/dash/roles">
+                                    <ListItemIcon>
+                                        <AccessibilityIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Roles" />
+                                </ListItemButton>
+                            </ListItem>
+                        </RoleRestricted>
                     </List>
                 </Secure>
             </Box>

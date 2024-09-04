@@ -90,9 +90,9 @@ CREATE TABLE order_states
     FOREIGN KEY (order_id) REFERENCES shop_order (id) ON DELETE CASCADE
 );
 
-INSERT INTO roles(name, description)
-VALUES ('Default', 'Default role'),
-       ('admin', 'Admin role');
+INSERT INTO roles(name, description, level)
+VALUES ('default', 'Default role', 255),
+       ('admin', 'Admin role', 0);
 
 DELIMITER $$
 CREATE TRIGGER `assign_def_role`

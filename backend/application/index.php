@@ -46,6 +46,7 @@ require_once "./oravix/security/JOSE/Security.php";
 require_once "./oravix/security/rest/api/data/LoginData.php";
 require_once "./oravix/security/rest/api/data/TokensData.php";
 require_once "./oravix/security/rest/api/data/RegisterData.php";
+require_once "./oravix/security/rest/api/role/Role.php";
 require_once "./oravix/security/rest/api/user/User.php";
 require_once "./oravix/security/rest/api/user/Users.php";
 require_once "./oravix/security/rest/api/user/UserUpdateData.php";
@@ -174,7 +175,7 @@ try {
                     foreach ($refClass->getMethods() as $method) {
                         foreach ($method->getAttributes() as $methodAttribute) {
                             if ($methodAttribute->getName() === Request::class) {
-                                $paths[$methodAttribute->getArguments()[1]->value . ">" . $_ENV["settings"]["APPLICATION_PATH"] . $classAttribute->getArguments()[0] . $methodAttribute->getArguments()[0]] = $method;
+                                $paths[$methodAttribute->getArguments()[1]->value][$_ENV["settings"]["APPLICATION_PATH"] . $classAttribute->getArguments()[0] . $methodAttribute->getArguments()[0]] = $method;
                             }
                         }
                     }
@@ -185,22 +186,20 @@ try {
             statusExit(HttpStates::INTERNAL_SERVER_ERROR, $e->getMessage());
         }
     }
-    $getPathDataKey = $_SERVER["REQUEST_METHOD"] . ">" . $requestedUrl;
     $method = $_SERVER["REQUEST_METHOD"];
     $payload = file_get_contents('php://input');
 
-    if (isset($paths[$getPathDataKey])) {
-        $userId = null;
-        foreach ($paths[$getPathDataKey]->getAttributes() as $attribute) {
-            $attribute->newInstance();
+    if (isset($paths[$method][$requestedUrl])) {
+        foreach ($paths[$method][$requestedUrl]->getAttributes() as $attribute) {
             if ($attribute->getName() === Secure::class) {
-                $userId = (new Security())->secure();
+                $_ENV["data"]["user-id"] = (new Security())->secure();
             }
+            $attribute->newInstance();
 
         }
 
         $methodPrams = [];
-        foreach ($paths[$getPathDataKey]->getParameters() as $parameter) {
+        foreach ($paths[$method][$requestedUrl]->getParameters() as $parameter) {
 
             foreach ($parameter->getAttributes() as $attribute) {
 
@@ -267,7 +266,7 @@ try {
                     $jsonDataRef = new ReflectionClass($parameter->getType()->getName());
                     $methodPrams[] = processJson($jsonData, $jsonDataRef->getName());
                 } elseif ($attribute->getName() === SecurityUserId::class) {
-                    $methodPrams[] = $userId;
+                    $methodPrams[] = $_ENV["data"]["user-id"];
                 } elseif ($attribute->getName() === FileUpload::class) {
                     $methodPrams[] = $encrypted ? decrypt($payload, $nonce, $encryptionKeypair) : $payload;
                 } elseif ($attribute->getName() === PlainText::class) {
@@ -278,11 +277,11 @@ try {
             }
         }
 
-        $classOfMethod = $paths[$getPathDataKey]->getDeclaringClass()->newInstance();
+        $classOfMethod = $paths[$method][$requestedUrl]->getDeclaringClass()->newInstance();
 
 
         try {
-            $response = $paths[$getPathDataKey]->invoke($classOfMethod, ...$methodPrams);
+            $response = $paths[$method][$requestedUrl]->invoke($classOfMethod, ...$methodPrams);
         } catch (Throwable|HttpException $e) {
             if ($e instanceof \oravix\exceptions\HttpException) {
                 $response = new \oravix\HTTP\HttpResponse($e->getMessage(), $e->getState());

@@ -3,7 +3,7 @@ import oravixSecurity from "../security.js";
 import {Link, useNavigate} from "react-router-dom";
 import {Typography, TextField, Button, CardContent, CardActions, Card} from "@mui/material";
 import PasswordInput from "../components/PasswordInput.jsx";
-import Redirect from "./Redirect.jsx";
+import EmailWait from "./EmailWait.jsx";
 
 const Login = () => {
     const [username, setUsername] = useState("");
@@ -29,7 +29,7 @@ const Login = () => {
     useEffect(() => {
     }, []);
 
-    return (logged ? <Redirect /> : (<>
+    return (logged ? <EmailWait /> : (<>
         <Card
             sx={{width: "350px", height: "max-content", alignSelf: "center"}}
             component="form"

@@ -15,6 +15,9 @@ import ErrorPage from "./pages/ErrorPage.jsx";
 import Register from "./pages/Register.jsx";
 import Redirect from "./pages/Redirect.jsx";
 import EmailWait from "./pages/EmailWait.jsx";
+import RoleRestricted from "./components/RoleRestricted.jsx";
+import Roles from "./pages/Roles.jsx";
+import EditRole from "./pages/EditRole.jsx";
 
 const App = () => {
     const router = createBrowserRouter([{
@@ -46,6 +49,20 @@ const App = () => {
                             {
                                 path: "home",
                                 element: <Home />
+                            },
+                            {
+                                path: "roles",
+                                element: <RoleRestricted role="admin"><Outlet /></RoleRestricted>,
+                                children: [
+                                    {
+                                        index: true,
+                                        element: <Roles />
+                                    },
+                                    {
+                                        path: ":id",
+                                        element: <EditRole />
+                                    }
+                                ]
                             },
                             {
                                 path: "user",

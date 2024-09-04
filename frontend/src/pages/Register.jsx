@@ -11,6 +11,7 @@ import PasswordInput from "../components/PasswordInput.jsx";
 import {frontendUrl} from "../../settings.js";
 import {useNavigate} from 'react-router-dom';
 import Redirect from "./Redirect.jsx";
+import EmailWait from "./EmailWait.jsx";
 
 const Register = () => {
     const [username, setUsername] = useState("");
@@ -44,7 +45,7 @@ const Register = () => {
             });
     }
 
-    return (registered ? <Redirect /> : (<>
+    return (registered ? <EmailWait /> : (<>
             <Card sx={{width: "350px", height: "max-content", alignSelf: "center", borderRadius: "5px"}} action="#"
                   method="POST" component="form"
                   onSubmit={register}>
