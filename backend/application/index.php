@@ -47,6 +47,8 @@ require_once "./oravix/security/rest/api/data/LoginData.php";
 require_once "./oravix/security/rest/api/data/TokensData.php";
 require_once "./oravix/security/rest/api/data/RegisterData.php";
 require_once "./oravix/security/rest/api/role/Role.php";
+require_once "./oravix/security/rest/api/role/RoleData.php";
+require_once "./oravix/security/rest/api/role/RoleUpdateData.php";
 require_once "./oravix/security/rest/api/user/User.php";
 require_once "./oravix/security/rest/api/user/Users.php";
 require_once "./oravix/security/rest/api/user/UserUpdateData.php";
@@ -79,7 +81,7 @@ function decrypt(string $data, string $nonce, string $keypair): string {
 }
 
 function processJson(array $data, ?string $className = null): object|array|null {
-    $returnData = null;
+    $returnData = [];
 
     if (is_null($className)) {
         foreach ($data as $value) {
@@ -106,7 +108,9 @@ function processJson(array $data, ?string $className = null): object|array|null 
                 } elseif (is_array($data[$propertyAttribute->getArguments()[0]])) {
                     $finalProperty->setValue($returnData, processJson($data[$propertyAttribute->getArguments()[0]], $property->getType()->getName()));
                 } else {
-                    $finalProperty->setValue($returnData, $data[$propertyAttribute->getArguments()[0]]);
+                    if (isset($data[$propertyAttribute->getArguments()[0]])) {
+                        $finalProperty->setValue($returnData, $data[$propertyAttribute->getArguments()[0]]);
+                    }
                 }
             } else {
                 statusExit(HttpStates::BAD_REQUEST, "Please set value: " . $propertyAttribute->getArguments()[0]);

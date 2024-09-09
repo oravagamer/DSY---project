@@ -4,17 +4,20 @@ namespace oravix\security\rest\api\role;
 
 use oravix\db\Database;
 use oravix\exceptions\HttpException;
+use oravix\HTTP\Consumes;
 use oravix\HTTP\ContentType;
 use oravix\HTTP\Controller;
 use oravix\HTTP\HttpMethod;
 use oravix\HTTP\HttpResponse;
 use oravix\HTTP\HttpStates;
+use oravix\HTTP\input\Json;
 use oravix\HTTP\input\PathVariable;
 use oravix\HTTP\Produces;
 use oravix\HTTP\Request;
 use oravix\security\Secure;
 use oravix\security\SecurityUserId;
 use PDO;
+use PDOException;
 
 #[
     Controller("/role")
@@ -31,7 +34,7 @@ class Role {
         Produces(ContentType::APPLICATION_JSON),
         Secure
     ]
-    function getRoles(
+    function getRolesOfUser(
         #[SecurityUserId] string $userId
     ) {
         $connection = $this->database->getConnection();
@@ -75,6 +78,94 @@ class Role {
     function getRole(
         #[PathVariable("role", true)] string $roleId
     ) {
+        $connection = $this->database->getConnection();
+        $statement = $connection->prepare("SELECT id, name, description, level FROM roles WHERE id = :role_id");
+        $statement->execute([
+            "role_id" => $roleId
+        ]);
+        $data = $statement->fetch(PDO::FETCH_NAMED);
+        return new HttpResponse($data);
     }
 
+    #[
+        Request("/single", HttpMethod::PUT),
+        Consumes(ContentType::APPLICATION_JSON),
+        Secure("admin")
+    ]
+    function updateRole(
+        #[PathVariable("role", true)] string $roleId,
+        #[Json] RoleUpdateData               $roleUpdateData
+    ) {
+        $sql = "UPDATE roles SET";
+        $connection = $this->database->getConnection();
+        if (isset($roleUpdateData->name)) {
+            $sql .= " name = :name";
+        }
+        if (isset($roleUpdateData->description)) {
+            $sql .= " description = :description";
+        }
+        if (isset($roleUpdateData->level)) {
+            $sql .= " level = :level";
+        }
+        $sql .= " WHERE id = :role_id AND (SELECT id FROM roles WHERE name = 'admin') != :role_id1 AND (SELECT id FROM roles WHERE name = 'default') != :role_id2";
+        $statement = $connection->prepare($sql);
+        $statement->bindParam("role_id", $roleId);
+        $statement->bindParam("role_id1", $roleId);
+        $statement->bindParam("role_id2", $roleId);
+        if (isset($roleUpdateData->name)) {
+        $statement->bindParam("name", $roleUpdateData->name);
+        }
+        if (isset($roleUpdateData->description)) {
+        $statement->bindParam("description", $roleUpdateData->description);
+        }
+        if (isset($roleUpdateData->level)) {
+        $statement->bindParam("level", $roleUpdateData->level, PDO::PARAM_INT);
+        }
+        $statement->execute();
+        if ($statement->rowCount() !== 1) {
+            throw new HttpException(HttpStates::NOT_FOUND);
+        }
+    }
+
+    #[
+        Request("/single", HttpMethod::POST),
+        Secure("admin"),
+        Consumes(ContentType::APPLICATION_JSON)
+    ]
+    function addRole(
+        #[Json] RoleData $roleData
+    ) {
+        $connection = $this->database->getConnection();
+        $statement = $connection->prepare("INSERT INTO roles(name, description, level) VALUES (:name, :description, :level)");
+        try {
+            $statement->execute([
+                "name" => $roleData->name,
+                "description" => $roleData->description,
+                "level" => $roleData->level
+            ]);
+        } catch (PDOException $exception) {
+            if ($exception->getCode() == 23000) {
+                throw new HttpException(HttpStates::CONFLICT);
+            } else {
+                throw $exception;
+            }
+        }
+    }
+
+    #[
+        Request("/single", HttpMethod::DELETE),
+        Secure("admin")
+    ]
+    function removeRole(
+        #[PathVariable("role", true)] string $roleId
+    ) {
+        $connection = $this->database->getConnection();
+        $statement = $connection->prepare("DELETE FROM roles WHERE id = :role_id AND (SELECT id FROM roles WHERE name = 'admin') != :role_id AND (SELECT id FROM roles WHERE name = 'default') != :role_id");
+        $statement->execute([
+            "role_id" => $roleId
+        ]);
+        if ($statement->rowCount() !== 1) {
+            throw new HttpException(HttpStates::NOT_FOUND);
+        }
+    }
 }
