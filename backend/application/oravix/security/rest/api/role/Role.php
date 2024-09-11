@@ -138,11 +138,10 @@ class Role {
         $connection = $this->database->getConnection();
         $statement = $connection->prepare("INSERT INTO roles(name, description, level) VALUES (:name, :description, :level)");
         try {
-            $statement->execute([
-                "name" => $roleData->name,
-                "description" => $roleData->description,
-                "level" => $roleData->level
-            ]);
+            $statement->bindParam("name", $roleUpdateData->name);
+            $statement->bindParam("description", $roleUpdateData->description);
+            $statement->bindParam("level", $roleUpdateData->level, PDO::PARAM_INT);
+            $statement->execute();
         } catch (PDOException $exception) {
             if ($exception->getCode() == 23000) {
                 throw new HttpException(HttpStates::CONFLICT);
