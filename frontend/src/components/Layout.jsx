@@ -52,7 +52,7 @@ const Layout = () => {
                 <Grid item xs={4} sx={{
                     justifyContent: "space-around", display: "flex", height: "100%", alignItems: "center"
                 }}>
-                    <LogoIcon fontSize="large" sx={{height: "inherit"}} />
+                    <Link to="/dash/home" style={{width: "auto", height: "inherit", aspectRatio: "1/1", display: "flex", justifyContent: "center"}}><LogoIcon fontSize="large" sx={{height: "inherit"}} /></Link>
                 </Grid>
                 <Grid item xs={4} sx={{height: "100%", display: "flex", alignItems: "center"}}></Grid>
             </Toolbar>
@@ -111,7 +111,10 @@ const Layout = () => {
                                 <ListItemText primary="Add order" />
                             </ListItemButton>
                         </ListItem>
-                        <RoleRestricted role="admin">
+                    </List>
+                    <RoleRestricted role="admin">
+                        <List>
+                            <Divider />
                             <ListItem>
                                 <ListItemButton component={Link} to="/dash/roles">
                                     <ListItemIcon>
@@ -120,8 +123,16 @@ const Layout = () => {
                                     <ListItemText primary="Roles" />
                                 </ListItemButton>
                             </ListItem>
-                        </RoleRestricted>
-                    </List>
+                            <ListItem>
+                                <ListItemButton component={Link} to="/dash/roles/add">
+                                    <ListItemIcon>
+                                        <AddCircleIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Add role" />
+                                </ListItemButton>
+                            </ListItem>
+                        </List>
+                    </RoleRestricted>
                 </Secure>
             </Box>
         </Drawer>

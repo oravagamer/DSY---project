@@ -7,6 +7,8 @@ import {
     Card, CardActions, CardContent, Button, TextField, ButtonGroup
 } from '@mui/material';
 import useOravixSecurity from "../hooks/useOravixSecurity.js";
+import {Link} from "react-router-dom";
+import RoleRestricted from "../components/RoleRestricted.jsx";
 
 const EditProfile = () => {
     const {id} = useParams();
@@ -141,7 +143,8 @@ const EditProfile = () => {
                     autoComplete="family-name" />
                 <Button variant="outlined">Change email</Button>
                 <Button variant="outlined">Change password</Button>
-                <Button variant="outlined" color="warning">Edit roles</Button>
+                <RoleRestricted role="admin"><Button variant="outlined" color="warning" component={Link}
+                                                     to={"../roles"}>Edit roles</Button></RoleRestricted>
             </CardContent>
             <CardActions>
                 <GoBack />

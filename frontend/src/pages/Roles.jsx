@@ -67,10 +67,11 @@ const Roles = () => {
             <TableBody>
                 {
                     data?.roles?.map && data?.roles.map(value => <TableRow key={value.id}>
-                    <TableCell>{value.name}</TableCell>
-                    <TableCell>{value.level}</TableCell>
-                    <TableCell>{value.description}</TableCell>
-                        {value.name === "admin" || value.name === "default" ? <TableCell /> : <TableCell><Link to={value.id}>Edit</Link></TableCell>}
+                        <TableCell>{value.name}</TableCell>
+                        <TableCell>{value.level}</TableCell>
+                        <TableCell>{value.description}</TableCell>
+                        {value.name === "admin" || value.name === "default" ? <TableCell /> :
+                            <TableCell><Link to={`edit/${value.id}`}>Edit</Link></TableCell>}
                     </TableRow>)
                 }
             </TableBody>

@@ -8,7 +8,7 @@ import useOravixSecurity from "../hooks/useOravixSecurity.js";
 
 const EditRole = () => {
     const {id} = useParams();
-    const {data, loading} = useOravixFetch(`${backendUrl}/role/single/?role=${id}`, {method: "GET"}, true, true, {
+    const {data, loading, refetch} = useOravixFetch(`${backendUrl}/role/single/?role=${id}`, {method: "GET"}, true, true, {
         name: "Loading", description: "Loading", level: 255
     });
     const [name, setName] = useState("");
@@ -25,11 +25,11 @@ const EditRole = () => {
             }, body: JSON.stringify({
                 ...(name === data.name ? {} : {name: name}), ...(description === data.description ? {} : {description: description}), ...(level === data.level ? {} : {level: Number.parseInt(level)})
             })
-        })
+        }).then(() => refetch())
     }
 
     const deleteRole = () => {
-        security.secureEncryptedFetch(`${backendUrl}/order?id=${id}`, {
+        security.secureEncryptedFetch(`${backendUrl}/role/single?role=${id}`, {
             method: "DELETE"
         })
             .then(async res => {

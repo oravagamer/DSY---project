@@ -107,11 +107,9 @@ class Role {
         if (isset($roleUpdateData->level)) {
             $sql .= " level = :level";
         }
-        $sql .= " WHERE id = :role_id AND (SELECT id FROM roles WHERE name = 'admin') != :role_id1 AND (SELECT id FROM roles WHERE name = 'default') != :role_id2";
+        $sql .= " WHERE id = :role_id AND name != 'admin' AND name != 'default'";
         $statement = $connection->prepare($sql);
         $statement->bindParam("role_id", $roleId);
-        $statement->bindParam("role_id1", $roleId);
-        $statement->bindParam("role_id2", $roleId);
         if (isset($roleUpdateData->name)) {
         $statement->bindParam("name", $roleUpdateData->name);
         }
@@ -138,9 +136,9 @@ class Role {
         $connection = $this->database->getConnection();
         $statement = $connection->prepare("INSERT INTO roles(name, description, level) VALUES (:name, :description, :level)");
         try {
-            $statement->bindParam("name", $roleUpdateData->name);
-            $statement->bindParam("description", $roleUpdateData->description);
-            $statement->bindParam("level", $roleUpdateData->level, PDO::PARAM_INT);
+            $statement->bindParam("name", $roleData->name);
+            $statement->bindParam("description", $roleData->description);
+            $statement->bindParam("level", $roleData->level, PDO::PARAM_INT);
             $statement->execute();
         } catch (PDOException $exception) {
             if ($exception->getCode() == 23000) {
@@ -159,7 +157,7 @@ class Role {
         #[PathVariable("role", true)] string $roleId
     ) {
         $connection = $this->database->getConnection();
-        $statement = $connection->prepare("DELETE FROM roles WHERE id = :role_id AND (SELECT id FROM roles WHERE name = 'admin') != :role_id AND (SELECT id FROM roles WHERE name = 'default') != :role_id");
+        $statement = $connection->prepare("DELETE FROM roles WHERE id = :role_id AND name <> 'admin' AND name <> 'default'");
         $statement->execute([
             "role_id" => $roleId
         ]);
