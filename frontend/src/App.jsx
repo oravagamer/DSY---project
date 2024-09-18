@@ -78,6 +78,10 @@ const App = () => {
                                             {
                                                 path: "edit",
                                                 element: <EditProfile />
+                                            },
+                                            {
+                                                path: "roles",
+                                                element: <EditUserRoles />
                                             }
                                         ]
                                     },
