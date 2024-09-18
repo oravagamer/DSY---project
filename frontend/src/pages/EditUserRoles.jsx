@@ -33,7 +33,10 @@ const EditUserRoles = () => {
             </TableHead>
             <TableBody>
                 <TableRow>
-                    <TableCell><Button color="error" variant="contained" onclick={() => {
+                    <TableCell></TableCell>
+                    <TableCell></TableCell>
+                    <TableCell></TableCell>
+                    <TableCell><Button color="error" variant="contained" onClick={() => {
       console.log("removed")
                     }}>Remove</Button></TableCell>
                 </TableRow>

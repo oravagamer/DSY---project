@@ -17,60 +17,11 @@ import Redirect from "./pages/Redirect.jsx";
 import EmailWait from "./pages/EmailWait.jsx";
 import RoleRestricted from "./components/RoleRestricted.jsx";
 import Roles from "./pages/Roles.jsx";
-import Roles from "./pages/EditUserRoles.jsx";
+import EditUserRoles from "./pages/EditUserRoles.jsx";
 import EditRole from "./pages/EditRole.jsx";
-import AddRole from "./pages/AddRole.jsx";
-import UsersRoles from "./pages/UsersRoles.jsx";
 
 const App = () => {
     const router = createBrowserRouter([{
-<<<<<<< HEAD
-        path: "/", errorElement: <ErrorPage />, element: <Layout />, children: [{
-            path: "login", element: <UnSecure><Login /></UnSecure>
-        }, {
-            path: "register", element: <UnSecure><Register /></UnSecure>
-        }, {
-            path: "redirect", element: <Redirect />
-        }, {
-            path: "email-wait", element: <EmailWait />
-        }, {
-            path: "dash", element: <Secure redirect={true}><Outlet /></Secure>, children: [{
-                path: "home", element: <Home />
-            }, {
-                path: "roles", element: <RoleRestricted role="admin"><Outlet /></RoleRestricted>, children: [{
-                    index: true, element: <Roles />
-                }, {
-                    path: "edit/:id", element: <EditRole />
-                }, {
-                    path: "add", element: <AddRole />
-                }]
-            }, {
-                path: "user", children: [{
-                    path: ":id", children: [{
-                        index: true, element: <Profile />
-                    }, {
-                        path: "edit", element: <EditProfile />
-                    }, {
-                        path: "roles", element: <UsersRoles />
-                    }]
-                }, {
-                    index: true, element: <Users />
-                }]
-            }, {
-                path: "order", children: [{
-                    path: "add", element: <AddOrder />
-                }, {
-                    path: ":id", children: [{
-                        index: true, element: <Order />
-                    }, {
-                        path: "edit", element: <EditOrder />
-                    }]
-                }]
-            }]
-        }]
-    }]);
-    return (<RouterProvider router={router} />)
-=======
             path: "/",
             errorElement: <ErrorPage />,
             element: <Layout />,
@@ -170,7 +121,6 @@ const App = () => {
     return (
         <RouterProvider router={router} />
     )
->>>>>>> refs/remotes/origin/master
 }
 
 export default App
