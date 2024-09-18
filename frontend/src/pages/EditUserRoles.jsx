@@ -13,6 +13,7 @@ import {
     TablePagination,
     TableRow,
     Divider,
+    Button
 
 } from '@mui/material';
 import {Link} from "react-router-dom";
@@ -27,17 +28,15 @@ const EditUserRoles = () => {
                     <TableCell>Name</TableCell>
                     <TableCell>Description</TableCell>
                     <TableCell>Level</TableCell>
+                    <TableCell>Action</TableCell>
                 </TableRow>
             </TableHead>
             <TableBody>
-                {
-                    data?.roles?.map && data?.roles.map(value => <TableRow key={value.id}>
-                    <TableCell>{value.name}</TableCell>
-                    <TableCell>{value.level}</TableCell>
-                    <TableCell>{value.description}</TableCell>
-                        {value.name === "admin" || value.name === "default" ? <TableCell /> : <TableCell><Link to={value.id}>Edit</Link></TableCell>}
-                    </TableRow>)
-                }
+                <TableRow>
+                    <TableCell><Button color="error" variant="contained" onclick={() => {
+      console.log("removed")
+                    }}>Remove</Button></TableCell>
+                </TableRow>
             </TableBody>
         </Table>
     </TableContainer>)
