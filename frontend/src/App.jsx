@@ -17,6 +17,7 @@ import Redirect from "./pages/Redirect.jsx";
 import EmailWait from "./pages/EmailWait.jsx";
 import RoleRestricted from "./components/RoleRestricted.jsx";
 import Roles from "./pages/Roles.jsx";
+import Roles from "./pages/EditUserRoles.jsx";
 import EditRole from "./pages/EditRole.jsx";
 
 const App = () => {
