@@ -106,4 +106,106 @@ class User {
         }
     }
 
+    #[
+        Request(
+            "/roles",
+            HttpMethod::GET
+        ),
+        Produces(ContentType::APPLICATION_JSON),
+        Secure
+    ]
+    function getUserRoles(
+        #[
+            PathVariable("id", true)
+        ] $userId
+    ) {
+        $connection = $this->database->getConnection();
+        $statement = $connection->prepare('SELECT id, name, description, level FROM user_with_role JOIN roles ON roles.id = role_id WHERE user_id = :id');
+        $statement->setFetchMode(PDO::FETCH_NAMED);
+        $statement->execute([
+            "id" => $userId
+        ]);
+        $data = $statement->fetchAll();
+        return new HttpResponse($data);
+    }
+
+    #[
+        Request(
+            "/roles",
+            HttpMethod::DELETE
+        ),
+        Secure("admin")
+    ]
+    function removeRoleToUser(
+        #[
+            PathVariable("user_id", true)
+        ] $userId,
+        #[
+            PathVariable("role_id", true)
+        ] $roleId
+    ) {
+        $connection = $this->database->getConnection();
+        $statement = $connection->prepare('DELETE FROM user_with_role WHERE user_id = :user_id AND role_id = :role_id');
+        $statement->execute([
+            "user_id" => $userId,
+            "role_id" => $roleId
+        ]);
+
+        if ($statement->rowCount() === 0) {
+            throw new HttpException(HttpStates::NOT_FOUND);
+        }
+    }
+
+    #[
+        Request(
+            "/roles",
+            HttpMethod::POST
+        ),
+        Produces(ContentType::APPLICATION_JSON),
+        Secure("admin")
+    ]
+    function addRoleToUser(
+        #[
+            PathVariable("user_id", true)
+        ] $userId,
+        #[
+            PathVariable("role_id", true)
+        ] $roleId
+    ) {
+        $connection = $this->database->getConnection();
+        $statement = $connection->prepare('INSERT INTO user_with_role(user_id, role_id) VALUES (:user_id, :role_id)');
+        $statement->execute([
+            "user_id" => $userId,
+            "role_id" => $roleId
+        ]);
+    }
+
+    #[
+        Request("/roles/not_users", HttpMethod::GET),
+        Produces(ContentType::APPLICATION_JSON),
+        Secure("admin")
+    ]
+    function getAllRoles(#[PathVariable("page", true)] int        $page,
+                         #[PathVariable("count", true)] int       $rowsPerPage,
+                         #[PathVariable("user_id", true)]         $userId,
+                         #[PathVariable("sort-by", false)] string $sortBy = "name",
+                         #[PathVariable("asc", false)] bool       $ascending = true
+    ) {
+        $connection = $this->database->getConnection();
+        if (!in_array($sortBy, array("name", "level"))) {
+            throw new HttpException(HttpStates::BAD_REQUEST, "Please use existing column");
+        }
+        $statement = $connection->prepare(sprintf("SELECT id, name, description, level FROM roles WHERE id NOT IN (SELECT role_id FROM user_with_role WHERE user_id = :user_id) ORDER BY %s %s LIMIT :number_of_records OFFSET :start_index", $sortBy, $ascending ? "ASC" : "DESC"));
+        $statement->execute([
+            "start_index" => $page * $rowsPerPage,
+            "number_of_records" => $rowsPerPage,
+            "user_id" => $userId
+        ]);
+        $data["roles"] = $statement->fetchAll(PDO::FETCH_NAMED);
+        $statement = $connection->prepare("SELECT COUNT(id) AS count FROM roles WHERE id NOT IN (SELECT role_id FROM user_with_role WHERE user_id = :user_id)");
+        $statement->execute(["user_id" => $userId]);
+        $data = [...$data, ...$statement->fetch(PDO::FETCH_NAMED)];
+        return new HttpResponse($data, HttpStates::OK);
+    }
+
 }
