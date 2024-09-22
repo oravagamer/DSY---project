@@ -11,7 +11,7 @@ const Login = () => {
     const [passwordValid, setPasswordValid] = useState("");
     const [usernameValid, setUsernameValid] = useState("");
     const [usernameFocus, setUsernameFocus] = useState(false);
-    const [logged, setLoggeded] = useState(false);
+    const [logged, setLogged] = useState(false);
     const login = event => {
         event.preventDefault();
         oravixSecurity
@@ -21,7 +21,7 @@ const Login = () => {
                     setPasswordValid("Data does not match");
                     setUsernameValid("Data does not match");
                 } else {
-                    setLoggeded(true);
+                    setLogged(true);
                 }
             })
     }
@@ -50,13 +50,11 @@ const Login = () => {
                         setUsernameValid("");
                     }}
                     sx={{mb: 1.5, width: '25ch'}}
-                    inputProps={{minLength: 3}}
                     focused={usernameFocus || usernameValid !== ""}
                     onFocus={() => setUsernameFocus(true)}
                     onBlur={() => setUsernameFocus(false)}
                     onInvalid={event => {
                         event.preventDefault();
-                        setUsernameValid(event.target.value.length < 3 ? "Min 3 chars" : "");
                     }}
                     autoComplete="username email" />
                 <PasswordInput
@@ -64,7 +62,7 @@ const Login = () => {
                     setPassword={setPassword}
                     autoComplete="current-password"
                     message={passwordValid}
-                    sx={{m: 1, width: '25ch'}} />
+                    sx={{m: 1, width: '25ch'}} helperText={<Link to="/activate">Activate account</Link>} />
             </CardContent>
             <CardActions align="center" display="flex" sx={{paddingY: "20px", justifyContent: "space-around"}}>
                 <Button component={Link} to="/register">Register</Button>

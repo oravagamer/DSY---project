@@ -83,6 +83,43 @@ class SecurityHttpActions {
 
     #[
         Request(
+            "/activate",
+            HttpMethod::POST
+        ),
+        Consumes(ContentType::TEXT_PLAIN)
+    ]
+    function activate(
+        #[PlainText] string                   $usernameOrEmail,
+        #[PathVariable("redirect-url", true)] $redirectUrl,
+        #[HeaderInput("win-id")]              $windowId
+    ): void {
+        if (str_contains("@", $usernameOrEmail)) {
+            $email = $usernameOrEmail;
+        } else {
+            $statement = $this->connection->prepare("SELECT email FROM users WHERE username = :username");
+            $statement->execute([
+                "username" => $usernameOrEmail
+            ]);
+            [
+                "email" => $email
+            ] = $statement->fetch(PDO::FETCH_NAMED);
+        }
+        try {
+            self::$security->createRedirectEmailSession("activate", json_encode([
+                "redirect-url" => $redirectUrl,
+                "win-id" => $windowId
+            ]), $email);
+        } catch (PDOException $e) {
+            if ($e->getCode() == 23000) {
+                throw new HttpException(HttpStates::CONFLICT, $e->getMessage());
+            } else {
+                throw $e;
+            }
+        }
+    }
+
+    #[
+        Request(
             "/login",
             HttpMethod::POST
         ),
@@ -200,6 +237,7 @@ class SecurityHttpActions {
         ]);
         switch ($action) {
             case "register":
+            case "activate":
             {
                 $this
                     ->connection

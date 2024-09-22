@@ -6,9 +6,10 @@ import InputAdornment from '@mui/material/InputAdornment';
 import FormControl from '@mui/material/FormControl';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import FormHelperText from "@mui/material/FormHelperText"
 import "./PasswordInput.css";
 
-const PasswordInput = ({setPassword, password, autoComplete, sx = {}, required = false, message = ""}) => {
+const PasswordInput = ({setPassword, password, autoComplete, sx = {}, required = false, message = "", helperText=""}) => {
     const [showPassword, setShowPassword] = useState(false);
     const [validText, setValidText] = useState("");
     const [focus, setFocus] = useState(false);
@@ -67,6 +68,7 @@ const PasswordInput = ({setPassword, password, autoComplete, sx = {}, required =
                 </IconButton>
             </InputAdornment>}
         />
+        <FormHelperText sx={{display: "flex", justifyContent: "right"}}>{helperText}</FormHelperText>
     </FormControl>)
 }
 

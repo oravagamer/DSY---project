@@ -9,7 +9,11 @@ const useOravixSecurity = () => {
         return data === null ? undefined : data.accessToken.payload.sub;
     }
 
-    return {security: context.oravixSecurity, getUserId: getUserId};
+    const getWinId = () => {
+        return sessionStorage.getItem("win-id")
+    }
+
+    return {security: context.oravixSecurity, getUserId: getUserId, winId: getWinId};
 
 }
 

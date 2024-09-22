@@ -19,6 +19,9 @@ import RoleRestricted from "./components/RoleRestricted.jsx";
 import Roles from "./pages/Roles.jsx";
 import EditUserRoles from "./pages/EditUserRoles.jsx";
 import EditRole from "./pages/EditRole.jsx";
+import Activate from "./pages/Activate.jsx";
+import ChangeEmail from "./pages/ChangeEmail.jsx";
+import ChangePassword from "./pages/ChangePassword.jsx";
 
 const App = () => {
     const router = createBrowserRouter([{
@@ -30,6 +33,10 @@ const App = () => {
                     {
                         path: "login",
                         element: <UnSecure><Login /></UnSecure>
+                    },
+                    {
+                        path: "activate",
+                        element: <UnSecure><Activate /></UnSecure>
                     },
                     {
                         path: "register",
@@ -82,7 +89,15 @@ const App = () => {
                                             {
                                                 path: "roles",
                                                 element: <EditUserRoles />
-                                            }
+                                            },
+                                            {
+                                                path: "email",
+                                                element: <ChangeEmail />
+                                            },
+                                            {
+                                                path: "password",
+                                                element: <ChangePassword />
+                                            },
                                         ]
                                     },
                                     {

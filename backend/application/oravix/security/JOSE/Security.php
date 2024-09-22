@@ -10,6 +10,7 @@ use oravix\HTTP\HttpStates;
 use oravix\security\rest\api\data\LoginData;
 use oravix\security\rest\api\data\TokensData;
 use PDO;
+use PDOException;
 use ReflectionClass;
 
 class Security {
@@ -141,12 +142,20 @@ class Security {
     public function createRedirectEmailSession(string $action, string $parameters, string $to, ?string $userId = null): void {
         if (is_null($userId)) {
             $statement = $this->connection->prepare("SELECT id from users WHERE email = :email");
-            $statement->execute([
-                "email" => $to
-            ]);
-            [
-                "id" => $userId
-            ] = $statement->fetch();
+            try {
+                $statement->execute([
+                    "email" => $to
+                ]);
+                [
+                    "id" => $userId
+                ] = $statement->fetch();
+            } catch (PDOException $e) {
+                if ($e->getCode() == 23000) {
+                    throw new HttpException(HttpStates::CONFLICT, $e->getMessage());
+                } else {
+                    throw $e;
+                }
+            }
         }
         $sessionId = $this->createSession($action, $parameters, $userId);
         parse_str($_SERVER["REDIRECT_QUERY_STRING"], $query);

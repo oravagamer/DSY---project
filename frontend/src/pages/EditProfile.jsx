@@ -141,8 +141,8 @@ const EditProfile = () => {
                         }
                     }}
                     autoComplete="family-name" />
-                <Button variant="outlined">Change email</Button>
-                <Button variant="outlined">Change password</Button>
+                <Button variant="outlined" component={Link} to="../email">Change email</Button>
+                <Button variant="outlined" component={Link} to="../password">Change password</Button>
                 <RoleRestricted role="admin"><Button variant="outlined" color="warning" component={Link}
                                                      to={"../roles"}>Edit roles</Button></RoleRestricted>
             </CardContent>
