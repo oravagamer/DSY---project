@@ -37,8 +37,10 @@ const EditProfile = () => {
                 username: username, first_name: firstName, last_name: lastName
             })
         }).then(res => {
-            setUsernameFocus(true);
-            setUsernameValid("Username already used");
+            if (res.status >= 400) {
+                setUsernameFocus(true);
+                setUsernameValid("Username already used");
+            }
         })
     }
     const deleteUser = () => {

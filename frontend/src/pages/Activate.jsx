@@ -3,22 +3,19 @@ import {Typography, TextField, Button, CardContent, CardActions, Card} from "@mu
 import EmailWait from "./EmailWait.jsx";
 import GoBack from "../components/GoBack.jsx";
 import useOravixSecurity from "../hooks/useOravixSecurity.js";
-import {backendUrl} from "../../settings.js";
 
 const Activate = () => {
     const [username, setUsername] = useState("");
     const {security, winId} = useOravixSecurity();
+    const [loading, setLoading] = useState(false);
 
 
     const activate = e => {
         e.preventDefault();
-        security.encryptedFetch(`${backendUrl}/security/activate?redirect-url=${encodeURIComponent(`${window.location.origin}/login`)}&win-id=${winId()}`, {
-            method: "POST",
-            body: username
-        }).then(res => console.log(res))
+        security.activate(username, `${window.location.origin}/login`);
     }
 
-    return (<>
+    return (loading ? <EmailWait /> : (<>
         <Card
             sx={{width: "350px", height: "max-content", alignSelf: "center"}}
             component="form"
@@ -46,7 +43,7 @@ const Activate = () => {
                 <Button variant="contained" type="submit">Activate</Button>
             </CardActions>
         </Card>
-    </>)
+    </>))
 }
 
 export default Activate;

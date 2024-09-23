@@ -1,4 +1,5 @@
 import _sodium from "libsodium-wrappers";
+import {backendUrl} from "../settings.js";
 
 /**
  * @typedef {{header: {
@@ -191,9 +192,7 @@ class OravixSecurity {
             decrypted = "{}";
         }
         return {
-            headers: await res.headers,
-            status: await res.status,
-            body: decrypted
+            headers: await res.headers, status: await res.status, body: decrypted
         }
     }
 
@@ -214,6 +213,13 @@ class OravixSecurity {
         return status;
     }
 
+    async activate(nameOrPassword, redirect = window.location.origin) {
+        const res = await this.encryptedFetch(`${backendUrl}/security/activate?redirect-url=${encodeURIComponent(redirect)}&win-id=${this.#winId}`, {
+            method: "POST", body: nameOrPassword
+        });
+        return res.status;
+    }
+
     logout() {
         const url = this.#url;
         this.encryptedFetch(`${url}/logout`, {
@@ -229,12 +235,17 @@ class OravixSecurity {
         })
     }
 
-    changePassword() {
-
+    changePassword(password) {
+        this.secureEncryptedFetch(`${backendUrl}/security/change-password`, {
+            method: "POST",
+            body: password
+        })
     }
 
-    changeEmail(newEmail) {
-
+    changeEmail(newEmail, redirect) {
+        this.secureEncryptedFetch(`${backendUrl}/security/change-email?email=${encodeURIComponent(newEmail)}&redirect-url=${encodeURIComponent(redirect)}`, {
+            method: "POST"
+        })
     }
 
     async register(username, password, firstName, lastName, email, redirect = window.location.toString()) {

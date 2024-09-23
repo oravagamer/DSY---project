@@ -1,9 +1,9 @@
 import {useEffect, useState} from "react";
-import oravixSecurity from "../security.js";
 import {Link, useNavigate} from "react-router-dom";
 import {Typography, TextField, Button, CardContent, CardActions, Card} from "@mui/material";
 import PasswordInput from "../components/PasswordInput.jsx";
 import EmailWait from "./EmailWait.jsx";
+import useOravixSecurity from "../hooks/useOravixSecurity.js";
 
 const Login = () => {
     const [username, setUsername] = useState("");
@@ -12,14 +12,15 @@ const Login = () => {
     const [usernameValid, setUsernameValid] = useState("");
     const [usernameFocus, setUsernameFocus] = useState(false);
     const [logged, setLogged] = useState(false);
+    const {security} = useOravixSecurity();
     const login = event => {
         event.preventDefault();
-        oravixSecurity
+        security
             .login(username, password)
             .then(async res => {
                 if (await res === 403) {
-                    setPasswordValid("Data does not match");
-                    setUsernameValid("Data does not match");
+                    setPasswordValid("Incorrect data or inactive");
+                    setUsernameValid("Incorrect data or inactive");
                 } else {
                     setLogged(true);
                 }

@@ -23,15 +23,15 @@ import AddCircleIcon from '@mui/icons-material/AddCircle';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import {useState} from "react";
 import Secure from "./Secure.jsx";
-import oravixSecurity from "../security.js";
 import useOravixSecurity from "../hooks/useOravixSecurity.js";
 import LogoIcon from "./LogoIcon.jsx";
 import AccessibilityIcon from '@mui/icons-material/Accessibility';
 import RoleRestricted from "./RoleRestricted.jsx";
+import GroupIcon from '@mui/icons-material/Group';
 
 const Layout = () => {
     const [open, setOpen] = useState(false);
-    const {getUserId} = useOravixSecurity();
+    const {getUserId, security} = useOravixSecurity();
 
     return (<Box sx={{height: "100vh"}}>
         <AppBar sx={{height: "64px", position: "fixed", top: 0}}>
@@ -76,7 +76,7 @@ const Layout = () => {
                 onClick={() => setOpen(false)}>
                 <List>
                     <ListItem>
-                        <ListItemButton onClick={() => oravixSecurity.logout()}>
+                        <ListItemButton onClick={() => security.logout()}>
                             <ListItemIcon>
                                 <ExitToAppIcon />
                             </ListItemIcon>
@@ -129,6 +129,14 @@ const Layout = () => {
                                         <AddCircleIcon />
                                     </ListItemIcon>
                                     <ListItemText primary="Add role" />
+                                </ListItemButton>
+                            </ListItem>
+                            <ListItem>
+                                <ListItemButton component={Link} to="/dash/user">
+                                    <ListItemIcon>
+                                        <GroupIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Users" />
                                 </ListItemButton>
                             </ListItem>
                         </List>

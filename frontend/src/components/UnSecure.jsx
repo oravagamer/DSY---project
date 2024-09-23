@@ -1,12 +1,13 @@
 import {Navigate} from "react-router-dom";
-import oravixSecurity from "../security.js";
 import {useEffect, useState} from "react"
+import useOravixSecurity from "../hooks/useOravixSecurity.js";
 
 const UnSecure = (props) => {
     const [isSecure, setIsSecure] = useState(false);
+    const {security} = useOravixSecurity();
 
     useEffect(() => {
-        setIsSecure(oravixSecurity
+        setIsSecure(security
             .isSecure())
     }, [isSecure]);
 

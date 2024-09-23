@@ -8,7 +8,7 @@ CREATE TABLE users
     first_name VARCHAR(255)  NOT NULL,
     last_name  VARCHAR(255)  NOT NULL,
     username   VARCHAR(255)  NOT NULL UNIQUE,
-    email      VARCHAR(255)  NOT NULL UNIQUE,
+    email      VARCHAR(255)  NOT NULL,
     password   VARCHAR(1023) NOT NULL,
     active     BOOLEAN       NOT NULL             DEFAULT FALSE
 );
@@ -27,7 +27,7 @@ CREATE TABLE roles
 (
     id          VARCHAR(36)  NOT NULL PRIMARY KEY DEFAULT UUID(),
     name        VARCHAR(255) NOT NULL UNIQUE,
-    level       BIT(8)       NOT NULL DEFAULT 255,
+    level       BIT(8)       NOT NULL             DEFAULT 255,
     description VARCHAR(255)
 );
 

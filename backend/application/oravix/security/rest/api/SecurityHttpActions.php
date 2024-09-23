@@ -150,10 +150,25 @@ class SecurityHttpActions {
     ]
     function changeEmail(
         #[SecurityUserId] string              $userId,
-        #[PathVariable("email", true)] string $email
-    ): HttpResponse {
-        if (self::$security->getUserEmailById($userId)) {
-            self::$security->createRedirectEmailSession("change-email", json_encode(["email" => $email]), $email);
+        #[PathVariable("email", true)] string $email,
+        #[PathVariable("redirect-url", true)] $redirectUrl,
+        #[HeaderInput("win-id")]              $windowId
+    ) {
+        if ($oldEmail = self::$security->getUserEmailById($userId)) {
+            $sessionId = self::$security->createSession("verify-email", json_encode(["old-email" => $email, "email" => $email, "redirect_url" => $redirectUrl, "win-id" => $windowId]), $userId);
+            parse_str($_SERVER["REDIRECT_QUERY_STRING"], $query);
+            [
+                "path" => $redirectString
+            ] = $query;
+            mail(
+                $oldEmail,
+                "Oravix change-email action",
+                "<a target='_blank' href='" . (new EncryptedURL($_SERVER["HTTP_X_FORWARDED_PROTO"] . "://" . $_SERVER["HTTP_X_FORWARDED_HOST"] . "/" . str_replace("change-email", "session", $redirectString), [
+                    "session" => $sessionId,
+                    "action" => "verify-email"
+                ], random_bytes(SODIUM_CRYPTO_BOX_NONCEBYTES)))->toString() . "'>Verify</a>",
+                'MIME-Version: 1.0' . "\r\n" . 'Content-type: text/html; charset=iso-8859-1' . "\r\n" . "From: DoNotReply@abell12.com"
+            );
         } else {
             return new HttpResponse(status: HttpStates::FORBIDDEN);
         }
@@ -164,15 +179,16 @@ class SecurityHttpActions {
             "/change-password",
             HttpMethod::POST
         ),
-        Consumes(ContentType::NO_CONTENT),
+        Consumes(ContentType::TEXT_PLAIN),
         Produces(ContentType::TEXT_PLAIN),
         Secure
     ]
     function changePassword(
-        #[SecurityUserId] string $userId
-    ): HttpResponse {
+        #[SecurityUserId] string $userId,
+        #[PlainText] string      $password
+    ) {
         if ($email = self::$security->getUserEmailById($userId)) {
-            self::$security->createRedirectEmailSession("change-password", "", $email);
+            self::$security->createRedirectEmailSession("change-password", json_encode(["password" => password_hash($password, PASSWORD_DEFAULT), "redirect-url" => $_ENV["settings"]["JWT_DEFAULT_URL"]]), $email);
         } else {
             return new HttpResponse(status: HttpStates::FORBIDDEN);
         }
@@ -274,14 +290,52 @@ class SecurityHttpActions {
                     ->connection
                     ->prepare("UPDATE users SET email = :email WHERE id = :id")
                     ->execute([
-                        "email" => json_decode($parameters, true)["email"],
+                        "email" => $parameters["old-email"],
                         "id" => $userId
                     ]);
+                return new HttpResponse(status: HttpStates::MOVED_PERMANENTLY, headers: [
+                    new HttpHeader("Location",
+                        (new EncryptedURL($_ENV["settings"]["JWT_REDIRECT_URL"], [
+                            "redirect-url" => $parameters["redirect-url"],
+                            "win-id" => $parameters["win-id"]
+                        ], random_bytes(SODIUM_CRYPTO_BOX_NONCEBYTES)))->toString())
+                ]);
+            }
+            case "verify-email":
+            {
+                parse_str($_SERVER["REDIRECT_QUERY_STRING"], $query);
+                [
+                    "path" => $redirectString
+                ] = $query;
+                $sessionId = self::$security->createSession("change-email", json_encode($parameters), $userId);
+                mail(
+                    $parameters["email"],
+                    "Oravix change-email action",
+                    "<a target='_blank' href='" . (new EncryptedURL($_SERVER["HTTP_X_FORWARDED_PROTO"] . "://" . $_SERVER["HTTP_X_FORWARDED_HOST"] . "/" . str_replace($action, "session", $redirectString), [
+                        "session" => $sessionId,
+                        "action" => "change-email"
+                    ], random_bytes(SODIUM_CRYPTO_BOX_NONCEBYTES)))->toString() . "'>Verify</a>",
+                    'MIME-Version: 1.0' . "\r\n" . 'Content-type: text/html; charset=iso-8859-1' . "\r\n" . "From: DoNotReply@abell12.com"
+                );
+                echo "Close tab";
                 break;
             }
             case "change-password":
             {
-                break;
+                $this
+                    ->connection
+                    ->prepare("UPDATE users SET password = :password WHERE id = :id")
+                    ->execute([
+                        "password" => $parameters["password"],
+                        "id" => $userId
+                    ]);
+                return new HttpResponse(status: HttpStates::MOVED_PERMANENTLY, headers: [
+                    new HttpHeader("Location",
+                        (new EncryptedURL($_ENV["settings"]["JWT_REDIRECT_URL"], [
+                            "redirect-url" => $parameters["redirect-url"],
+                            "win-id" => $parameters["win-id"]
+                        ], random_bytes(SODIUM_CRYPTO_BOX_NONCEBYTES)))->toString())
+                ]);
             }
         }
 

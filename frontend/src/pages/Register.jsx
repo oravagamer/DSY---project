@@ -1,5 +1,4 @@
 import {useState} from "react";
-import oravixSecurity from "../security.js";
 import {Link} from "react-router-dom";
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
@@ -9,9 +8,8 @@ import TextField from '@mui/material/TextField';
 import Typography from "@mui/material/Typography";
 import PasswordInput from "../components/PasswordInput.jsx";
 import {frontendUrl} from "../../settings.js";
-import {useNavigate} from 'react-router-dom';
-import Redirect from "./Redirect.jsx";
 import EmailWait from "./EmailWait.jsx";
+import useOravixSecurity from "../hooks/useOravixSecurity.js";
 
 const Register = () => {
     const [username, setUsername] = useState("");
@@ -28,10 +26,11 @@ const Register = () => {
     const [lastNameFocus, setLastNameFocus] = useState(false);
     const [emailFocus, setEmailFocus] = useState(false);
     const [registered, setRegistered] = useState(false);
+    const {security} = useOravixSecurity();
 
     const register = event => {
         event.preventDefault();
-        oravixSecurity
+        security
             .register(username, password, firstName, lastName, email, frontendUrl + "/login")
             .then(async res => {
                 let value = await res;

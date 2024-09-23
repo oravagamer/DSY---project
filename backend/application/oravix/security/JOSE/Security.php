@@ -164,8 +164,8 @@ class Security {
         ] = $query;
         mail(
             $to,
-            "Oravix login verification",
-            "<a target='_blank' href='" . (new EncryptedURL($_SERVER["HTTP_X_FORWARDED_PROTO"] . "://" . $_SERVER["HTTP_X_FORWARDED_HOST"] . "/" . str_replace($action, "session", $redirectString), [
+            "Oravix " . $action . " action",
+            "<a target='_blank' href='" . (new EncryptedURL($_SERVER["HTTP_X_FORWARDED_PROTO"] . "://" . $_SERVER["HTTP_X_FORWARDED_HOST"] . "/" .  str_replace($action, "session", $redirectString), [
                 "session" => $sessionId,
                 "action" => $action
             ], random_bytes(SODIUM_CRYPTO_BOX_NONCEBYTES)))->toString() . "'>Verify</a>",
@@ -174,7 +174,7 @@ class Security {
     }
 
     public function getUserEmailWithVerification(LoginData $loginData): false|string {
-        $statement = $this->connection->prepare("SELECT id, password, email FROM users WHERE username = :username OR email = :username");
+        $statement = $this->connection->prepare("SELECT id, password, email FROM users WHERE (username = :username OR email = :username) AND active = TRUE");
         $statement->execute([
             "username" => $loginData->username
         ]);

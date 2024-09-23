@@ -37,7 +37,7 @@ class Users {
         if (!in_array($sortBy, array("username", "first_name", "last_name", "email"))) {
             throw new HttpException(HttpStates::BAD_REQUEST, "Please use existing column");
         }
-        $statement = $connection->prepare(sprintf("SELECT first_name, last_name, username, email, id FROM users ORDER BY %s %s LIMIT :number_of_records OFFSET :start_index", $sortBy, $ascending ? "ASC" : "DESC"));
+        $statement = $connection->prepare(sprintf("SELECT first_name, last_name, username, email, id, active FROM users ORDER BY %s %s LIMIT :number_of_records OFFSET :start_index", $sortBy, $ascending ? "ASC" : "DESC"));
         $statement->execute([
             "start_index" => $page * $rowsPerPage,
             "number_of_records" => $rowsPerPage
