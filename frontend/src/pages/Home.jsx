@@ -46,7 +46,7 @@ const Home = () => {
             <Input
                 id="table-search"
                 type="text"
-                placeholder="Search {in:<Column> <Value>}"
+                placeholder="Search {in:<Column>: <Value>}"
                 endAdornment={<InputAdornment position="end">
                     <IconButton
                         edge="end"

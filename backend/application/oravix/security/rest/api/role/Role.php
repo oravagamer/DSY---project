@@ -11,6 +11,8 @@ use oravix\HTTP\HttpMethod;
 use oravix\HTTP\HttpResponse;
 use oravix\HTTP\HttpStates;
 use oravix\HTTP\input\Json;
+use oravix\HTTP\input\PageInput;
+use oravix\HTTP\input\PageInputParams;
 use oravix\HTTP\input\PathVariable;
 use oravix\HTTP\Produces;
 use oravix\HTTP\Request;
@@ -50,18 +52,14 @@ class Role {
         Produces(ContentType::APPLICATION_JSON),
         Secure("admin")
     ]
-    function getAllRoles(#[PathVariable("page", true)] int        $page,
-                         #[PathVariable("count", true)] int       $rowsPerPage,
-                         #[PathVariable("sort-by", false)] string $sortBy = "name",
-                         #[PathVariable("asc", false)] bool       $ascending = true) {
+    function getAllRoles(
+        #[PageInputParams("username", array("name", "level"))] PageInput $pageInput
+    ) {
         $connection = $this->database->getConnection();
-        if (!in_array($sortBy, array("name", "level"))) {
-            throw new HttpException(HttpStates::BAD_REQUEST, "Please use existing column");
-        }
-        $statement = $connection->prepare(sprintf("SELECT id, name, description, level FROM roles ORDER BY %s %s LIMIT :number_of_records OFFSET :start_index", $sortBy, $ascending ? "ASC" : "DESC"));
+        $statement = $connection->prepare(sprintf("SELECT id, name, description, level FROM roles ORDER BY %s %s LIMIT :number_of_records OFFSET :start_index", $pageInput->sortBy, $pageInput->ascending ? "ASC" : "DESC"));
         $statement->execute([
-            "start_index" => $page * $rowsPerPage,
-            "number_of_records" => $rowsPerPage
+            "start_index" => $pageInput->page * $pageInput->rowsPerPage,
+            "number_of_records" => $pageInput->rowsPerPage
         ]);
         $data["roles"] = $statement->fetchAll(PDO::FETCH_NAMED);
         $statement = $connection->prepare("SELECT COUNT(*) AS count FROM roles");
@@ -111,13 +109,13 @@ class Role {
         $statement = $connection->prepare($sql);
         $statement->bindParam("role_id", $roleId);
         if (isset($roleUpdateData->name)) {
-        $statement->bindParam("name", $roleUpdateData->name);
+            $statement->bindParam("name", $roleUpdateData->name);
         }
         if (isset($roleUpdateData->description)) {
-        $statement->bindParam("description", $roleUpdateData->description);
+            $statement->bindParam("description", $roleUpdateData->description);
         }
         if (isset($roleUpdateData->level)) {
-        $statement->bindParam("level", $roleUpdateData->level, PDO::PARAM_INT);
+            $statement->bindParam("level", $roleUpdateData->level, PDO::PARAM_INT);
         }
         $statement->execute();
         if ($statement->rowCount() !== 1) {

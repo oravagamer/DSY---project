@@ -9,6 +9,8 @@ use oravix\HTTP\Controller;
 use oravix\HTTP\HttpMethod;
 use oravix\HTTP\HttpResponse;
 use oravix\HTTP\HttpStates;
+use oravix\HTTP\input\PageInput;
+use oravix\HTTP\input\PageInputParams;
 use oravix\HTTP\input\PathVariable;
 use oravix\HTTP\Produces;
 use oravix\HTTP\Request;
@@ -28,19 +30,13 @@ class Users {
         Secure
     ]
     function getUsers(
-        #[PathVariable("page", true)] int        $page,
-        #[PathVariable("count", true)] int       $rowsPerPage,
-        #[PathVariable("sort-by", false)] string $sortBy = "username",
-        #[PathVariable("asc", false)] bool       $ascending = true
+        #[PageInputParams("username", array("username", "first_name", "last_name", "email"))] PageInput $pageInput
     ) {
         $connection = (new Database())->getConnection();
-        if (!in_array($sortBy, array("username", "first_name", "last_name", "email"))) {
-            throw new HttpException(HttpStates::BAD_REQUEST, "Please use existing column");
-        }
-        $statement = $connection->prepare(sprintf("SELECT first_name, last_name, username, email, id, active FROM users ORDER BY %s %s LIMIT :number_of_records OFFSET :start_index", $sortBy, $ascending ? "ASC" : "DESC"));
+        $statement = $connection->prepare(sprintf("SELECT first_name, last_name, username, email, id, active FROM users ORDER BY %s %s LIMIT :number_of_records OFFSET :start_index", $pageInput->sortBy, $pageInput->ascending ? "ASC" : "DESC"));
         $statement->execute([
-            "start_index" => $page * $rowsPerPage,
-            "number_of_records" => $rowsPerPage
+            "start_index" => $pageInput->page * $pageInput->rowsPerPage,
+            "number_of_records" => $pageInput->rowsPerPage
         ]);
         $statement->setFetchMode(PDO::FETCH_NAMED);
         $data = $statement->fetchAll();

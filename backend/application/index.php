@@ -1,5 +1,6 @@
 <?php
 
+use oravix\exceptions\HttpException;
 use oravix\HTTP\ContentType;
 use oravix\HTTP\Controller;
 use oravix\HTTP\HttpStates;
@@ -8,6 +9,8 @@ use oravix\HTTP\input\HeaderInput;
 use oravix\HTTP\input\Json;
 use oravix\HTTP\input\multipart\File;
 use oravix\HTTP\input\multipart\FormData;
+use oravix\HTTP\input\PageInput;
+use oravix\HTTP\input\PageInputParams;
 use oravix\HTTP\input\PathVariable;
 use oravix\HTTP\input\PlainText;
 use oravix\HTTP\Request;
@@ -24,6 +27,8 @@ require_once "./oravix/HTTP/input/FileUpload.php";
 require_once "./oravix/HTTP/input/HeaderInput.php";
 require_once "./oravix/HTTP/input/Json.php";
 require_once "./oravix/HTTP/input/JsonValue.php";
+require_once "./oravix/HTTP/input/PageInput.php";
+require_once "./oravix/HTTP/input/PageInputParams.php";
 require_once "./oravix/HTTP/input/PathVariable.php";
 require_once "./oravix/HTTP/input/PlainText.php";
 require_once "./oravix/HTTP/Consumes.php";
@@ -277,6 +282,37 @@ try {
                     $methodPrams[] = $encrypted ? decrypt($payload, $nonce, $encryptionKeypair) : $payload;
                 } elseif ($attribute->getName() === HeaderInput::class) {
                     $methodPrams[] = apache_request_headers()[$attribute->getArguments()[0]];
+                } elseif ($attribute->getName() === PageInputParams::class) {
+                    $inputParams = $attribute->newInstance();
+                    if (!isset($urlPartsQuery["page"])) {
+                        statusExit(HttpStates::BAD_REQUEST, "Please set variable: page");
+                    } else if (!isset($urlPartsQuery["count"])) {
+                        statusExit(HttpStates::BAD_REQUEST, "Please set variable: count");
+                    }
+                    $sortBy = "";
+                    $asc = $inputParams->ascending;
+                    $searchedColumn = null;
+                    $searchedValue = null;
+                    if (isset($urlPartsQuery["sort-by"])) {
+                        $sortBy = decrypt($urlPartsQuery["sort-by"], $nonce, $encryptionKeypair);
+                    }
+                    if (isset($urlPartsQuery["asc"])) {
+                        $asc = decrypt($urlPartsQuery["asc"], $nonce, $encryptionKeypair);
+                    }
+                    if (isset($urlPartsQuery["searched-column"])) {
+                        $searchedColumn = decrypt($urlPartsQuery["searched-column"], $nonce, $encryptionKeypair);
+                    }
+                    if (isset($urlPartsQuery["searched-value"])) {
+                        $searchedValue = decrypt($urlPartsQuery["searched-value"], $nonce, $encryptionKeypair);
+                    }
+                    $page = $encrypted ? decrypt($urlPartsQuery["page"], $nonce, $encryptionKeypair) : $urlPartsQuery["page"];
+                    $count = $encrypted ? decrypt($urlPartsQuery["count"], $nonce, $encryptionKeypair) : $urlPartsQuery["count"];
+                    $asc = $encrypted ? decrypt($urlPartsQuery["asc"], $nonce, $encryptionKeypair) : $urlPartsQuery["asc"];
+                    if (!in_array($sortBy, $inputParams->allowedColumns) && $inputParams->allowedColumns !== []) {
+                        throw new HttpException(HttpStates::BAD_REQUEST, "Please use existing column");
+                    }
+                    $pageInput = new PageInput($sortBy !== "" ? $sortBy : $inputParams->defaultSortBy, $page, $count, $asc, $searchedColumn, $searchedValue);
+                    $methodPrams[] = $pageInput;
                 }
             }
         }
