@@ -291,27 +291,19 @@ try {
                     }
                     $sortBy = "";
                     $asc = $inputParams->ascending;
-                    $searchedColumn = null;
-                    $searchedValue = null;
                     if (isset($urlPartsQuery["sort-by"])) {
-                        $sortBy = decrypt($urlPartsQuery["sort-by"], $nonce, $encryptionKeypair);
+                        $sortBy = $encrypted ? decrypt($urlPartsQuery["sort-by"], $nonce, $encryptionKeypair) : $urlPartsQuery["sort-by"];
                     }
                     if (isset($urlPartsQuery["asc"])) {
-                        $asc = decrypt($urlPartsQuery["asc"], $nonce, $encryptionKeypair);
-                    }
-                    if (isset($urlPartsQuery["searched-column"])) {
-                        $searchedColumn = decrypt($urlPartsQuery["searched-column"], $nonce, $encryptionKeypair);
-                    }
-                    if (isset($urlPartsQuery["searched-value"])) {
-                        $searchedValue = decrypt($urlPartsQuery["searched-value"], $nonce, $encryptionKeypair);
+                        $asc = $encrypted ? decrypt($urlPartsQuery["asc"], $nonce, $encryptionKeypair) : $urlPartsQuery["asc"];
                     }
                     $page = $encrypted ? decrypt($urlPartsQuery["page"], $nonce, $encryptionKeypair) : $urlPartsQuery["page"];
                     $count = $encrypted ? decrypt($urlPartsQuery["count"], $nonce, $encryptionKeypair) : $urlPartsQuery["count"];
                     $asc = $encrypted ? decrypt($urlPartsQuery["asc"], $nonce, $encryptionKeypair) : $urlPartsQuery["asc"];
                     if (!in_array($sortBy, $inputParams->allowedColumns) && $inputParams->allowedColumns !== []) {
-                        throw new HttpException(HttpStates::BAD_REQUEST, "Please use existing column");
+                        statusExit(HttpStates::BAD_REQUEST, "Please use existing column");
                     }
-                    $pageInput = new PageInput($sortBy !== "" ? $sortBy : $inputParams->defaultSortBy, $page, $count, $asc, $searchedColumn, $searchedValue);
+                    $pageInput = new PageInput($sortBy !== "" ? $sortBy : $inputParams->defaultSortBy, $page, $count, $asc);
                     $methodPrams[] = $pageInput;
                 }
             }
@@ -323,7 +315,7 @@ try {
         try {
             $response = $paths[$method][$requestedUrl]->invoke($classOfMethod, ...$methodPrams);
         } catch (Throwable|HttpException $e) {
-            if ($e instanceof \oravix\exceptions\HttpException) {
+            if ($e instanceof HttpException) {
                 $response = new \oravix\HTTP\HttpResponse($e->getMessage(), $e->getState());
             } else {
                 $response = new \oravix\HTTP\HttpResponse($e->getMessage(), HttpStates::INTERNAL_SERVER_ERROR);

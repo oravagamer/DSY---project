@@ -1,11 +1,8 @@
 import {backendUrl, frontendUrl} from "../../settings.js";
 import {Link} from "react-router-dom";
 import {useState, useEffect} from "react";
+import React from "react";
 import {
-    IconButton,
-    FormControl,
-    Input,
-    InputAdornment,
     Table,
     TableBody,
     TableCell,
@@ -14,22 +11,25 @@ import {
     TableHead,
     TablePagination,
     TableRow,
-    Divider
+    FormControlLabel,
+    Grid,
+    Switch
 } from '@mui/material';
 import useOravixFetch from "../hooks/useOravixFetch.js";
-import SearchIcon from '@mui/icons-material/Search';
 
 const Home = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [my, setMy] = useState(false);
+    const [completed, setCompleted] = useState(false);
     const [sorting, setSorting] = useState({
         sortBy: "date_created", asc: false
     });
     const {
         data, refetch, status
-    } = useOravixFetch(`${backendUrl}/orders/?page=${page}&count=${rowsPerPage}&sort-by=${sorting.sortBy}&asc=${+sorting.asc}`, {
+    } = useOravixFetch(`${backendUrl}/orders/?page=${page}&count=${rowsPerPage}&sort-by=${sorting.sortBy}&asc=${+sorting.asc}&completed=${+completed}&only-my=${+my}`, {
         method: "GET"
-    }, true, true, []);
+    }, true, false, []);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -42,20 +42,20 @@ const Home = () => {
     };
 
     return (<>
-        <FormControl sx={{m: "10px"}}>
-            <Input
-                id="table-search"
-                type="text"
-                placeholder="Search {in:<Column>: <Value>}"
-                endAdornment={<InputAdornment position="end">
-                    <IconButton
-                        edge="end"
-                    >
-                        <SearchIcon />
-                    </IconButton>
-                </InputAdornment>} />
-        </FormControl>
-        <Divider />
+        <Grid container>
+            <Grid item sx={{pl: "5px"}}>
+                <FormControlLabel control={<Switch onChange={e => {
+                    setMy(e.target.checked)
+                    refetch()
+                }} />} label="Only my" />
+            </Grid>
+            <Grid item>
+                <FormControlLabel control={<Switch onChange={e => {
+                    setCompleted(e.target.checked)
+                    refetch()
+                }} />} label="Completed" />
+            </Grid>
+        </Grid>
         <TableContainer
             sx={{width: "100%", flexGrow: 1, height: "100%"}}>
             <Table

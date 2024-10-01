@@ -42,20 +42,6 @@ const Home = () => {
     };
 
     return (<>
-        <FormControl sx={{m: "10px"}}>
-            <Input
-                id="table-search"
-                type="text"
-                placeholder="Search {in:<Column> <Value>}"
-                endAdornment={<InputAdornment position="end">
-                    <IconButton
-                        edge="end"
-                    >
-                        <SearchIcon />
-                    </IconButton>
-                </InputAdornment>} />
-        </FormControl>
-        <Divider />
         <TableContainer
             sx={{width: "100%", flexGrow: 1, height: "100%"}}>
             <Table

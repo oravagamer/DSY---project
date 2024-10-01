@@ -6,6 +6,7 @@ import {
     Card, CardActions, CardContent, Button, Typography, Dialog, DialogTitle, ImageList, ImageListItem
 } from '@mui/material';
 import useOravixFetch from "../hooks/useOravixFetch.js";
+import useOravixSecurity from "../hooks/useOravixSecurity.js";
 
 const Order = () => {
     const {id} = useParams();
@@ -13,14 +14,13 @@ const Order = () => {
     const {data} = useOravixFetch(backendUrl + "/order/?id=" + id, {
         method: "GET"
     }, true, true, {
-        name: "Loading",
-        description: "Loading",
-        created_date: "Loading",
-        status: -1
+        name: "Loading", description: "Loading", created_date: "Loading", status: -1
     });
-    const {data:  imgData, loading: imgLoading} = useOravixFetch(backendUrl + "/image/all?id=" + id, {
+    const {getUserId, security} = useOravixSecurity();
+    const {data: imgData, loading: imgLoading} = useOravixFetch(backendUrl + "/image/all?id=" + id, {
         method: "GET"
     }, true, true, []);
+    const {data: roles} = useOravixFetch(`${backendUrl}/role`, {method: "GET"}, true, true, []);
 
     return (<>
         <Card sx={{minWidth: "300px", alignSelf: "center", borderRadius: "5px"}} variant="outlined">
@@ -37,7 +37,8 @@ const Order = () => {
             </CardContent>
             <CardActions sx={{justifyContent: "space-between"}}>
                 <GoBack />
-                <Button component={Link} to="edit" variant="contained">Edit</Button>
+                <Button component={Link} to="edit" variant="contained"
+                        disabled={data.created_for !== getUserId() && data.created_by !== getUserId() && roles.find(value => value.name === "admin") === undefined}>Edit</Button>
             </CardActions>
         </Card>
         <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} fullWidth={true} scroll="body" maxWidth="lg">

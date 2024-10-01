@@ -6,9 +6,7 @@ class PageInput {
     public function __construct(public string  $sortBy,
                                 public int     $page,
                                 public int     $rowsPerPage,
-                                public bool    $ascending,
-                                public string|null $searchedColumnName,
-                                public mixed $searchedValue
+                                public bool    $ascending
     ) {
     }
 }

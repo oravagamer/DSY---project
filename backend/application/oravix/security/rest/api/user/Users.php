@@ -30,7 +30,7 @@ class Users {
         Secure
     ]
     function getUsers(
-        #[PageInputParams("username", array("username", "first_name", "last_name", "email"))] PageInput $pageInput
+        #[PageInputParams("username", array("username", "first_name", "last_name", "email", "active"))] PageInput $pageInput
     ) {
         $connection = (new Database())->getConnection();
         $statement = $connection->prepare(sprintf("SELECT first_name, last_name, username, email, id, active FROM users ORDER BY %s %s LIMIT :number_of_records OFFSET :start_index", $pageInput->sortBy, $pageInput->ascending ? "ASC" : "DESC"));
