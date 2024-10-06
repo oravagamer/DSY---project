@@ -115,18 +115,22 @@ class Order {
     ]
     function updateOrder(
         #[PathVariable("id", true)] string $orderId,
-        #[Json] OrderPutJsonData           $editData
+        #[Json] OrderPutJsonData           $editData,
+        #[SecurityUserId] string           $userId
     ) {
         $connection = $this->database->getConnection();
-        $statement = $connection->prepare('UPDATE shop_order SET  name = :name,  description = :desc, finish_date = :finish_date, created_for = :cf, status = :status WHERE id = :order_id');
+        $statement = $connection->prepare('UPDATE shop_order SET  name = :name,  description = :desc, finish_date = :finish_date' . (isset($editData->createdFor) ? ", created_for = :cf" : "") .', status = :status WHERE id = :order_id AND (created_for = :uid OR created_by = :uid1 OR (SELECT user_id FROM user_with_role JOIN roles ON roles.id = user_with_role.role_id WHERE roles.name = \'admin\') = :uid2)');
         try {
             $statement->execute([
                 "name" => $editData->name,
                 "desc" => $editData->description,
                 "finish_date" => date("Y-m-d H:i:s", $editData->finishDate),
-                "cf" => $editData->createdFor,
                 "status" => $editData->status,
-                "order_id" => $orderId
+                "order_id" => $orderId,
+                "uid" => $userId,
+                "uid1" => $userId,
+                "uid2" => $userId,
+                ...(isset($editData->createdFor) ? ["cf" => $editData->createdFor] : [])
             ]);
         } catch (PDOException $exception) {
             return new HttpResponse(status: $exception->getCode() == 23000 ? HttpStates::CONFLICT : HttpStates::INTERNAL_SERVER_ERROR);

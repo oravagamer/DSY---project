@@ -43,7 +43,7 @@ const App = () => {
                 path: "roles", element: <RoleRestricted role="admin"><Outlet /></RoleRestricted>, children: [{
                     index: true, element: <Roles />
                 }, {
-                    path: ":id", element: <EditRole />
+                    path: "edit/:id", element: <EditRole />
                 }, {
                     path: "add", element: <AddRole />
                 }]

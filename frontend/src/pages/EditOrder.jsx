@@ -81,7 +81,7 @@ const EditOrder = () => {
                 created_for: user === undefined ? null : user,
                 status: status === "0" ? null : parseInt(status)
             })
-        })
+        }).then(res => console.log(res))
     }
 
     const deleteOrder = () => {
