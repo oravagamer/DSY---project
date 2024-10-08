@@ -6,6 +6,6 @@ use Attribute;
 
 #[Attribute(Attribute::TARGET_PARAMETER)]
 class PlainText {
-    public function __construct() {
+    public function __construct(public ?string $regex = "/(.|\R)+/") {
     }
 }

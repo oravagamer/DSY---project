@@ -66,7 +66,7 @@ session_start();
 session_regenerate_id();
 
 function statusExit(HTTPStates $netStatus, ?string $message = null): void {
-    echo $message === null ? ($netStatus === HttpStates::OK ? "" : $netStatus->name) : $message;
+    echo $message;
     http_response_code($netStatus->value);
     exit(0);
 }
@@ -103,22 +103,24 @@ function processJson(array $data, ?string $className = null): object|array|null 
         $returnData = $JsonClassRef->newInstance();
 
         foreach ($JsonClassRef->getProperties() as $property) {
-            $propertyAttribute = $property->getAttributes()[0];
+            $propertyAttributeInstance = $property->getAttributes()[0]->newInstance();
 
-            if (($propertyAttribute->getArguments()[1] && isset($data[$propertyAttribute->getArguments()[0]])) || !$propertyAttribute->getArguments()[1]) {
+            if (($propertyAttributeInstance->required && isset($data[$propertyAttributeInstance->name])) || !$propertyAttributeInstance->required) {
                 $finalProperty = new ReflectionProperty($returnData, $property->getName());
                 $finalProperty->setAccessible(true);
-                if (is_array($data[$propertyAttribute->getArguments()[0]]) && array_key_exists(0, $data[$propertyAttribute->getArguments()[0]])) {
-                    $finalProperty->setValue($returnData, processJson($data[$propertyAttribute->getArguments()[0]]));
-                } elseif (is_array($data[$propertyAttribute->getArguments()[0]])) {
-                    $finalProperty->setValue($returnData, processJson($data[$propertyAttribute->getArguments()[0]], $property->getType()->getName()));
+                if (is_array($data[$propertyAttributeInstance->name]) && array_key_exists(0, $data[$propertyAttributeInstance->name])) {
+                    $finalProperty->setValue($returnData, processJson($data[$propertyAttributeInstance->name]));
+                } elseif (is_array($data[$propertyAttributeInstance->name])) {
+                    $finalProperty->setValue($returnData, processJson($data[$propertyAttributeInstance->name], $property->getType()->getName()));
                 } else {
-                    if (isset($data[$propertyAttribute->getArguments()[0]])) {
-                        $finalProperty->setValue($returnData, $data[$propertyAttribute->getArguments()[0]]);
+                    $stringedValue = strval($data[$propertyAttributeInstance->name]);
+                    if (!preg_match($propertyAttributeInstance->regex, $stringedValue)) {
+                        statusExit(HttpStates::BAD_REQUEST, $propertyAttributeInstance->name . " does not match pattern \"" . $propertyAttributeInstance->regex . "\"");
                     }
+                    $finalProperty->setValue($returnData, $data[$propertyAttributeInstance->name]);
                 }
             } else {
-                statusExit(HttpStates::BAD_REQUEST, "Please set value: " . $propertyAttribute->getArguments()[0]);
+                statusExit(HttpStates::BAD_REQUEST, "Please set value: " . $propertyAttributeInstance->name);
             }
         }
     }
@@ -211,12 +213,17 @@ try {
         foreach ($paths[$method][$requestedUrl]->getParameters() as $parameter) {
 
             foreach ($parameter->getAttributes() as $attribute) {
+                $attributeInitialized = $attribute->newInstance();
 
                 if ($attribute->getName() === PathVariable::class) {
-                    if ($attribute->getArguments()[1] && !isset($urlPartsQuery[$attribute->getArguments()[0]])) {
-                        statusExit(HttpStates::BAD_REQUEST, "Please set path variable: " . $attribute->getArguments()[0]);
+                    if ($attributeInitialized->required && !isset($urlPartsQuery[$attributeInitialized->name])) {
+                        statusExit(HttpStates::BAD_REQUEST, "Please set path variable: " . $attributeInitialized->name);
                     } else {
-                        $methodPrams[] = isset($urlPartsQuery[$attribute->getArguments()[0]]) ? ($encrypted ? decrypt($urlPartsQuery[$attribute->getArguments()[0]], $nonce, $encryptionKeypair) : $urlPartsQuery[$attribute->getArguments()[0]]) : $parameter->getDefaultValue();
+                        $localValue = isset($urlPartsQuery[$attributeInitialized->name]) ? ($encrypted ? decrypt($urlPartsQuery[$attributeInitialized->name], $nonce, $encryptionKeypair) : $urlPartsQuery[$attributeInitialized->name]) : $parameter->getDefaultValue();
+                        if (!preg_match($attributeInitialized->regex, $localValue)) {
+                            statusExit(HttpStates::BAD_REQUEST, $attributeInitialized->name . " does not match pattern \"" . $attributeInitialized->regex . "\"");
+                        }
+                        $methodPrams[] = $localValue;
                     }
                 } elseif ($attribute->getName() === FormData::class) {
                     $formDataRef = new ReflectionClass($parameter->getType()->getName());
@@ -279,7 +286,11 @@ try {
                 } elseif ($attribute->getName() === FileUpload::class) {
                     $methodPrams[] = $encrypted ? decrypt($payload, $nonce, $encryptionKeypair) : $payload;
                 } elseif ($attribute->getName() === PlainText::class) {
-                    $methodPrams[] = $encrypted ? decrypt($payload, $nonce, $encryptionKeypair) : $payload;
+                    $localValue = $encrypted ? decrypt($payload, $nonce, $encryptionKeypair) : $payload;
+                    if (!preg_match($attributeInitialized->regex, strval($localValue))) {
+                        statusExit(HttpStates::BAD_REQUEST, "Input does not match pattern \"" . $attributeInitialized->regex . "\"");
+                    }
+                    $methodPrams[] = $localValue;
                 } elseif ($attribute->getName() === HeaderInput::class) {
                     $methodPrams[] = apache_request_headers()[$attribute->getArguments()[0]];
                 } elseif ($attribute->getName() === PageInputParams::class) {

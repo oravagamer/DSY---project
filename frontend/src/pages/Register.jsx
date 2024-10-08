@@ -62,13 +62,14 @@ const Register = () => {
                             setUsernameValid("");
                         }}
                         sx={{mb: 1.5}}
-                        inputProps={{minLength: 3}}
+                        inputProps={{minLength: 3, maxLength: 255}}
                         focused={usernameFocus || usernameValid !== ""}
                         onFocus={() => setUsernameFocus(true)}
                         onBlur={() => setUsernameFocus(false)}
                         onInvalid={event => {
                             event.preventDefault();
                             setUsernameValid(event.target.value.length < 3 ? "Min 3 chars" : "");
+                            setUsernameValid(event.target.value.length > 255 ? "Max 255 chars" : "");
                         }}
                         autoComplete="username" />
                     <PasswordInput password={password} setPassword={setPassword} autoComplete="new-password"
