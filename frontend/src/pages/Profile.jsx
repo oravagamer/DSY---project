@@ -5,14 +5,20 @@ import {
     Card, CardActions, CardContent, Button, Typography
 } from '@mui/material';
 import useOravixFetch from "../hooks/useOravixFetch.js";
+import {useEffect} from "react"
 
 const Profile = () => {
     const {id} = useParams();
-    const {data} = useOravixFetch(`${backendUrl}/user?id=${id}`, {
+    const {data, status} = useOravixFetch(`${backendUrl}/user?id=${id}`, {
         method: "GET"
     }, true, true, {
         username: "Loading", first_name: "Loading", last_name: "Loading", email: "Loading", roles: ["Loading"]
     });
+    useEffect(() => {
+        if (status === 404){
+            throw new Response("Not found", {status: 404, statusText: "Not found"})
+        }
+    }, [status]);
     return (<Card sx={{minWidth: "300px", alignSelf: "center", borderRadius: "5px"}} variant="outlined">
         <CardContent sx={{display: "flex", flexDirection: "column"}}>
             <Typography variant="h4" component="div">{data.username}</Typography>

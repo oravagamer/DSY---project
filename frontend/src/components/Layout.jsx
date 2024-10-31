@@ -29,7 +29,7 @@ import AccessibilityIcon from '@mui/icons-material/Accessibility';
 import RoleRestricted from "./RoleRestricted.jsx";
 import GroupIcon from '@mui/icons-material/Group';
 
-const Layout = () => {
+const Layout = ({children}) => {
     const [open, setOpen] = useState(false);
     const {getUserId, security} = useOravixSecurity();
 
@@ -60,7 +60,7 @@ const Layout = () => {
         <Typography component="section" gutterBottom flexDirection="column" display="flex"
                     sx={{position: "absolute", top: "64px", bottom: "64px", width: "100%"}}
                     justifyContent="center">
-            <Outlet />
+            {children ? children : <Outlet />}
         </Typography>
         <Box component="footer" sx={{
             height: "64px", display: "flex", justifyContent: "center", position: "fixed", width: "100%", bottom: 0

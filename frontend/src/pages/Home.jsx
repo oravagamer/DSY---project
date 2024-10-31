@@ -29,7 +29,7 @@ const Home = () => {
         data, refetch, status
     } = useOravixFetch(`${backendUrl}/orders/?page=${page}&count=${rowsPerPage}&sort-by=${sorting.sortBy}&asc=${+sorting.asc}&completed=${+completed}&only-my=${+my}`, {
         method: "GET"
-    }, true, false, []);
+    }, true, true, []);
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);

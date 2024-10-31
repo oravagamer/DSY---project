@@ -56,7 +56,7 @@ const EditProfile = () => {
 
     useEffect(() => {
         if (status === 404) {
-            navigate("/dash/home")
+            throw new Response("Not found", {status: 404, statusText: "Not found"})
         }
         setUsername(data.username);
         setFirstName(data.first_name);
@@ -82,13 +82,14 @@ const EditProfile = () => {
                         setUsernameFocus(false);
                         setUsernameValid("");
                     }}
-                    inputProps={{minLength: 3}}
+                    inputProps={{minLength: 3, maxLength: 255}}
                     focused={usernameFocus || usernameValid !== ""}
                     onFocus={() => setUsernameFocus(true)}
                     onBlur={() => setUsernameFocus(false)}
                     onInvalid={event => {
                         event.preventDefault();
                         setUsernameValid(event.target.value.length < 3 ? "Min 3 chars" : "");
+                        setUsernameValid(event.target.value.length > 255 ? "Max 255 chars" : "");
                     }}
                     autoComplete="username" />
                 <TextField

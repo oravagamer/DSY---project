@@ -43,8 +43,7 @@ class JWT {
 
     public function isValid($key = null): bool {
         $data = $this->JoseHeader->getVersionBase64() . "." . $this->JwtPayload->getVersionBase64();
-        return !$this->isExpired()
-            && ($this
+        return ($this
                     ->JoseHeader
                     ->getAlgorithm()
                     ->getAlgFamily() == AlgorithmFamily::NONE

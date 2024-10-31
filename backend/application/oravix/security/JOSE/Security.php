@@ -165,7 +165,7 @@ class Security {
         mail(
             $to,
             "Oravix " . $action . " action",
-            "<a target='_blank' href='" . (new EncryptedURL($_SERVER["HTTP_X_FORWARDED_PROTO"] . "://" . $_SERVER["HTTP_X_FORWARDED_HOST"] . "/" .  str_replace($action, "session", $redirectString), [
+            "<a target='_blank' href='" . (new EncryptedURL($_SERVER["HTTP_X_FORWARDED_PROTO"] . "://" . $_SERVER["HTTP_X_FORWARDED_HOST"] . "/" . str_replace($action, "session", $redirectString), [
                 "session" => $sessionId,
                 "action" => $action
             ], random_bytes(SODIUM_CRYPTO_BOX_NONCEBYTES)))->toString() . "'>Verify</a>",
@@ -221,7 +221,7 @@ class Security {
         $this->verifyRefreshToken($oldRefreshToken);
 
         if ($oldRefreshToken->isExpired()) {
-            throw new HttpException(HttpStates::FORBIDDEN);
+            throw new HttpException(HttpStates::FORBIDDEN,);
         } else {
             $this->logout($tokensData);
             [
@@ -245,6 +245,9 @@ class Security {
             list(, $rawToken) = explode("Bearer ", $authorization);
             $token = JWT::decode($rawToken);
             $this->verifyAccessToken($token);
+            if ($token->isExpired()) {
+                throw new HttpException(HttpStates::FORBIDDEN);
+            };
             return $token->getJwtPayload()->getSubject();
         }
     }
@@ -285,7 +288,7 @@ class Security {
 
     public function verifyRefreshToken(JWT $token): true {
         if ($token->getJoseHeader()->getAlgorithm() === JWA::$NONE) {
-            if (!$token->isValid()) {
+            if (!$token->isValid() || $token->isExpired()) {
                 throw new HttpException(HttpStates::FORBIDDEN);
             }
         } else {
@@ -308,7 +311,7 @@ class Security {
                 $key = openssl_pkey_get_public($str_cert);
             }
 
-            if (!$token->isValid($key)) {
+            if (!$token->isValid($key) || $token->isExpired()) {
                 throw new HttpException(HttpStates::FORBIDDEN);
             }
         }

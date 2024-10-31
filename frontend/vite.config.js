@@ -1,11 +1,15 @@
 import {defineConfig} from 'vite'
 import react from '@vitejs/plugin-react'
 import {svgrComponent} from 'vite-plugin-svgr-component';
+import babel from '@rollup/plugin-babel';
 
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [react(), svgrComponent()], server: {
+    plugins: [react(), svgrComponent(), babel({
+      babelHelpers: 'bundled',
+      plugins: ['@babel/plugin-proposal-throw-expressions'],
+    })], server: {
         proxy: {
             "/rest/api": {
                 target: "http://localhost:80",

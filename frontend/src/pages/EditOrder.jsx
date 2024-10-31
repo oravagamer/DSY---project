@@ -49,7 +49,7 @@ const EditOrder = () => {
     const [user, setUser] = useState();
     const [dialogOpen, setDialogOpen] = useState(false);
     const [hasImages, setHasImages] = useState(false);
-    const {data, loading} = useOravixFetch(backendUrl + "/order/?id=" + id, {
+    const {data, status: ordStatus, loading} = useOravixFetch(backendUrl + "/order/?id=" + id, {
         method: "GET"
     }, true, true, {});
     const {security} = useOravixSecurity();
@@ -96,6 +96,9 @@ const EditOrder = () => {
     }
 
     useEffect(() => {
+        if (ordStatus === 404) {
+            throw new Response("Not found", {status: 404, statusText: "Not found"})
+        }
         setName(data?.name);
         setDescription(data?.description);
         setStatus(data?.status === null ? 0 : data?.status);

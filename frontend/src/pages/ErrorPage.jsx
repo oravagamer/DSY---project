@@ -1,17 +1,32 @@
-import Section from "../components/Section.jsx";
+import {
+    Card, CardActions, CardContent, Typography, Box, Button
+} from '@mui/material';
 import GoBack from "../components/GoBack.jsx";
 import {useRouteError, Link} from "react-router-dom";
 
 const ErrorPage = () => {
     const error = useRouteError();
-    return (<Section>
-        <h1>Oops!</h1>
-        <h2>{error.status}</h2>
-        <p>{error.statusText}</p>
-        {error.data?.message && <p>{error.data.message}</p>}
-        <GoBack />
-        <Link to="/login">Home</Link>
-    </Section>)
+    return (<Box sx={{width: "100vw", height: "100vh", display: "flex", justifyContent: "space-around"}}>
+        <Card sx={{width: "350px", alignSelf: "center"}}>
+            <CardContent sx={{
+                display: "flex",
+                alignItems: "center",
+                flexDirection: "column",
+                '& .MuiTextField-root, & .MuiButton-root, & .MuiFormControl-root': {
+                    m: 1
+                }
+            }}>
+                <Typography variant="h1">Oops!</Typography>
+                <Typography variant="h2">{error.status}</Typography>
+                <Typography component="p" variant="p">{error.statusText}</Typography>
+                {error.data?.message && <Typography>{error.data.message}</Typography>}
+            </CardContent>
+            <CardActions sx={{justifyContent: "space-between"}}>
+                    <GoBack />
+                    <Button component={Link} to="/dash/home">Home</Button>
+            </CardActions>
+        </Card>
+    </Box>)
 }
 
 export default ErrorPage;

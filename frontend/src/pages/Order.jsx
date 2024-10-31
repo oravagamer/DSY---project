@@ -11,7 +11,7 @@ import useOravixSecurity from "../hooks/useOravixSecurity.js";
 const Order = () => {
     const {id} = useParams();
     const [dialogOpen, setDialogOpen] = useState(false);
-    const {data} = useOravixFetch(backendUrl + "/order/?id=" + id, {
+    const {data, status} = useOravixFetch(backendUrl + "/order/?id=" + id, {
         method: "GET"
     }, true, true, {
         name: "Loading", description: "Loading", created_date: "Loading", status: -1
@@ -21,6 +21,12 @@ const Order = () => {
         method: "GET"
     }, true, true, []);
     const {data: roles} = useOravixFetch(`${backendUrl}/role`, {method: "GET"}, true, true, []);
+
+    useEffect(() => {
+        if (status === 404){
+            throw new Response("Not found", {status: 404, statusText: "Not found"})
+        }
+    }, [status]);
 
     return (<>
         <Card sx={{minWidth: "300px", alignSelf: "center", borderRadius: "5px"}} variant="outlined">

@@ -23,10 +23,16 @@ import Activate from "./pages/Activate.jsx";
 import ChangeEmail from "./pages/ChangeEmail.jsx";
 import ChangePassword from "./pages/ChangePassword.jsx";
 import AddRole from "./pages/AddRole.jsx";
+import NotFound from "./components/404.jsx";
 
 const App = () => {
     const router = createBrowserRouter([{
-        path: "/", errorElement: <ErrorPage />, element: <Layout />, children: [{
+        path: "/", errorElement: <Layout><ErrorPage /></Layout>, element: <Layout />, children: [
+            {
+                index: true,
+                element: <NotFound />
+            },
+            {
             path: "login", element: <UnSecure><Login /></UnSecure>
         }, {
             path: "activate", element: <UnSecure><Activate /></UnSecure>

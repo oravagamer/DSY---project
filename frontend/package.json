@@ -17,6 +17,7 @@
     "@mui/material": "^5.16.7",
     "@mui/x-date-pickers": "^7.13.0",
     "@react-buddy/palette-mui": "^5.0.1",
+    "@rollup/plugin-babel": "^6.0.4",
     "@types/libsodium-wrappers": "^0.7.14",
     "bootstrap": "^5.3.3",
     "dayjs": "^1.11.12",
@@ -28,6 +29,7 @@
     "vite-plugin-svgr-component": "^1.0.1"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-throw-expressions": "^7.25.9",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@vitejs/plugin-react": "^4.2.1",

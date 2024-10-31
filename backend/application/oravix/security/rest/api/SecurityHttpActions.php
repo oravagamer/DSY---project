@@ -150,7 +150,7 @@ class SecurityHttpActions {
     ]
     function changeEmail(
         #[SecurityUserId] string              $userId,
-        #[PathVariable("email", true)] string $email,
+        #[PathVariable("email", true, "^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$")] string $email,
         #[PathVariable("redirect-url", true)] $redirectUrl,
         #[HeaderInput("win-id")]              $windowId
     ) {
@@ -185,7 +185,7 @@ class SecurityHttpActions {
     ]
     function changePassword(
         #[SecurityUserId] string $userId,
-        #[PlainText] string      $password
+        #[PlainText("^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,16}$")] string      $password
     ) {
         if ($email = self::$security->getUserEmailById($userId)) {
             self::$security->createRedirectEmailSession("change-password", json_encode(["password" => password_hash($password, PASSWORD_DEFAULT), "redirect-url" => $_ENV["settings"]["JWT_DEFAULT_URL"]]), $email);

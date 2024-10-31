@@ -37,7 +37,7 @@ const AddRole = () => {
                     m: 1
                 }
             }}>
-                <TextField value={name} onChange={event => setName(event.target.value)} label="Name" variant="filled" />
+                <TextField value={name} onChange={event => setName(event.target.value)} label="Name" variant="filled"  />
                 <TextField value={description} onChange={event => setDescription(event.target.value)}
                            label="Description"
                            variant="filled" />

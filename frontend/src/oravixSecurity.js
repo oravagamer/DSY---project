@@ -26,6 +26,7 @@ class OravixSecurity {
 
     constructor(url) {
         this.#url = url;
+        sessionStorage.setItem("first-reload", "1");
         (async () => {
             await _sodium.ready;
             this.#sodium = _sodium;
@@ -92,6 +93,10 @@ class OravixSecurity {
                         }
                         this.#isProcessSecure = true;
                     }, (data.accessToken.payload.iat + data.accessToken.payload.exp) * 1000 - Date.now());
+                    if (sessionStorage.getItem("first-value") === "1") {
+                        sessionStorage.setItem("first-reload", "0")
+                        location.reload();
+                    }
                 } else {
                     this.logout();
                 }
@@ -192,7 +197,7 @@ class OravixSecurity {
             decrypted = "{}";
         }
         return {
-            headers: await res.headers, status: await res.status, body: decrypted
+            headers: await res.headers, status: await res.status, body: await decrypted
         }
     }
 
@@ -237,8 +242,7 @@ class OravixSecurity {
 
     changePassword(password) {
         this.secureEncryptedFetch(`${backendUrl}/security/change-password`, {
-            method: "POST",
-            body: password
+            method: "POST", body: password
         })
     }
 
@@ -265,37 +269,36 @@ class OravixSecurity {
     }
 
     isSecure() {
-        return !this.#isAccessTokenExpired() && localStorage.getItem("access-token") !== null
+        return localStorage.getItem("access-token") !== null
     }
 
     async #refreshTokens() {
-        let response;
-        this
+        return await this
             .encryptedFetch(this.#url + "/refresh-token", {
                 method: "POST", headers: {
                     "content-type": "application/json"
-                }, body: {
-                    accessToken: localStorage.getItem("access-token"),
-                    refreshToken: localStorage.getItem("refresh-token")
+                }, body: JSON.stringify({
+                    access: localStorage.getItem("access-token"), refresh: localStorage.getItem("refresh-token")
+                })
+            })
+            .then(async res => {
+                if (await res?.status === 403) {
+                    return false;
+                } else {
+                    const data = JSON.parse(await res?.body);
+                    localStorage.setItem("access-token", data.access);
+                    localStorage.setItem("refresh-token", data.refresh);
+                    const jsonData = this.getJsonData();
+                    setTimeout(async () => {
+                        this.#isProcessSecure = false;
+                        if (!(await this.#refreshTokens())) {
+                            this.logout();
+                        }
+                        this.#isProcessSecure = true;
+                    }, (jsonData.accessToken.payload.iat + jsonData.accessToken.payload.exp) * 1000 - Date.now());
+                    return true;
                 }
             })
-            .then(async res => response = await res)
-        if (await response?.status === 403) {
-            return false;
-        } else {
-            const data = JSON.parse(await response?.body);
-            localStorage.setItem("access-token", data.access);
-            localStorage.setItem("refresh-token", data.refresh);
-            const jsonData = this.getJsonData();
-            setTimeout(async () => {
-                this.#isProcessSecure = false;
-                if (!(await this.#refreshTokens())) {
-                    this.logout();
-                }
-                this.#isProcessSecure = true;
-            }, (jsonData.accessToken.payload.iat + jsonData.accessToken.payload.exp) * 1000 - Date.now());
-            return true;
-        }
     }
 
     #isAccessTokenExpired() {

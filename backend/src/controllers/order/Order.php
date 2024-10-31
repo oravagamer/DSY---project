@@ -4,6 +4,7 @@
 namespace order;
 
 use oravix\db\Database;
+use oravix\exceptions\HttpException;
 use oravix\HTTP\Consumes;
 use oravix\HTTP\ContentType;
 use oravix\HTTP\Controller;
@@ -48,6 +49,9 @@ class Order {
         ]);
         $statement->setFetchMode(PDO::FETCH_NAMED);
         $data = $statement->fetch();
+        if (!$data) {
+            throw new HttpException(HttpStates::NOT_FOUND, "{}");
+        }
         $images = explode(",", $data["img_id"]);
 
         return new HttpResponse([
