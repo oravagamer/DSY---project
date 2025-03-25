@@ -149,12 +149,15 @@ class Order {
         Secure
     ]
     function removeOrder(
-        #[PathVariable("id", true)] string $orderId
+        #[PathVariable("id", true)] string $orderId,
+        #[SecurityUserId] string           $userId
     ) {
         $connection = $this->database->getConnection();
-        $statement = $connection->prepare('DELETE FROM shop_order WHERE id = :order_id');
+        $statement = $connection->prepare('DELETE FROM shop_order WHERE id = :order_id AND (created_by = :uid1 OR (SELECT user_id FROM user_with_role JOIN roles ON roles.id = user_with_role.role_id WHERE roles.name = \'admin\') = :uid2)');
         $statement->execute([
-            "order_id" => $orderId
+            "order_id" => $orderId,
+            "uid1" => $userId,
+            "uid2" => $userId
         ]);
         if ($statement->rowCount() === 0) {
             return new HttpResponse(status: HttpStates::NOT_FOUND);
