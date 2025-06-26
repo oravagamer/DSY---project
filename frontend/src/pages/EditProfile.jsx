@@ -9,6 +9,7 @@ import {
 import useOravixSecurity from "../hooks/useOravixSecurity.js";
 import {Link} from "react-router-dom";
 import RoleRestricted from "../components/RoleRestricted.jsx";
+import {toast} from "react-toastify";
 
 const EditProfile = () => {
     const {id} = useParams();
@@ -30,6 +31,7 @@ const EditProfile = () => {
     });
     const saveChanges = event => {
         event.preventDefault();
+        const message = toast.loading("Please wait...");
         security.secureEncryptedFetch(`${backendUrl}/user?id=${id}`, {
             headers: {
                 "Content-type": "application/json"
@@ -40,6 +42,29 @@ const EditProfile = () => {
             if (res.status >= 400) {
                 setUsernameFocus(true);
                 setUsernameValid("Username already used");
+                toast.update(message, {
+                    render: "Failed",
+                    type: "error",
+                    isLoading: false,
+                    autoClose: 5000,
+                    position: "top-right"
+                })
+            } else if (res.status < 400) {
+                toast.update(message, {
+                    render: "Success",
+                    type: "success",
+                    isLoading: false,
+                    autoClose: 5000,
+                    position: "top-right"
+                })
+            } else {
+                toast.update(message, {
+                    render: "Failed",
+                    type: "error",
+                    isLoading: false,
+                    autoClose: 5000,
+                    position: "top-right"
+                })
             }
         })
     }

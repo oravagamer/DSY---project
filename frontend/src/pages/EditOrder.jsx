@@ -26,6 +26,7 @@ import UploadFileIcon from '@mui/icons-material/UploadFile';
 import dayjs from 'dayjs';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
 import useOravixFetch from "../hooks/useOravixFetch.js";
+import {toast} from "react-toastify";
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -71,6 +72,7 @@ const EditOrder = () => {
 
     const saveChanges = event => {
         event.preventDefault();
+        const message = toast.loading("Please wait...");
         security.secureEncryptedFetch(`${backendUrl}/order?id=${id}`, {
             method: "PUT", headers: {
                 "Content-Type": "application/json"
@@ -79,9 +81,27 @@ const EditOrder = () => {
                 description: description,
                 finish_date: finishDate,
                 created_for: user === undefined ? null : user,
-                status: status === "0" ? null : parseInt(status)
+                status: parseInt(status)
             })
-        }).then(res => console.log(res))
+        }).then(res => {
+            if (res.status < 400) {
+                toast.update(message, {
+                    render: "Success",
+                    type: "success",
+                    isLoading: false,
+                    autoClose: 5000,
+                    position: "top-right"
+                })
+            } else {
+                toast.update(message, {
+                    render: "Failed",
+                    type: "error",
+                    isLoading: false,
+                    autoClose: 5000,
+                    position: "top-right"
+                })
+            }
+        })
     }
 
     const deleteOrder = () => {
@@ -101,7 +121,7 @@ const EditOrder = () => {
         }
         setName(data?.name);
         setDescription(data?.description);
-        setStatus(data?.status === null ? 0 : data?.status);
+        setStatus(data?.status === undefined ? 0 : parseInt(data?.status));
         setUser(data?.created_for);
         setFinishDate(new Date(data?.finish_date).getTime() / 1000);
         setHasImages(data.images);
@@ -153,7 +173,7 @@ const EditOrder = () => {
                         labelId="id-status-select"
                         label="Status"
                         autoWidth
-                        value={status === undefined ? 0 : status}
+                        value={status === undefined || status === null || status === 0 || isNaN(status) ? 0 : status}
                         onChange={event => setStatus(event.target.value)}
                     >
                         <MenuItem value={0}>Created</MenuItem>

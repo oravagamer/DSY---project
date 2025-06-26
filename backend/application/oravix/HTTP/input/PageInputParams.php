@@ -9,7 +9,10 @@ class PageInputParams {
     /**
      * @param ?string[] $allowedColumns
      */
-    public function __construct(public string $defaultSortBy, public ?array $allowedColumns = [], public ?bool $ascending = true) {
+    public function __construct(
+        public string $defaultSortBy,
+        public ?array $allowedColumns = [],
+        public ?bool $ascending = true) {
     }
 
 }

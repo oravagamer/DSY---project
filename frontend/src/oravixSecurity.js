@@ -30,7 +30,7 @@ class OravixSecurity {
         (async () => {
             await _sodium.ready;
             this.#sodium = _sodium;
-            if (getCookies(document.cookie)["PHPSESSID"] === undefined) {
+            if (getCookies(document.cookie)["PHPSESSID"] === undefined || localStorage.getItem("public-key") === null) {
                 let keypair = this.#sodium.crypto_box_keypair();
                 await fetch(url + "/encryption", {
                     method: "POST",

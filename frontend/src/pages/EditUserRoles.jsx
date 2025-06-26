@@ -9,6 +9,7 @@ import useOravixSecurity from "../hooks/useOravixSecurity.js";
 import AddIcon from '@mui/icons-material/Add';
 import SelectRole from "../components/SelectRole.jsx";
 import {useState} from "react";
+import {toast} from "react-toastify";
 
 const EditUserRoles = () => {
     const {id} = useParams();
@@ -33,7 +34,26 @@ const EditUserRoles = () => {
                     <TableCell>{value.description}</TableCell>
                     <TableCell>{value.level}</TableCell>
                     <TableCell><Button color="error" sx={{width: "100%"}} variant="outlined" onClick={async () => {
-                        await security.secureEncryptedFetch(`${backendUrl}/user/roles/?user_id=${id}&role_id=${value.id}`, {method: "DELETE"})
+                        const message = toast.loading("Please wait...");
+                        await security.secureEncryptedFetch(`${backendUrl}/user/roles/?user_id=${id}&role_id=${value.id}`, {method: "DELETE"}).then(res => {
+                            if (res.status < 400) {
+                                toast.update(message, {
+                                    render: "Success",
+                                    type: "success",
+                                    isLoading: false,
+                                    autoClose: 5000,
+                                    position: "top-right"
+                                })
+                            } else {
+                                toast.update(message, {
+                                    render: "Failed",
+                                    type: "error",
+                                    isLoading: false,
+                                    autoClose: 5000,
+                                    position: "top-right"
+                                })
+                            }
+                        })
                         await refetch();
                     }}>Remove</Button></TableCell>
                 </TableRow>)}

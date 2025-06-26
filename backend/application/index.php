@@ -193,6 +193,7 @@ try {
                 }
             }
         } catch (Exception|Error $e) {
+
             header("content-type", ContentType::TEXT_PLAIN->value);
             statusExit(HttpStates::INTERNAL_SERVER_ERROR, $e->getMessage());
         }
@@ -220,7 +221,8 @@ try {
                         statusExit(HttpStates::BAD_REQUEST, "Please set path variable: " . $attributeInitialized->name);
                     } else {
                         $localValue = isset($urlPartsQuery[$attributeInitialized->name]) ? ($encrypted ? decrypt($urlPartsQuery[$attributeInitialized->name], $nonce, $encryptionKeypair) : $urlPartsQuery[$attributeInitialized->name]) : $parameter->getDefaultValue();
-                        if (!preg_match($attributeInitialized->regex, $localValue)) {
+                        if (!preg_match($attributeInitialized->regex, strval($localValue))) {
+                            //var_dump($localValue);
                             statusExit(HttpStates::BAD_REQUEST, $attributeInitialized->name . " does not match pattern \"" . $attributeInitialized->regex . "\"");
                         }
                         $methodPrams[] = $localValue;

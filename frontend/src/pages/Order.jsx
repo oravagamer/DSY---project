@@ -37,7 +37,7 @@ const Order = () => {
                 <Typography variant="body2">Created: {data.created_date}</Typography>
                 <Typography variant="body2">Finish: {data.finish_date}</Typography>
                 <Typography
-                    variant="body2">Status: {data.status === -1 ? "Loading" : (data.status === null ? "Created" : data.status === 1 ? "In progress" : "Finished")}</Typography>
+                    variant="body2">Status: {data.status === -1 ? "Loading" : (data.status === null || data.status === undefined || data.status === 0 ? "Created" : data.status === 1 ? "In progress" : "Finished")}</Typography>
                 <>{imgLoading ? "" : (data?.images ?
                     <Button sx={{alignSelf: "flex-start"}} onClick={() => setDialogOpen(true)}>Images</Button> : "")}</>
             </CardContent>

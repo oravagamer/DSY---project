@@ -100,13 +100,23 @@ class Role {
             $sql .= " name = :name";
         }
         if (isset($roleUpdateData->description)) {
+            if (isset($roleUpdateData->name)) {
+                $sql .= ",";
+            }
             $sql .= " description = :description";
         }
         if (isset($roleUpdateData->level)) {
+            if (isset($roleUpdateData->name) || isset($roleUpdateData->description)) {
+                $sql .= ",";
+            }
             $sql .= " level = :level";
         }
         $sql .= " WHERE id = :role_id AND name != 'admin' AND name != 'default'";
-        $statement = $connection->prepare($sql);
+        try {
+            $statement = $connection->prepare($sql);
+        } catch (\Exception $e) {
+            var_dump($e);
+        }
         $statement->bindParam("role_id", $roleId);
         if (isset($roleUpdateData->name)) {
             $statement->bindParam("name", $roleUpdateData->name);

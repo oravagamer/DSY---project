@@ -5,10 +5,15 @@ import useOravixFetch from "../hooks/useOravixFetch.js";
 import {backendUrl} from "../../settings.js";
 import {useEffect, useState} from "react";
 import useOravixSecurity from "../hooks/useOravixSecurity.js";
+import {toast} from "react-toastify";
 
 const EditRole = () => {
     const {id} = useParams();
-    const {data, loading, refetch} = useOravixFetch(`${backendUrl}/role/single/?role=${id}`, {method: "GET"}, true, true, {
+    const {
+        data,
+        loading,
+        refetch
+    } = useOravixFetch(`${backendUrl}/role/single/?role=${id}`, {method: "GET"}, true, true, {
         name: "Loading", description: "Loading", level: 255
     });
     const [name, setName] = useState("");
@@ -19,13 +24,33 @@ const EditRole = () => {
 
     const saveChanges = event => {
         event.preventDefault();
+        const message = toast.loading("Please wait...");
         security.secureEncryptedFetch(`${backendUrl}/role/single?role=${id}`, {
             method: "PUT", headers: {
                 "Content-Type": "application/json"
             }, body: JSON.stringify({
                 ...(name === data.name ? {} : {name: name}), ...(description === data.description ? {} : {description: description}), ...(level === data.level ? {} : {level: Number.parseInt(level)})
             })
-        }).then(() => refetch())
+        }).then(res => {
+            if (res.status < 400) {
+                toast.update(message, {
+                    render: "Success",
+                    type: "success",
+                    isLoading: false,
+                    autoClose: 5000,
+                    position: "top-right"
+                })
+            } else {
+                toast.update(message, {
+                    render: "Failed",
+                    type: "error",
+                    isLoading: false,
+                    autoClose: 5000,
+                    position: "top-right"
+                })
+            }
+            refetch()
+        })
     }
 
     const deleteRole = () => {

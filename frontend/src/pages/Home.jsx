@@ -90,7 +90,7 @@ const Home = () => {
                             <TableCell>{value.name}</TableCell>
                             <TableCell>{value.created_date}</TableCell>
                             <TableCell>{value.finish_date}</TableCell>
-                            <TableCell>{value.status === null ? "Created" : (value.status === 1 ? "In progress" : "Finished")}</TableCell>
+                            <TableCell>{value.status === null || value.status === undefined || value.status === 0 ? "Created" : (value.status === 1 ? "In progress" : "Finished")}</TableCell>
                             <TableCell><Link to={`/dash/order/${value.id}`}>More</Link></TableCell>
                         </TableRow>)
                     })}

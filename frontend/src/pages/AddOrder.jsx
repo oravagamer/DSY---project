@@ -10,6 +10,7 @@ import {
 import {styled} from '@mui/material/styles';
 import dayjs from 'dayjs';
 import {DatePicker} from '@mui/x-date-pickers/DatePicker';
+import {toast} from "react-toastify";
 
 const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -57,12 +58,18 @@ const AddOrder = () => {
                 data.append("images[]", image);
             }
         }
+        const message = toast.loading("Please wait...");
         security.noCryptSecureFetch(`${backendUrl}/order`, {
             method: "POST", body: data
         })
             .then(async res => {
                 if (res.status == 409) {
                     setError(true);
+                    toast.update(message, { render: "Already used", type: "error", isLoading: false, autoClose: 5000, position: "top-right" })
+                } else if (res.status < 400) {
+                    toast.update(message, { render: "Success", type: "success", isLoading: false, autoClose: 5000, position: "top-right" })
+                } else {
+                    toast.update(message, { render: "Failed", type: "error", isLoading: false, autoClose: 5000, position: "top-right" })
                 }
             })
     }
